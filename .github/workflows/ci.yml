@@ -1,0 +1,36 @@
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+name: CI
+
+jobs:
+  python-tests:
+    name: Python tests
+    runs-on: ubuntu-latest
+    container: condaforge/mambaforge
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          mamba env create -f environment.yaml
+          source activate changeforest_simulations
+          pytest tests
+        shell: bash -lxeu {0}
+
+  pre-commit-checks:
+    name: "Pre-commit checks"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v2.4.0
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Install Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Run pre-commit checks
+        uses: pre-commit/action@v2.0.3
