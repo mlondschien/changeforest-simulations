@@ -26,3 +26,12 @@ def load_iris():
         dataset = fetch_openml(data_id=61)["frame"]
         dataset.to_csv(_IRIS_PATH, index=False)
         return dataset
+
+
+def load(dataset):
+    if dataset == "iris":
+        return load_iris()
+    elif dataset == "letters":
+        return load_letters()
+    else:
+        raise ValueError("Invalid dataset name")
