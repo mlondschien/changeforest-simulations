@@ -1,0 +1,10 @@
+name: changeforest_simulations
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python >=3.7
+  - scikit-learn
+  - pandas
+  - numpy >=1.19.0
+  - changeforest
