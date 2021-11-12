@@ -15,7 +15,7 @@ def load_letters():
         return pd.read_csv(_LETTERS_PATH)
     else:
         dataset = fetch_openml(data_id=6)["frame"]
-        dataset.to_csv(_LETTERS_PATH)
+        dataset.to_csv(_LETTERS_PATH, index=False)
         return dataset
 
 
@@ -24,5 +24,5 @@ def load_iris():
         return pd.read_csv(_IRIS_PATH)
     else:
         dataset = fetch_openml(data_id=61)["frame"]
-        dataset.to_csv(_IRIS_PATH)
+        dataset.to_csv(_IRIS_PATH, index=False)
         return dataset
