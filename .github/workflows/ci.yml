@@ -17,6 +17,7 @@ jobs:
         run: |
           mamba env create -f environment.yaml
           source activate changeforest_simulations
+          pip install --no-use-pep517 --no-deps --disable-pip-version-check -e .
           pytest tests
         shell: bash -lxeu {0}
 
