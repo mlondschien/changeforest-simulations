@@ -39,7 +39,7 @@ def simulate(data, class_label="class", segment_sizes=None, seed=0):
 
     for label, segment_size in segment_sizes.to_dict().items():
         indices = np.append(
-            idx,
+            indices,
             rng.choice(
                 data[lambda x: x[class_label] == label].index,
                 segment_size,
@@ -49,5 +49,5 @@ def simulate(data, class_label="class", segment_sizes=None, seed=0):
 
     return (
         np.append([0], segment_sizes.to_numpy().cumsum()),
-        data.iloc[indices].drop(columns=class_label),
+        data.iloc[indices].drop(columns=class_label).to_numpy(),
     )
