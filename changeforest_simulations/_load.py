@@ -3,11 +3,11 @@ from pathlib import Path
 import pandas as pd
 from sklearn.datasets import fetch_openml
 
-_LETTERS_FILE = "letters.csv"
-_LETTERS_PATH = Path(__file__).parents[1].resolve() / "datasets" / _LETTERS_FILE
-
-_IRIS_FILE = "iris.csv"
-_IRIS_PATH = Path(__file__).parents[1].resolve() / "datasets" / _IRIS_FILE
+_DATASET_PATH = Path(__file__).parents[1].resolve() / "datasets"
+_LETTERS_PATH = _DATASET_PATH / "letters.csv"
+_IRIS_PATH = _DATASET_PATH / "iris.csv"
+_WHITE_WINE_PATH = _DATASET_PATH / "winequality-white.csv"
+_RED_WINE_PATH = _DATASET_PATH / "winequality-red.csv"
 
 
 def load_letters():
@@ -28,10 +28,38 @@ def load_iris():
         return dataset
 
 
+def load_red_wine():
+    if _RED_WINE_PATH.exists():
+        return pd.read_csv(_RED_WINE_PATH)
+    else:
+        dataset = pd.read_csv(
+            "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv",
+            sep=";",
+        )
+        dataset.to_csv(_RED_WINE_PATH, index=False)
+        return dataset
+
+
+def load_white_wine():
+    if _WHITE_WINE_PATH.exists():
+        return pd.read_csv(_WHITE_WINE_PATH)
+    else:
+        dataset = pd.read_csv(
+            "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-white.csv",
+            sep=";",
+        )
+        dataset.to_csv(_WHITE_WINE_PATH, index=False)
+        return dataset
+
+
 def load(dataset):
     if dataset == "iris":
         return load_iris()
     elif dataset == "letters":
         return load_letters()
+    elif dataset == "red_wine":
+        return load_red_wine()
+    elif dataset == "white_wine":
+        return load_white_wine()
     else:
         raise ValueError("Invalid dataset name")
