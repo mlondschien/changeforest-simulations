@@ -9,7 +9,8 @@ from changeforest_simulations import adjusted_rand_score, load, simulate
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-seeds = list(range(5))
+seeds = list(range(1))
+
 datasets = [
     ("iris", "class"),
     ("letters", "class"),
@@ -25,6 +26,7 @@ result_columns = [
     "true_changepoints",
     "estimated_changepoints",
     "score",
+    "time",
     "result",
 ]
 results = pd.DataFrame(columns=result_columns)
@@ -52,6 +54,7 @@ for dataset, class_label in datasets:
                 score = adjusted_rand_score(
                     change_points, [0] + result.split_points() + [len(time_series)]
                 )
+                time = toc - tic
                 results = results.append(
                     pd.DataFrame(
                         [
@@ -63,6 +66,7 @@ for dataset, class_label in datasets:
                                 change_points,
                                 estimated_changepoints,
                                 score,
+                                time,
                                 result,
                             ]
                         ],
@@ -72,10 +76,8 @@ for dataset, class_label in datasets:
 
                 logger.info(
                     f"Detection for dataset {dataset} seed {seed} method {method} and segmentation {segmentation} "
-                    f"found change points {estimated_changepoints} in {toc - tic:.2f}s. "
+                    f"found change points {estimated_changepoints} in {time:.2f}s. "
                     f"Score={score}."
                 )
-    print(results.drop(columns="result"))
 
-breakpoint()
-print(results.drop(columns="result"))
+print(results.groupby(["dataset", "method", "segmentation"])["score", "time"].mean())
