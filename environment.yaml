@@ -6,6 +6,7 @@ dependencies:
   - pip
   - pytest
   - r-base
+  - r-ecp
   - rpy2
   - changeforest
   - scikit-learn  # For adj. rand
