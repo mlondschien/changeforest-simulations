@@ -26,7 +26,7 @@ jobs:
           conda activate simulations
           set -eu
 
-          Rscript install_packages  # Some packages are not available on conda-forge
+          Rscript install_packages.R  # Some packages are not available on conda-forge
 
           pip install --no-use-pep517 --no-deps --disable-pip-version-check -e .
           pytest tests
