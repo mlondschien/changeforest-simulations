@@ -2,9 +2,9 @@ import logging
 from time import perf_counter
 
 import pandas as pd
-from hdcd import Control, hdcd
 
 from changeforest_simulations import adjusted_rand_score, load, simulate
+from changeforest_simulations.methods import estimate_changepoints
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -12,72 +12,57 @@ logging.basicConfig(level=logging.INFO)
 seeds = list(range(1))
 
 datasets = [
-    ("iris", "class"),
-    ("letters", "class"),
-    ("red_wine", "quality"),
-    ("white_wine", "quality"),
+    "iris",
+    "letters",
+    "red_wine",
+    "white_wine",
 ]
 
 result_columns = [
     "dataset",
     "seed",
-    "segmentation",
     "method",
-    "true_changepoints",
-    "estimated_changepoints",
     "score",
     "time",
-    "result",
 ]
 results = pd.DataFrame(columns=result_columns)
 
-for dataset, class_label in datasets:
+for dataset in datasets:
     data = load(dataset)
 
     for seed in seeds:
-        change_points, time_series = simulate(data, seed=seed, class_label=class_label)
+        change_points, time_series = simulate(data, seed=seed)
         logger.info(f"True changepoints: {list(change_points)}.")
 
-        for segmentation in "bs", "sbs", "wbs":
+        for method in [
+            "changeforest_bs",
+            "changeforest_sbs",
+            "changekNN_bs",
+            "changekNN_sbs",
+            "change_in_mean_bs",
+            "change_in_mean_sbs",
+            "ecp",
+            "multirank",
+        ]:
+            tic = perf_counter()
+            estimate = estimate_changepoints(
+                time_series, method, minimal_relative_segment_length=0.02
+            )
+            toc = perf_counter()
 
-            for method in "change_in_mean", "random_forest", "knn":
-                tic = perf_counter()
-                result = hdcd(
-                    time_series,
-                    method,
-                    segmentation,
-                    Control(minimal_relative_segment_length=0.01),
-                )
-                toc = perf_counter()
+            score = adjusted_rand_score(change_points, estimate)
 
-                estimated_changepoints = result.split_points()
-                score = adjusted_rand_score(
-                    change_points, [0] + result.split_points() + [len(time_series)]
+            results = results.append(
+                pd.DataFrame(
+                    [[dataset, seed, method, score, toc - tic]], columns=result_columns
                 )
-                time = toc - tic
-                results = results.append(
-                    pd.DataFrame(
-                        [
-                            [
-                                dataset,
-                                seed,
-                                segmentation,
-                                method,
-                                change_points,
-                                estimated_changepoints,
-                                score,
-                                time,
-                                result,
-                            ]
-                        ],
-                        columns=result_columns,
-                    )
-                )
+            )
 
-                logger.info(
-                    f"Detection for dataset {dataset} seed {seed} method {method} and segmentation {segmentation} "
-                    f"found change points {estimated_changepoints} in {time:.2f}s. "
-                    f"Score={score}."
-                )
+            logger.info(
+                f"Detection for dataset {dataset} seed {seed} method {method} "
+                f"found change points {estimate} in {toc - tic:.2f}s. "
+                f"Score={score}."
+            )
 
-print(results.groupby(["dataset", "method", "segmentation"])["score", "time"].mean())
+
+print(results.groupby(["dataset", "method"])["score", "time"].mean())

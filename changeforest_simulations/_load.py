@@ -36,6 +36,7 @@ def load_red_wine():
             "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv",
             sep=";",
         )
+        dataset = dataset.rename(columns={"quality": "class"}, copy=False)
         dataset.to_csv(_RED_WINE_PATH, index=False)
         return dataset
 
@@ -48,6 +49,7 @@ def load_white_wine():
             "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-white.csv",
             sep=";",
         )
+        dataset = dataset.rename(columns={"quality": "class"}, copy=False)
         dataset.to_csv(_WHITE_WINE_PATH, index=False)
         return dataset
 
