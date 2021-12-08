@@ -1,3 +1,6 @@
+import numpy as np
+
+from ._kernseg import kernseg
 from .changeforest import (
     change_in_mean_bs,
     change_in_mean_sbs,
@@ -27,6 +30,8 @@ def estimate_changepoints(X, method, **kwargs):
         return change_in_mean_sbs(X, **kwargs)
     elif method == "multirank":
         __, cpts = autoDynKWRupt(X.T)
-        return [0] + cpts[cpts != 0] + 1
+        return np.append([0], cpts[cpts != 0] + 1)
+    elif method == "kernseg":
+        return kernseg(X, **kwargs)
     else:
         raise ValueError(f"Unknown method: {method}.")

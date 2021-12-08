@@ -7,6 +7,8 @@ dependencies:
   - pytest
   - r-base
   - r-ecp
+  - r-rfast  # for Rfast::Lchoose only
+  - r-kernlab  # Dependency of r-KernSeg
   - rpy2
   - changeforest
   - scikit-learn  # For adj. rand

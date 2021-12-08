@@ -4,7 +4,6 @@ from rpy2.robjects.conversion import localconverter
 
 def ecp(X, minimal_relative_segment_length):
     min_size = int(minimal_relative_segment_length * X.shape[0])
-    numpy2ri.activate()
 
     n, p = X.shape
     with localconverter(default_converter + numpy2ri.converter):
