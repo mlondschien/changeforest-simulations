@@ -6,4 +6,5 @@ max-complexity = 18
 select = B,C,E,F,W,T4,B9
 per-file-ignores =
     tests/**:D101,D102,D103
+exclude = changeforest_simulations/methods/multirank/*
 docstring-convention = numpy

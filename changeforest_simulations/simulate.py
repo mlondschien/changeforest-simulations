@@ -1,7 +1,13 @@
 import numpy as np
 
 
-def simulate(data, class_label="class", segment_sizes=None, seed=0):
+def simulate(
+    data,
+    class_label="class",
+    segment_sizes=None,
+    minimal_relative_segment_length=0.02,
+    seed=0,
+):
     """Simulate time series with change points from labeled dataset.
 
     Parameters
@@ -13,6 +19,9 @@ def simulate(data, class_label="class", segment_sizes=None, seed=0):
     segment_sizes : list, optional, default=None
         List of sizes of segments to simulate. If `None`, segment sizes correspond to
         value counts of labels in data.
+    minimal_relative_segment_length : float, optional, default=0.02
+        Minimal relative length of simulated segments. Classes with smaller relative size
+        are ignored.
     seed: int, optional, default=0
         Random seed for reproducibility.
 
@@ -28,6 +37,11 @@ def simulate(data, class_label="class", segment_sizes=None, seed=0):
 
     if segment_sizes is None:
         segment_sizes = data[class_label].value_counts()
+
+        if minimal_relative_segment_length is not None:
+            segment_sizes = segment_sizes[
+                lambda x: x / len(data) > minimal_relative_segment_length
+            ]
     else:
         raise NotImplementedError
 
