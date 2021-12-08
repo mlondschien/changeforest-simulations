@@ -9,6 +9,8 @@ def kernseg(X, minimal_relative_segment_length):
     with localconverter(default_converter + numpy2ri.converter):
         r.assign("X", r.matrix(X, nrow=n, ncol=p))
         r.assign("D_max", D_max)
+        # In the following we implement the slope heuristic as suggested in
+        # https://www.jmlr.org/papers/v20/16-155.html, 6.2 ourself.
         return r(
             """
 result = KernSeg::KernSeg_MultiD(X, D_max)
@@ -16,6 +18,7 @@ result = KernSeg::KernSeg_MultiD(X, D_max)
 D_06 = as.integer(D_max * 0.6)
 n = nrow(X)
 
+# Lchoose(n, k) = log(n! / (k! * (n - k)!))
 c1 = sapply(1 : D_max, function(D) Rfast::Lchoose(n - 1, D - 1))
 c2 = 1 : D_max
 lm_fit = lm(result$J.est[D_06 : D_max] ~ c1[D_06 : D_max] + c2[D_06 : D_max])
