@@ -1,10 +1,13 @@
-name: changeforest_simulations
+name: simulations
 channels:
   - conda-forge
   - nodefaults
 dependencies:
-  - python >=3.7
-  - scikit-learn
-  - pandas
-  - numpy >=1.19.0
+  - pip
   - pytest
+  - r-base
+  - rpy2
+  - changeforest
+  - scikit-learn  # For adj. rand
+  - numpy
+  - pandas  # For read.csv only. TODO: get rid of this
