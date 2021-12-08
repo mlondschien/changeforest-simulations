@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Install dependencies
+      - name: Install dependencies and run tests
         run: |
           mamba env create -f environment.yaml
 
@@ -25,6 +25,8 @@ jobs:
           set +eu
           conda activate simulations
           set -eu
+
+          Rscript install_packages  # Some packages are not available on conda-forge
 
           pip install --no-use-pep517 --no-deps --disable-pip-version-check -e .
           pytest tests

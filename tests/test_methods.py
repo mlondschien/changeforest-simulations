@@ -16,6 +16,7 @@ from changeforest_simulations.simulate import simulate
         "changekNN_sbs",
         "change_in_mean_bs",
         "change_in_mean_sbs",
+        "kernseg",
     ],
 )
 def test_method(method):
@@ -23,4 +24,7 @@ def test_method(method):
     changepoints = estimate_changepoints(
         X, method=method, minimal_relative_segment_length=0.1
     )
-    assert len(changepoints) > 0
+    assert changepoints[0] == 0
+    assert changepoints[-1] == 150
+
+    assert len(changepoints) > 2
