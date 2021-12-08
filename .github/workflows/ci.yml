@@ -21,7 +21,11 @@ jobs:
           CONDA_BASE=$(conda info --base)
           source ${CONDA_BASE}/etc/profile.d/conda.sh
 
+          # Hack from https://github.com/conda/conda/issues/8186
+          set +eu
           conda activate simulations
+          set -eu
+
           pip install --no-use-pep517 --no-deps --disable-pip-version-check -e .
           pytest tests
         shell: bash -lxeu {0}
