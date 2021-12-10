@@ -54,6 +54,12 @@ def load_white_wine():
         return dataset
 
 
+def load_wine():
+    white_wine = load_white_wine()
+    red_wine = load_red_wine()
+    return pd.concat([white_wine.assign(color_red=0), red_wine.assign(color_red=1)])
+
+
 def load(dataset):
     if dataset == "iris":
         return load_iris()
@@ -63,5 +69,7 @@ def load(dataset):
         return load_red_wine()
     elif dataset == "white_wine":
         return load_white_wine()
+    elif dataset == "wine":
+        return load_wine()
     else:
         raise ValueError("Invalid dataset name")
