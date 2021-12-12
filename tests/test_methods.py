@@ -11,6 +11,7 @@ from changeforest_simulations.simulate import simulate
         "ecp",
         "multirank",
         "changeforest_bs",
+        "changeforest_bs__random_forest_ntrees=10",
         "changeforest_sbs",
         "changekNN_bs",
         "changekNN_sbs",
