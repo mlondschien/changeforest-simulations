@@ -11,6 +11,7 @@ from changeforest_simulations import load
         ("red_wine", (1599, 12)),
         ("white_wine", (4898, 12)),
         ("wine", (1599 + 4898, 13)),
+        ("glass", (214, 9)),
     ],
 )
 def test_load(dataset, expected_shape):
