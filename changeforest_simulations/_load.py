@@ -8,6 +8,7 @@ _LETTERS_PATH = _DATASET_PATH / "letters.csv"
 _IRIS_PATH = _DATASET_PATH / "iris.csv"
 _WHITE_WINE_PATH = _DATASET_PATH / "winequality-white.csv"
 _RED_WINE_PATH = _DATASET_PATH / "winequality-red.csv"
+_GLASS_PATH = _DATASET_PATH / "glass.csv"
 
 
 def load_letters():
@@ -60,6 +61,20 @@ def load_wine():
     return pd.concat([white_wine.assign(color_red=0), red_wine.assign(color_red=1)])
 
 
+def load_glass():
+    if _GLASS_PATH.exists():
+        return pd.read_csv(_GLASS_PATH)
+    else:
+        dataset = pd.read_csv(
+            "https://archive.ics.uci.edu/ml/machine-learning-databases/glass/glass.data",
+            names=["id", "ri", "na", "mg", "si", "k", "ca", "ba", "fe", "class"],
+            sep=",",
+        )
+        dataset = dataset.drop(columns=["id"])
+        dataset.to_csv(_GLASS_PATH, index=False)
+        return dataset
+
+
 def load(dataset):
     if dataset == "iris":
         return load_iris()
@@ -71,5 +86,7 @@ def load(dataset):
         return load_white_wine()
     elif dataset == "wine":
         return load_wine()
+    elif dataset == "glass":
+        return load_glass()
     else:
-        raise ValueError("Invalid dataset name")
+        raise ValueError(f"Invalid dataset name {dataset}.")
