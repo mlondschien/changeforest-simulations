@@ -14,6 +14,16 @@ from .multirank.dynkw import autoDynKWRupt
 
 
 def estimate_changepoints(X, method, **kwargs):
+
+    # Allow to pass kwargs to changeforest via the method name string.
+    # E.g. method="changeforest_bs__random_forest_ntrees=20"
+    if "__" in method:
+        args = method.split("__")
+        method = args[0]
+        for arg in args[1:]:
+            key, value = arg.split("=")
+            kwargs[key] = float(value)
+
     if method == "ecp":
         return ecp(X, **kwargs)
     elif method == "changeforest_bs":
