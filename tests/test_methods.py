@@ -18,6 +18,8 @@ from changeforest_simulations.simulate import simulate
         "change_in_mean_bs",
         "change_in_mean_sbs",
         "kernseg",
+        "kernseg_rbf",
+        "kernseg_linear",
     ],
 )
 def test_method(method):

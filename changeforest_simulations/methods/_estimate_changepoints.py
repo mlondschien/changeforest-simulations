@@ -11,6 +11,7 @@ from .changeforest import (
 )
 from .ecp import ecp
 from .multirank.dynkw import autoDynKWRupt
+from .ruptures import kernseg_linear, kernseg_rbf
 
 
 def estimate_changepoints(X, method, **kwargs):
@@ -43,5 +44,9 @@ def estimate_changepoints(X, method, **kwargs):
         return np.append([0], cpts[cpts != 0] + 1)
     elif method == "kernseg":
         return kernseg(X, **kwargs)
+    elif method == "kernseg_rbf":
+        return kernseg_rbf(X, **kwargs)
+    elif method == "kernseg_linear":
+        return kernseg_linear(X, **kwargs)
     else:
         raise ValueError(f"Unknown method: {method}.")
