@@ -14,18 +14,23 @@ def main(n):
     last_file = sorted(files)[-int(n)]
     df = pd.read_csv(last_file)
 
-    print("mean score\n")
-    print(df.pivot_table(index="method", columns="dataset", values="score"))
-    print("\n\nmedian score\n")
     print(
-        df.pivot_table(
-            index="method", columns="dataset", values="score", aggfunc=np.median
-        )
+        f"""mean score
+{df.pivot_table(index="method", columns="dataset", values="score")}
+
+median score
+{df.pivot_table(index="method", columns="dataset", values="score", aggfunc=np.median)}
+
+mean n_cpts
+{df.pivot_table(index="method", columns="dataset", values="n_cpts")}
+
+mean time
+{df.pivot_table(index="method", columns="dataset", values="time")}
+
+n
+{df.pivot_table(index="method", columns="dataset", values="seed", aggfunc=len)}
+"""
     )
-    print("\n\nmean n_cpts\n")
-    print(df.pivot_table(index="method", columns="dataset", values="n_cpts"))
-    print("\n\nmean time\n")
-    print(df.pivot_table(index="method", columns="dataset", values="time"))
 
 
 if __name__ == "__main__":
