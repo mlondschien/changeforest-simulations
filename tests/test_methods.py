@@ -1,8 +1,6 @@
 import pytest
 
-from changeforest_simulations import load_iris
-from changeforest_simulations.methods import estimate_changepoints
-from changeforest_simulations.simulate import simulate
+from changeforest_simulations import estimate_changepoints, simulate
 
 
 @pytest.mark.parametrize(
@@ -23,7 +21,7 @@ from changeforest_simulations.simulate import simulate
     ],
 )
 def test_method(method):
-    _, X = simulate(load_iris())
+    _, X = simulate("iris")
     changepoints = estimate_changepoints(
         X, method=method, minimal_relative_segment_length=0.1
     )
