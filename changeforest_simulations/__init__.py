@@ -1,6 +1,7 @@
 import pkg_resources
 
-from ._load import load, load_iris, load_letters
+from ._load import DATASETS, load
+from .methods import estimate_changepoints
 from .score import adjusted_rand_score
 from .simulate import simulate
 
@@ -9,4 +10,10 @@ try:
 except Exception:
     __version__ = "unknown"
 
-__all__ = ["adjusted_rand_score", "load", "load_iris", "load_letters", "simulate"]
+__all__ = [
+    "adjusted_rand_score",
+    "load",
+    "simulate",
+    "DATASETS",
+    "estimate_changepoints",
+]

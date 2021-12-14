@@ -25,7 +25,8 @@ def kernseg(X, kernel, minimal_relative_segment_length):
     `n / sqrt(log(n))`. We observe better estimation performance and much faster runtime
     (~10x) when using the former.
 
-    [1] A Kernel Multiple Change-point Algorithm via Model Selection.
+    [1] S. Arlot, A. Celisse, Z. Harchaoui. A Kernel Multiple Change-point Algorithm
+        via Model Selection, 2019
     """
     algo = rpt.KernelCPD(kernel=kernel)
 

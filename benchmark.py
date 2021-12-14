@@ -16,16 +16,13 @@ from changeforest_simulations.methods import estimate_changepoints
 def benchmark(n_seeds, methods, datasets):
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     file_path = Path(__file__).parent.absolute() / "output" / f"{now}.csv"
-    file_path.write_text("dataset,seed,method,score,n_cpts,time\n")
 
     seeds = list(range(n_seeds))
 
     if datasets is None:
-        datasets = ["iris", "white_wine", "red_wine", "wine"]
-    elif isinstance(datasets, list):
-        datasets = datasets
+        datasets = ["iris", "white_wine", "glass", "dirichlet"]
     else:
-        datasets = [datasets]
+        datasets = datasets.split(" ")
 
     if methods is None:
         methods = [
@@ -33,18 +30,16 @@ def benchmark(n_seeds, methods, datasets):
             "changeforest_bs__random_forest_ntrees=20",
             "changeforest_bs__random_forest_ntrees=500",
             "changekNN_bs",
-            "change_in_mean_bs",
+            # "change_in_mean_bs",
             "changeforest_sbs",
             "changekNN_sbs",
-            "change_in_mean_sbs",
-            "ecp",
-            "multirank",
-            "kernseg",
+            # "change_in_mean_sbs",
+            # "ecp",
+            # "multirank",
+            # "kernseg",
         ]
-    elif isinstance(methods, list):
-        methods = methods
     else:
-        methods = [methods]
+        methods = methods.split(" ")
 
     skip = {
         "letters": ["ecp", "changekNN_bs", "changekNN_sbs", "multirank"],
@@ -55,6 +50,8 @@ def benchmark(n_seeds, methods, datasets):
         "wine": ["ecp"],
         "white_wine": ["ecp"],
     }
+
+    file_path.write_text("dataset,seed,method,score,n_cpts,time\n")
 
     for seed in seeds:
         for dataset in datasets:

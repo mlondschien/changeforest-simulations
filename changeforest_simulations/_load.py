@@ -10,6 +10,8 @@ _WHITE_WINE_PATH = _DATASET_PATH / "winequality-white.csv"
 _RED_WINE_PATH = _DATASET_PATH / "winequality-red.csv"
 _GLASS_PATH = _DATASET_PATH / "glass.csv"
 
+DATASETS = ["letters", "iris", "red_wine", "white_wine", "wine", "glass"]
+
 
 def load_letters():
     if _LETTERS_PATH.exists():
@@ -89,4 +91,6 @@ def load(dataset):
     elif dataset == "glass":
         return load_glass()
     else:
-        raise ValueError(f"Invalid dataset name {dataset}.")
+        raise ValueError(
+            f"Invalid dataset name {dataset}. Availabel datasets are {DATASETS}."
+        )

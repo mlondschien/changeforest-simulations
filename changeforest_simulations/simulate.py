@@ -1,7 +1,34 @@
 import numpy as np
 
+from changeforest_simulations import DATASETS, load
 
-def simulate(
+
+def simulate(scenario, seed=0):
+    """Simulate time series with change points from scenario.
+
+    Parameters
+    ----------
+    scenario : str
+        One of ...
+    seed: int, optional, default=0
+        Random seed for reproducibility.
+
+    Returns
+    -------
+    numpy.ndarray
+        Array with changepoints, including zero and `n`.
+    numpy.ndarray
+        Simulated time series.
+    """
+    if scenario in DATASETS:
+        return simulate_from_data(load(scenario), seed=seed)
+    elif scenario == "dirichlet":
+        return simulate_dirichlet(seed=seed)
+    else:
+        raise NotImplementedError
+
+
+def simulate_from_data(
     data,
     class_label="class",
     segment_sizes=None,
@@ -65,3 +92,23 @@ def simulate(
         np.append([0], segment_sizes.to_numpy().cumsum()),
         data.iloc[indices].drop(columns=class_label).to_numpy(),
     )
+
+
+def simulate_dirichlet(seed=0):
+    """
+    Simulate histogram-valued dataset as described in Scenario 3, 6.1, [1].
+
+    [1] S. Arlot, A. Celisse, Z. Harchaoui. A Kernel Multiple Change-point Algorithm
+        via Model Selection, 2019
+    """
+    d = 20
+    changepoints = [0, 100, 130, 220, 320, 370, 520, 620, 740, 790, 870, 1000]
+    n_segments = len(changepoints) - 1
+    rng = np.random.default_rng(seed)
+    params = rng.uniform(0, 0.2, n_segments * d).reshape((n_segments, d))
+
+    X = np.zeros((changepoints[-1], d))
+    for idx, (start, end) in enumerate(zip(changepoints[:-1], changepoints[1:])):
+        X[start:end, :] = np.random.dirichlet(params[idx, :], end - start)
+
+    return np.array(changepoints), X
