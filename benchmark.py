@@ -5,7 +5,7 @@ from time import perf_counter
 import click
 import pandas as pd
 
-from changeforest_simulations import adjusted_rand_score, load, simulate
+from changeforest_simulations import adjusted_rand_score, simulate
 from changeforest_simulations.methods import estimate_changepoints
 
 
@@ -20,7 +20,14 @@ def benchmark(n_seeds, methods, datasets):
     seeds = list(range(n_seeds))
 
     if datasets is None:
-        datasets = ["iris", "white_wine", "glass", "dirichlet"]
+        datasets = [
+            "iris",
+            "white_wine",
+            "glass",
+            "dirichlet",
+            "change_in_mean",
+            "change_in_covariance",
+        ]
     else:
         datasets = datasets.split(" ")
 
@@ -30,13 +37,14 @@ def benchmark(n_seeds, methods, datasets):
             "changeforest_bs__random_forest_ntrees=20",
             "changeforest_bs__random_forest_ntrees=500",
             "changekNN_bs",
-            # "change_in_mean_bs",
+            "change_in_mean_bs",
             "changeforest_sbs",
             "changekNN_sbs",
-            # "change_in_mean_sbs",
-            # "ecp",
-            # "multirank",
-            # "kernseg",
+            "change_in_mean_sbs",
+            "ecp",
+            "multirank",
+            "kernseg_linear",
+            "kernseg_rbf",
         ]
     else:
         methods = methods.split(" ")
@@ -55,8 +63,7 @@ def benchmark(n_seeds, methods, datasets):
 
     for seed in seeds:
         for dataset in datasets:
-            data = load(dataset)
-            change_points, time_series = simulate(data, seed=seed)
+            change_points, time_series = simulate(dataset, seed=seed)
 
             for method in methods:
                 if method in skip.get(dataset, []) or (

@@ -24,8 +24,12 @@ def simulate(scenario, seed=0):
         return simulate_from_data(load(scenario), seed=seed)
     elif scenario == "dirichlet":
         return simulate_dirichlet(seed=seed)
+    elif scenario == "change_in_mean":
+        return simulate_change_in_mean(seed=seed)
+    elif scenario == "change_in_covariance":
+        return simulate_change_in_covariance(seed=seed)
     else:
-        raise NotImplementedError
+        raise ValueError(f"Scenario {scenario} not supported.")
 
 
 def simulate_from_data(
@@ -112,3 +116,43 @@ def simulate_dirichlet(seed=0):
         X[start:end, :] = np.random.dirichlet(params[idx, :], end - start)
 
     return np.array(changepoints), X
+
+
+def simulate_change_in_mean(seed=0):
+    """
+    Simulate change in mean dataset as described in [1], 4.3.
+
+    [1] D. Matteson, N. James. A Nonparametric Approach for Multiple Change
+    Point Analysis of Multivariate Data, 2012
+    """
+    T, d, mu = 600, 5, 1
+
+    rng = np.random.default_rng(seed)
+    X = rng.normal(0, 1, (T, d))
+    X[int(T / 3) : int(2 * T / 3), :] += mu
+
+    return [0, T / 3, 2 * T / 3, T], X
+
+
+def simulate_change_in_covariance(seed=0):
+    """
+    Simulate change in correlation dataset as described in [1], 4.3.
+
+    [1] D. Matteson, N. James. A Nonparametric Approach for Multiple Change
+    Point Analysis of Multivariate Data, 2012
+    """
+    T, d, rho = 600, 5, 0.9
+    Sigma = np.full((d, d), rho)
+    np.fill_diagonal(Sigma, 1)
+
+    rng = np.random.default_rng(seed)
+    X = np.concatenate(
+        (
+            rng.normal(0, 1, (int(T / 3), d)),
+            rng.multivariate_normal(np.zeros(d), Sigma, int(T / 3)),
+            rng.normal(0, 1, (int(T / 3), d)),
+        ),
+        axis=0,
+    )
+
+    return [0, T / 3, 2 * T / 3, T], X

@@ -20,6 +20,8 @@ from changeforest_simulations import simulate
             [0, 100, 130, 220, 320, 370, 520, 620, 740, 790, 870, 1000],
             (1000, 20),
         ),
+        ("change_in_mean", [0, 200, 400, 600], (600, 5)),
+        ("change_in_covariance", [0, 200, 400, 600], (600, 5)),
     ],
 )
 def test_simulate(scenario, expected_changepoints, expected_shape):
