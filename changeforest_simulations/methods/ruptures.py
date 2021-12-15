@@ -4,17 +4,17 @@ from scipy.special import betaln
 from sklearn.linear_model import LinearRegression
 
 
-def kernseg_rbf(X, minimal_relative_segment_length):
+def kernseg_rbf(X, minimal_relative_segment_length, **kwargs):
     """Wrapper around kernseg with a radial basis function kernel."""
-    return kernseg(X, "rbf", minimal_relative_segment_length)
+    return kernseg(X, "rbf", minimal_relative_segment_length, **kwargs)
 
 
-def kernseg_linear(X, minimal_relative_segment_length):
+def kernseg_linear(X, minimal_relative_segment_length, **kwargs):
     """Wrapper around kernseg with a linear kernel."""
-    return kernseg(X, "linear", minimal_relative_segment_length)
+    return kernseg(X, "linear", minimal_relative_segment_length, **kwargs)
 
 
-def kernseg(X, kernel, minimal_relative_segment_length):
+def kernseg(X, kernel, minimal_relative_segment_length, **kwargs):
     """
     Find change points using the kernel based method presented in [1].
 
@@ -28,7 +28,10 @@ def kernseg(X, kernel, minimal_relative_segment_length):
     [1] S. Arlot, A. Celisse, Z. Harchaoui. A Kernel Multiple Change-point Algorithm
         via Model Selection, 2019
     """
-    algo = rpt.KernelCPD(kernel=kernel)
+    if not kwargs:
+        kwargs = None
+
+    algo = rpt.KernelCPD(kernel=kernel, params=kwargs)
 
     n_bkps_max = int(1 / minimal_relative_segment_length)
     algo.fit(X).predict(n_bkps=n_bkps_max)
