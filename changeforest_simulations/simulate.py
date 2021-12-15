@@ -3,6 +3,13 @@ import numpy as np
 from changeforest_simulations import DATASETS, load
 
 
+def normalize(X):
+    """Normalize time series by median pairwise distances."""
+    medians = np.median(np.abs(X[1:, :] - X[:-1, :]), axis=0)
+    medians[medians == 0] = 1
+    return X / medians
+
+
 def simulate(scenario, seed=0):
     """Simulate time series with change points from scenario.
 
@@ -21,7 +28,8 @@ def simulate(scenario, seed=0):
         Simulated time series.
     """
     if scenario in DATASETS:
-        return simulate_from_data(load(scenario), seed=seed)
+        change_points, data = simulate_from_data(load(scenario), seed=seed)
+        return change_points, normalize(data)
     elif scenario == "dirichlet":
         return simulate_dirichlet(seed=seed)
     elif scenario == "change_in_mean":
