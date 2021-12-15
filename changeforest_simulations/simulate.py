@@ -125,7 +125,7 @@ def simulate_change_in_mean(seed=0):
     [1] D. Matteson, N. James. A Nonparametric Approach for Multiple Change
     Point Analysis of Multivariate Data, 2012
     """
-    T, d, mu = 600, 5, 1
+    T, d, mu = 600, 5, 2
 
     rng = np.random.default_rng(seed)
     X = rng.normal(0, 1, (T, d))
@@ -141,7 +141,7 @@ def simulate_change_in_covariance(seed=0):
     [1] D. Matteson, N. James. A Nonparametric Approach for Multiple Change
     Point Analysis of Multivariate Data, 2012
     """
-    T, d, rho = 600, 5, 0.9
+    T, d, rho = 600, 5, 0.7
     Sigma = np.full((d, d), rho)
     np.fill_diagonal(Sigma, 1)
 
