@@ -44,7 +44,9 @@ def benchmark(n_seeds, methods, datasets):
             "ecp",
             "multirank",
             "kernseg_linear",
-            "kernseg_rbf",
+            "kernseg_rbf__gamma=0.1",
+            "kernseg_rbf__gamma=1",
+            "kernseg_rbf__gamma=0.01",
         ]
     else:
         methods = methods.split(" ")
@@ -56,7 +58,8 @@ def benchmark(n_seeds, methods, datasets):
 
     slow = {
         "wine": ["ecp"],
-        "white_wine": ["ecp"],
+        "white_wine__normalize=True": ["ecp"],
+        "white_wine__normalize=False": ["ecp"],
     }
 
     file_path.write_text("dataset,seed,method,score,n_cpts,time\n")
