@@ -12,7 +12,8 @@ from changeforest_simulations import load
         ("white_wine", (4898, 12)),
         ("wine", (1599 + 4898, 13)),
         ("glass", (214, 9)),
-        ("eeg_eye_state", (13979, 14)),
+        ("eeg_eye_state", (14979, 15)),
+        ("abalone", (4177, 10)),
     ],
 )
 def test_load(dataset, expected_shape):
