@@ -1,5 +1,6 @@
 import tempfile
 import urllib
+import zipfile
 from pathlib import Path
 
 import pandas as pd
@@ -14,6 +15,7 @@ _GLASS_PATH = _DATASET_PATH / "glass.csv"
 _EEG_EYE_STATE_PATH = _DATASET_PATH / "eeg_eye_state.csv"
 _ABALONE_PATH = _DATASET_PATH / "abalone.csv"
 _COVERTYPE_PATH = _DATASET_PATH / "covertype.csv"
+_DRY_BEANS_PATH = _DATASET_PATH / "dry-beans.csv"
 
 DATASETS = [
     "letters",
@@ -24,6 +26,7 @@ DATASETS = [
     "glass",
     "covertype",
     "abalone",
+    "dry-beans",
 ]
 
 
@@ -142,6 +145,25 @@ def load_covertype():
         return dataset.astype(float)
 
 
+def load_dry_beans():
+    if _DRY_BEANS_PATH.exists():
+        return pd.read_csv(_DRY_BEANS_PATH)
+    else:
+        temp_beans_file = Path(tempfile.mkdtemp()) / "beans.zip"
+        with urllib.request.urlopen(
+            "https://archive.ics.uci.edu/ml/machine-learning-databases/00602/DryBeanDataset.zip"
+        ) as f:
+            with open(temp_beans_file, "wb") as f_out:
+                f_out.write(f.read())
+
+        with zipfile.ZipFile(temp_beans_file) as z:
+            dataset = pd.read_excel(z.open("DryBeanDataset/Dry_Bean_Dataset.xlsx"))
+
+        dataset = dataset.rename(columns={"Class": "class"}, copy=False)
+        dataset.to_csv(_DRY_BEANS_PATH, index=False)
+        return dataset
+
+
 def load(dataset):
     if dataset == "iris":
         return load_iris()
@@ -161,6 +183,8 @@ def load(dataset):
         return load_abalone()
     elif dataset == "covertype":
         return load_covertype()
+    elif dataset == "dry-beans":
+        return load_dry_beans()
     else:
         raise ValueError(
             f"Invalid dataset name {dataset}. Availabel datasets are {DATASETS}."
