@@ -16,8 +16,9 @@ _EEG_EYE_STATE_PATH = _DATASET_PATH / "eeg_eye_state.csv"
 _ABALONE_PATH = _DATASET_PATH / "abalone.csv"
 _COVERTYPE_PATH = _DATASET_PATH / "covertype.csv"
 _DRY_BEANS_PATH = _DATASET_PATH / "dry-beans.csv"
+_BREAST_CANCER_PATH = _DATASET_PATH / "breast-cancer.csv"
 
-DATASETS = [
+MULTICLASS_DATASETS = [
     "letters",
     "iris",
     "red_wine",
@@ -28,6 +29,10 @@ DATASETS = [
     "abalone",
     "dry-beans",
 ]
+
+BINARY_DATASETS = ["breast_cancer"]
+
+DATASETS = MULTICLASS_DATASETS + BINARY_DATASETS
 
 
 def load_letters():
@@ -164,6 +169,35 @@ def load_dry_beans():
         return dataset
 
 
+def load_breast_cancer():
+    if _BREAST_CANCER_PATH.exists():
+        return pd.read_csv(_BREAST_CANCER_PATH)
+    else:
+        dataset = pd.read_csv(
+            "https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data",
+            names=[
+                "id",
+                "clump_thickness",
+                "uniformity_of_cell_size",
+                "uniformity_of_cell_shape",
+                "marginal_adhesion",
+                "single_epithelial_cell_size",
+                "bare_nuclei",
+                "bland_chromatin",
+                "normal_nucleoli",
+                "mitoses",
+                "class",
+            ],
+            sep=",",
+        )
+        dataset = dataset.drop(columns="id")
+        # 1 is by far the most common value in `bare_nuclei`.
+        dataset.loc[lambda x: x["bare_nuclei"].eq("?"), "bare_nuclei"] = 1
+        dataset = dataset.astype("float")
+        dataset.to_csv(_BREAST_CANCER_PATH, index=False)
+        return dataset
+
+
 def load(dataset):
     if dataset == "iris":
         return load_iris()
@@ -185,6 +219,8 @@ def load(dataset):
         return load_covertype()
     elif dataset == "dry-beans":
         return load_dry_beans()
+    elif dataset == "breast-cancer":
+        return load_breast_cancer()
     else:
         raise ValueError(
             f"Invalid dataset name {dataset}. Availabel datasets are {DATASETS}."

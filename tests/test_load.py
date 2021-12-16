@@ -16,6 +16,7 @@ from changeforest_simulations import load
         ("abalone", (4177, 10)),
         ("covertype", (581012, 55)),
         ("dry-beans", (13611, 17)),
+        ("breast-cancer", (699, 10)),
     ],
 )
 def test_load(dataset, expected_shape):
