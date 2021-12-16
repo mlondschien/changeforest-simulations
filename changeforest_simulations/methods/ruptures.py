@@ -28,10 +28,7 @@ def kernseg(X, kernel, minimal_relative_segment_length, **kwargs):
     [1] S. Arlot, A. Celisse, Z. Harchaoui. A Kernel Multiple Change-point Algorithm
         via Model Selection, 2019
     """
-    if not kwargs:
-        kwargs = None
-
-    algo = rpt.KernelCPD(kernel=kernel, params=kwargs)
+    algo = rpt.KernelCPD(kernel=kernel, params={"gamma": 0.1})
 
     n_bkps_max = int(1 / minimal_relative_segment_length)
     algo.fit(X).predict(n_bkps=n_bkps_max)
