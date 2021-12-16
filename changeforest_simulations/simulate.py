@@ -10,7 +10,7 @@ def normalize(X):
     return X / medians
 
 
-def simulate(scenario, seed=0):
+def simulate(scenario, seed=0, minimal_relative_segment_length=0.02):
     """Simulate time series with change points from scenario.
 
     Parameters
@@ -28,7 +28,11 @@ def simulate(scenario, seed=0):
         Simulated time series.
     """
     if scenario in DATASETS:
-        change_points, data = simulate_from_data(load(scenario), seed=seed)
+        change_points, data = simulate_from_data(
+            load(scenario),
+            seed=seed,
+            minimal_relative_segment_length=minimal_relative_segment_length,
+        )
         return change_points, normalize(data)
     elif scenario == "dirichlet":
         return simulate_dirichlet(seed=seed)

@@ -14,5 +14,6 @@ dependencies:
   - changeforest
   - scikit-learn  # For adj. rand
   - numpy
+  - openpyxl  # To read dry-beans excel file
   - pandas  # For read.csv only. TODO: get rid of this
   - click

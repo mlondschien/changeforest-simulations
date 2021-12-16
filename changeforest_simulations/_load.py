@@ -1,3 +1,6 @@
+import tempfile
+import urllib
+import zipfile
 from pathlib import Path
 
 import pandas as pd
@@ -9,8 +12,27 @@ _IRIS_PATH = _DATASET_PATH / "iris.csv"
 _WHITE_WINE_PATH = _DATASET_PATH / "winequality-white.csv"
 _RED_WINE_PATH = _DATASET_PATH / "winequality-red.csv"
 _GLASS_PATH = _DATASET_PATH / "glass.csv"
+_EEG_EYE_STATE_PATH = _DATASET_PATH / "eeg_eye_state.csv"
+_ABALONE_PATH = _DATASET_PATH / "abalone.csv"
+_COVERTYPE_PATH = _DATASET_PATH / "covertype.csv"
+_DRY_BEANS_PATH = _DATASET_PATH / "dry-beans.csv"
+_BREAST_CANCER_PATH = _DATASET_PATH / "breast-cancer.csv"
 
-DATASETS = ["letters", "iris", "red_wine", "white_wine", "wine", "glass"]
+MULTICLASS_DATASETS = [
+    "letters",
+    "iris",
+    "red_wine",
+    "white_wine",
+    "wine",
+    "glass",
+    "covertype",
+    "abalone",
+    "dry-beans",
+]
+
+BINARY_DATASETS = ["breast_cancer"]
+
+DATASETS = MULTICLASS_DATASETS + BINARY_DATASETS
 
 
 def load_letters():
@@ -77,6 +99,105 @@ def load_glass():
         return dataset
 
 
+def load_eeg_eye_state():
+    if _EEG_EYE_STATE_PATH.exists():
+        return pd.read_csv(_EEG_EYE_STATE_PATH)
+    else:
+        temp_eeg_file = Path(tempfile.mkdtemp()) / "eeg_eye_state.arff"
+        with urllib.request.urlopen(
+            "https://archive.ics.uci.edu/ml/machine-learning-databases/00264/EEG%20Eye%20State.arff"
+        ) as f:
+            with open(temp_eeg_file, "wb") as f_out:
+                f_out.writelines(f.read().splitlines(True)[20:])
+
+        dataset = pd.read_csv(temp_eeg_file, sep=",", header=None)
+        dataset.columns = [f"eeg_{idx}" for idx in range(14)] + ["class"]
+        dataset.to_csv(_EEG_EYE_STATE_PATH, index=False)
+        return dataset
+
+
+def load_abalone():
+    if _ABALONE_PATH.exists():
+        return pd.read_csv(_ABALONE_PATH)
+    else:
+        dataset = pd.read_csv(
+            "https://archive.ics.uci.edu/ml/machine-learning-databases/abalone/abalone.data",
+            names=[
+                "sex",
+                "length",
+                "diameter",
+                "height",
+                "whole_weight",
+                "shucked_weight",
+                "viscera_weight",
+                "shell_weight",
+                "class",
+            ],
+        )
+        dataset["male"] = dataset["sex"].eq("M").astype("float")
+        dataset["infant"] = dataset["sex"].eq("I").astype("float")
+        dataset = dataset.drop(columns="sex")
+        dataset.to_csv(_ABALONE_PATH, index=False)
+        return dataset
+
+
+def load_covertype():
+    if _COVERTYPE_PATH.exists():
+        return pd.read_csv(_COVERTYPE_PATH).astype(float)
+    else:
+        dataset = fetch_openml(data_id=1596)["frame"]
+        dataset.to_csv(_COVERTYPE_PATH, index=False)
+        return dataset.astype(float)
+
+
+def load_dry_beans():
+    if _DRY_BEANS_PATH.exists():
+        return pd.read_csv(_DRY_BEANS_PATH)
+    else:
+        temp_beans_file = Path(tempfile.mkdtemp()) / "beans.zip"
+        with urllib.request.urlopen(
+            "https://archive.ics.uci.edu/ml/machine-learning-databases/00602/DryBeanDataset.zip"
+        ) as f:
+            with open(temp_beans_file, "wb") as f_out:
+                f_out.write(f.read())
+
+        with zipfile.ZipFile(temp_beans_file) as z:
+            dataset = pd.read_excel(z.open("DryBeanDataset/Dry_Bean_Dataset.xlsx"))
+
+        dataset = dataset.rename(columns={"Class": "class"}, copy=False)
+        dataset.to_csv(_DRY_BEANS_PATH, index=False)
+        return dataset
+
+
+def load_breast_cancer():
+    if _BREAST_CANCER_PATH.exists():
+        return pd.read_csv(_BREAST_CANCER_PATH)
+    else:
+        dataset = pd.read_csv(
+            "https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data",
+            names=[
+                "id",
+                "clump_thickness",
+                "uniformity_of_cell_size",
+                "uniformity_of_cell_shape",
+                "marginal_adhesion",
+                "single_epithelial_cell_size",
+                "bare_nuclei",
+                "bland_chromatin",
+                "normal_nucleoli",
+                "mitoses",
+                "class",
+            ],
+            sep=",",
+        )
+        dataset = dataset.drop(columns="id")
+        # 1 is by far the most common value in `bare_nuclei`.
+        dataset.loc[lambda x: x["bare_nuclei"].eq("?"), "bare_nuclei"] = 1
+        dataset = dataset.astype("float")
+        dataset.to_csv(_BREAST_CANCER_PATH, index=False)
+        return dataset
+
+
 def load(dataset):
     if dataset == "iris":
         return load_iris()
@@ -90,6 +211,16 @@ def load(dataset):
         return load_wine()
     elif dataset == "glass":
         return load_glass()
+    elif dataset == "eeg_eye_state":
+        return load_eeg_eye_state()
+    elif dataset == "abalone":
+        return load_abalone()
+    elif dataset == "covertype":
+        return load_covertype()
+    elif dataset == "dry-beans":
+        return load_dry_beans()
+    elif dataset == "breast-cancer":
+        return load_breast_cancer()
     else:
         raise ValueError(
             f"Invalid dataset name {dataset}. Availabel datasets are {DATASETS}."
