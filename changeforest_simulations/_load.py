@@ -13,8 +13,18 @@ _RED_WINE_PATH = _DATASET_PATH / "winequality-red.csv"
 _GLASS_PATH = _DATASET_PATH / "glass.csv"
 _EEG_EYE_STATE_PATH = _DATASET_PATH / "eeg_eye_state.csv"
 _ABALONE_PATH = _DATASET_PATH / "abalone.csv"
+_COVERTYPE_PATH = _DATASET_PATH / "covertype.csv"
 
-DATASETS = ["letters", "iris", "red_wine", "white_wine", "wine", "glass"]
+DATASETS = [
+    "letters",
+    "iris",
+    "red_wine",
+    "white_wine",
+    "wine",
+    "glass",
+    "covertype",
+    "abalone",
+]
 
 
 def load_letters():
@@ -123,6 +133,15 @@ def load_abalone():
         return dataset
 
 
+def load_covertype():
+    if _COVERTYPE_PATH.exists():
+        return pd.read_csv(_COVERTYPE_PATH).astype(float)
+    else:
+        dataset = fetch_openml(data_id=1596)["frame"]
+        dataset.to_csv(_COVERTYPE_PATH, index=False)
+        return dataset.astype(float)
+
+
 def load(dataset):
     if dataset == "iris":
         return load_iris()
@@ -140,6 +159,8 @@ def load(dataset):
         return load_eeg_eye_state()
     elif dataset == "abalone":
         return load_abalone()
+    elif dataset == "covertype":
+        return load_covertype()
     else:
         raise ValueError(
             f"Invalid dataset name {dataset}. Availabel datasets are {DATASETS}."

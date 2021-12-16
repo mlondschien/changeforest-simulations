@@ -14,6 +14,7 @@ from changeforest_simulations import load
         ("glass", (214, 9)),
         ("eeg_eye_state", (14979, 15)),
         ("abalone", (4177, 10)),
+        ("covertype", (581012, 55)),
     ],
 )
 def test_load(dataset, expected_shape):
