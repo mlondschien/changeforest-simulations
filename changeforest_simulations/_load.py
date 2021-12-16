@@ -1,3 +1,5 @@
+import tempfile
+import urllib
 from pathlib import Path
 
 import pandas as pd
@@ -9,6 +11,8 @@ _IRIS_PATH = _DATASET_PATH / "iris.csv"
 _WHITE_WINE_PATH = _DATASET_PATH / "winequality-white.csv"
 _RED_WINE_PATH = _DATASET_PATH / "winequality-red.csv"
 _GLASS_PATH = _DATASET_PATH / "glass.csv"
+_EEG_EYE_STATE_PATH = _DATASET_PATH / "eeg_eye_state.csv"
+
 
 DATASETS = ["letters", "iris", "red_wine", "white_wine", "wine", "glass"]
 
@@ -77,6 +81,23 @@ def load_glass():
         return dataset
 
 
+def load_eeg_eye_state():
+    if _EEG_EYE_STATE_PATH.exists():
+        return pd.read_csv(_EEG_EYE_STATE_PATH)
+    else:
+        temp_eeg_file = Path(tempfile.mkdtemp()) / "eeg_eye_state.arff"
+        with urllib.request.urlopen(
+            "https://archive.ics.uci.edu/ml/machine-learning-databases/00264/EEG%20Eye%20State.arff"
+        ) as f:
+            with open(temp_eeg_file, "wb") as f_out:
+                f_out.writelines(f.read().splitlines(True)[20:])
+
+        dataset = pd.read_csv(temp_eeg_file, sep=",", header=None)
+        dataset.columns = [f"eeg_{idx}" for idx in range(14)] + ["class"]
+        dataset.to_csv(_EEG_EYE_STATE_PATH, index=False)
+        return dataset
+
+
 def load(dataset):
     if dataset == "iris":
         return load_iris()
@@ -90,6 +111,8 @@ def load(dataset):
         return load_wine()
     elif dataset == "glass":
         return load_glass()
+    elif dataset == "eeg_eye_state":
+        return load_eeg_eye_state()
     else:
         raise ValueError(
             f"Invalid dataset name {dataset}. Availabel datasets are {DATASETS}."
