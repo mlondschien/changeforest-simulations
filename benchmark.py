@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from pathlib import Path
 from time import perf_counter
@@ -8,20 +9,40 @@ import pandas as pd
 from changeforest_simulations import adjusted_rand_score, simulate
 from changeforest_simulations.methods import estimate_changepoints
 
+_OUTPUT_FOLDER = Path(__file__).parent.absolute() / "output"
+logger = logging.getLogger(__file__)
+
 
 @click.command()
 @click.option("--n-seeds", default=100, help="Number of seeds to use for simulation.")
 @click.option("--methods", default=None, help="Methods to benchmark. All if None.")
 @click.option("--datasets", default=None, help="Datasets to benchmark. All if None.")
-def benchmark(n_seeds, methods, datasets):
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    file_path = Path(__file__).parent.absolute() / "output" / f"{now}.csv"
+@click.option(
+    "--continue", "continue_", is_flag=True, help="Continue from previous run."
+)
+def benchmark(n_seeds, methods, datasets, continue_):
+
+    logging.basicConfig(level=logging.INFO)
+
+    if not continue_:
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        file_path = _OUTPUT_FOLDER / f"{now}.csv"
+        file_path.write_text("dataset,seed,method,score,n_cpts,time\n")
+        existing_results = pd.DataFrame(columns=["dataset", "seed", "method"])
+        logger.info(f"Writing results to {file_path}.")
+    else:
+        file_path = sorted(_OUTPUT_FOLDER.glob("2021-*.csv"))[-1]
+        existing_results = pd.read_csv(file_path)[["dataset", "seed", "method"]]
+        logger.info(f"Continuing {file_path} with {len(existing_results)} results.")
 
     seeds = list(range(n_seeds))
 
     if datasets is None:
         datasets = [
             "iris",
+            "abalone",
+            "dry-beans",
+            "breast-cancer",
             "white_wine",
             "glass",
             "dirichlet",
@@ -35,34 +56,18 @@ def benchmark(n_seeds, methods, datasets):
         methods = [
             "changeforest_bs__random_forest_ntrees=100",
             "changeforest_bs__random_forest_ntrees=20",
-            "changeforest_bs__random_forest_ntrees=500",
             "changekNN_bs",
             "change_in_mean_bs",
-            "changeforest_sbs",
-            "changekNN_sbs",
-            "change_in_mean_sbs",
             "ecp",
             "multirank",
-            "kernseg_linear",
-            "kernseg_rbf__gamma=0.1",
-            "kernseg_rbf__gamma=1",
-            "kernseg_rbf__gamma=0.01",
+            "kernseg_rbf",
         ]
     else:
         methods = methods.split(" ")
 
-    skip = {
-        "letters": ["ecp", "changekNN_bs", "changekNN_sbs", "multirank"],
-        "wine": ["multirank"],
-    }
+    skip = {"wine": ["multirank"], "dry-beans": ["ecp", "multirank"]}
 
-    slow = {
-        "wine": ["ecp"],
-        "white_wine__normalize=True": ["ecp"],
-        "white_wine__normalize=False": ["ecp"],
-    }
-
-    file_path.write_text("dataset,seed,method,score,n_cpts,time\n")
+    slow = {"white_wine": ["ecp"], "abalone": ["ecp"]}
 
     for seed in seeds:
         for dataset in datasets:
@@ -73,6 +78,12 @@ def benchmark(n_seeds, methods, datasets):
                     method in slow.get(dataset, []) and seed % 5 != 0
                 ):
                     continue
+
+                if (dataset, seed, method) in existing_results.itertuples(index=False):
+                    logger.info(f"Skipping existing {dataset}, {seed}, {method}.")
+                    continue
+
+                logger.info(f"Running {dataset}, {seed}, {method}.")
 
                 tic = perf_counter()
                 estimate = estimate_changepoints(

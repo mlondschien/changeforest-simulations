@@ -30,7 +30,7 @@ MULTICLASS_DATASETS = [
     "dry-beans",
 ]
 
-BINARY_DATASETS = ["breast_cancer"]
+BINARY_DATASETS = ["breast-cancer"]
 
 DATASETS = MULTICLASS_DATASETS + BINARY_DATASETS
 
