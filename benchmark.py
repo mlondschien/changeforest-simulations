@@ -47,7 +47,7 @@ def benchmark(n_seeds, methods, datasets, continue_):
             "glass",
             "dirichlet",
             "change_in_mean",
-            "change_in_covariance",
+            "covertype",
         ]
     else:
         datasets = datasets.split(" ")
@@ -65,7 +65,22 @@ def benchmark(n_seeds, methods, datasets, continue_):
     else:
         methods = methods.split(" ")
 
-    skip = {"wine": ["multirank"], "dry-beans": ["ecp", "multirank"]}
+    skip = {
+        "letters": ["ecp", "changekNN_bs", "changekNN_sbs", "multirank"],
+        "covertype": [
+            "multirank",
+            "ecp",
+            "changekNN_bs",
+            "changeKNN_sbs",
+            "changeforest_bs__random_forest_ntrees=500",
+        ],
+        "dry-beans": ["ecp", "multirank"],
+    }
+
+    slow = {
+        "white_wine": ["ecp"],
+        "abalone": ["ecp"],
+    }
 
     slow = {"white_wine": ["ecp"], "abalone": ["ecp"]}
 
