@@ -10,6 +10,7 @@ from .changeforest import (
     changekNN_sbs,
 )
 from .ecp import ecp
+from .kcprs import kcprs
 from .multirank.dynkw import autoDynKWRupt
 from .ruptures import kernseg_linear, kernseg_rbf
 
@@ -48,5 +49,7 @@ def estimate_changepoints(X, method, **kwargs):
         return kernseg_rbf(X, **kwargs)
     elif method == "kernseg_linear":
         return kernseg_linear(X, **kwargs)
+    elif method == "kcprs":
+        return kcprs(X, **kwargs)
     else:
         raise ValueError(f"Unknown method: {method}.")

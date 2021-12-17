@@ -18,12 +18,13 @@ from changeforest_simulations import estimate_changepoints, simulate
         "kernseg",
         "kernseg_rbf",
         "kernseg_linear",
+        "kcprs",
     ],
 )
 def test_method(method):
     _, X = simulate("iris")
     changepoints = estimate_changepoints(
-        X, method=method, minimal_relative_segment_length=0.1
+        X, method=method, minimal_relative_segment_length=0.02
     )
     assert changepoints[0] == 0
     assert changepoints[-1] == 150
