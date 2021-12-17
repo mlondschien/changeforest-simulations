@@ -82,7 +82,7 @@ def benchmark(n_seeds, methods, datasets, continue_):
     slow = {
         "white_wine": ["ecp"],
         "abalone": ["ecp"],
-        "covertype": ["changeforest_bs__random_forest_ntrees"],
+        "covertype": ["changeforest_bs__random_forest_ntrees=20"],
     }
 
     slow = {"white_wine": ["ecp"], "abalone": ["ecp"]}
