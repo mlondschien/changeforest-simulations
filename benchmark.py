@@ -72,7 +72,9 @@ def benchmark(n_seeds, methods, datasets, continue_):
             "ecp",
             "changekNN_bs",
             "changeKNN_sbs",
+            "kernseg_rbf",
             "changeforest_bs__random_forest_ntrees=500",
+            "changeforest_bs__random_forest_ntrees=100",
         ],
         "dry-beans": ["ecp", "multirank"],
     }
@@ -80,6 +82,7 @@ def benchmark(n_seeds, methods, datasets, continue_):
     slow = {
         "white_wine": ["ecp"],
         "abalone": ["ecp"],
+        "covertype": ["changeforest_bs__random_forest_ntrees"],
     }
 
     slow = {"white_wine": ["ecp"], "abalone": ["ecp"]}
