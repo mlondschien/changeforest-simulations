@@ -11,7 +11,7 @@ dependencies:
   - r-kernlab  # Dependency of r-KernSeg
   - ruptures
   - rpy2
-  - changeforest
+  - changeforest>=0.4.0
   - scikit-learn  # For adj. rand
   - numpy
   - openpyxl  # To read dry-beans excel file
