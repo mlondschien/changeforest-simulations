@@ -9,7 +9,7 @@ from changeforest_simulations import estimate_changepoints, simulate
         "ecp",
         "multirank",
         "changeforest_bs",
-        "changeforest_bs__random_forest_ntrees=10",
+        "changeforest_bs__random_forest_n_trees=10",
         "changeforest_sbs",
         "changekNN_bs",
         "changekNN_sbs",
