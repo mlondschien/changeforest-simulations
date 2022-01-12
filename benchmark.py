@@ -54,8 +54,8 @@ def benchmark(n_seeds, methods, datasets, continue_):
 
     if methods is None:
         methods = [
-            "changeforest_bs__random_forest_ntrees=100",
-            "changeforest_bs__random_forest_ntrees=20",
+            "changeforest_bs__random_forest_n_trees=100",
+            "changeforest_bs__random_forest_n_trees=20",
             "changekNN_bs",
             "change_in_mean_bs",
             "ecp",
@@ -74,8 +74,8 @@ def benchmark(n_seeds, methods, datasets, continue_):
             "changekNN_bs",
             "changeKNN_sbs",
             "kernseg_rbf",
-            "changeforest_bs__random_forest_ntrees=500",
-            "changeforest_bs__random_forest_ntrees=100",
+            "changeforest_bs__random_forest_n_trees=500",
+            "changeforest_bs__random_forest_n_trees=100",
         ],
         "dry-beans": ["ecp", "multirank"],
     }
@@ -83,18 +83,20 @@ def benchmark(n_seeds, methods, datasets, continue_):
     slow = {
         "white_wine": ["ecp"],
         "abalone": ["ecp"],
-        "covertype": ["changeforest_bs__random_forest_ntrees=20"],
+        "covertype": ["changeforest_bs"],
     }
-
-    slow = {"white_wine": ["ecp"], "abalone": ["ecp"]}
 
     for seed in seeds:
         for dataset in datasets:
             change_points, time_series = simulate(dataset, seed=seed)
 
             for method in methods:
-                if method in skip.get(dataset, []) or (
-                    method in slow.get(dataset, []) and seed % 5 != 0
+                if method in skip.get(dataset, []):
+                    continue
+
+                if (
+                    any(slow_method in method for slow_method in slow.get(dataset, []))
+                    and seed % 10 != 0
                 ):
                     continue
 
