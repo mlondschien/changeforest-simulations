@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 output_path = Path(__file__).parent.absolute() / "output"
-files = output_path.glob("2021-*.csv")
+files = output_path.glob("202*.csv")
 
 
 @click.command()

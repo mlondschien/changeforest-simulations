@@ -31,7 +31,7 @@ def benchmark(n_seeds, methods, datasets, continue_):
         existing_results = pd.DataFrame(columns=["dataset", "seed", "method"])
         logger.info(f"Writing results to {file_path}.")
     else:
-        file_path = sorted(_OUTPUT_FOLDER.glob("2021-*.csv"))[-1]
+        file_path = sorted(_OUTPUT_FOLDER.glob("202*.csv"))[-1]
         existing_results = pd.read_csv(file_path)[["dataset", "seed", "method"]]
         logger.info(f"Continuing {file_path} with {len(existing_results)} results.")
 
@@ -61,12 +61,13 @@ def benchmark(n_seeds, methods, datasets, continue_):
             "ecp",
             "multirank",
             "kernseg_rbf",
+            "kcprs",
         ]
     else:
         methods = methods.split(" ")
 
     skip = {
-        "letters": ["ecp", "changekNN_bs", "changekNN_sbs", "multirank"],
+        "letters": ["ecp", "changekNN_bs", "changekNN_sbs", "multirank", "kcprs"],
         "covertype": [
             "multirank",
             "ecp",
