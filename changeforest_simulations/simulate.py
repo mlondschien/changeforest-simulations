@@ -34,6 +34,9 @@ def simulate(scenario, seed=0, minimal_relative_segment_length=0.02):
             minimal_relative_segment_length=minimal_relative_segment_length,
         )
         return change_points, normalize(data)
+    elif scenario == "repeated_covertype":
+        change_points, data = simulate_repeated_covertype(seed=seed)
+        return change_points, normalize(data)
     elif scenario == "dirichlet":
         return simulate_dirichlet(seed=seed)
     elif scenario == "change_in_mean":
@@ -78,34 +81,76 @@ def simulate_from_data(
     """
     rng = np.random.default_rng(seed)
 
-    if segment_sizes is None:
-        segment_sizes = data[class_label].value_counts()
+    data = data.reset_index()
 
+    value_counts = data[class_label].value_counts()
+
+    if segment_sizes is None:
         if minimal_relative_segment_length is not None:
-            segment_sizes = segment_sizes[
+            value_counts = value_counts[
                 lambda x: x / len(data) > minimal_relative_segment_length
             ]
+
+        idx = np.arange(len(value_counts))
+        rng.shuffle(idx)
+        value_counts = value_counts.iloc[idx]
+
+        indices = np.array([], dtype=np.int_)
+
+        for label, segment_size in value_counts.to_dict().items():
+            indices = np.append(
+                indices,
+                rng.choice(
+                    data[lambda x: x[class_label] == label].index,
+                    segment_size,
+                    replace=False,
+                ),
+            )
+
+        segment_sizes = value_counts.to_numpy()
+
     else:
-        raise NotImplementedError
+        segment_sizes = np.array(segment_sizes)
+        rng.shuffle(segment_sizes)
 
-    idx = np.arange(len(segment_sizes))
-    rng.shuffle(idx)
-    segment_sizes = segment_sizes.iloc[idx]
+        available_indices = np.ones(len(data), dtype=np.bool_)
 
-    indices = np.array([], dtype=np.int_)
+        segment_id = None
 
-    for label, segment_size in segment_sizes.to_dict().items():
-        indices = np.append(
-            indices,
-            rng.choice(
-                data[lambda x: x[class_label] == label].index,
-                segment_size,
-                replace=False,
-            ),
-        )
+        indices = np.array([], dtype=np.int_)
+
+        for segment_size in segment_sizes:
+            available_segments = value_counts[
+                lambda x: (x >= segment_size).to_numpy() & (x.index != segment_id)
+            ]
+
+            if len(available_segments) == 0:
+                raise ValueError("Not enough data.")
+
+            segment_id = rng.choice(
+                available_segments.index,
+                1,
+                p=available_segments / available_segments.sum(),
+            )[0]
+
+            value_counts.loc[segment_id] -= segment_size
+
+            indices = np.append(
+                indices,
+                rng.choice(
+                    data[
+                        lambda x: (x["class"] == segment_id).to_numpy()
+                        & available_indices
+                    ].index,
+                    segment_size,
+                    replace=False,
+                ),
+            )
+
+            available_indices[indices] = False
 
     return (
-        np.append([0], segment_sizes.to_numpy().cumsum()),
+        np.append([0], segment_sizes.cumsum()),
         data.iloc[indices].drop(columns=class_label).to_numpy(),
     )
 
@@ -168,3 +213,70 @@ def simulate_change_in_covariance(seed=0):
     )
 
     return [0, T / 3, 2 * T / 3, T], X
+
+
+def simulate_repeated_covertype(seed=0):
+    return simulate_from_data(
+        data=load("covertype"),
+        segment_sizes=_exponential_segment_lengths(100, 100000, 0.001, seed),
+        minimal_relative_segment_length=None,
+        seed=seed,
+    )
+
+
+def _exponential_segment_lengths(
+    n_segments,
+    n_observations,
+    minimal_relative_segment_length=0.01,
+    seed=0,
+):
+    """Exponential segment lengths.
+
+    Parameters
+    ----------
+    n_segments : int
+        Number of segment lengths to be sampled.
+    n_observations : int
+        Number of observations in simulated time series. The sum of segment lengths
+        returned will be equal to this.
+    minimal_relative_segment_length : float, optional, default=0.01
+        All segments will be at least `n * minimal_relative_segment_length` long.
+    seed: int, optional, default=0
+        Random seed for reproducibility.
+
+    Returns
+    -------
+    numpy.ndarray
+        Array with segment lengths.
+
+    """
+    rng = np.random.default_rng(seed)
+
+    expo = rng.exponential(scale=1, size=n_segments)
+    expo = expo / (n_segments * minimal_relative_segment_length + expo.sum())
+    assert expo.sum() == 1
+
+    return _cascade_round(expo * n_observations)
+
+
+def _cascade_round(x):
+    """Round floats in x to near integer, preserving their sum.
+
+    Inspired by
+    https://stackoverflow.com/questions/792460/how-to-round-floats-to-integers-while-preserving-their-sum
+
+    """
+
+    if np.abs(x - np.round(x)) > 1e-12:
+        raise ValueError("Values in x must sum to an integer value.")
+
+    x_rounded = np.zeros(len(x), dtype=np.int_)
+    remainder = 0
+
+    for idx in range(len(x)):
+        x_rounded[idx] = np.round(x[idx] + remainder)
+        remainder += x[idx] - x_rounded[idx]
+
+    assert np.abs(remainder) < 1e-12
+
+    return x_rounded
