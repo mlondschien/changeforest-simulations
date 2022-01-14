@@ -225,10 +225,7 @@ def simulate_repeated_covertype(seed=0):
 
 
 def _exponential_segment_lengths(
-    n_segments,
-    n_observations,
-    minimal_relative_segment_length=0.01,
-    seed=0,
+    n_segments, n_observations, minimal_relative_segment_length=0.01, seed=0,
 ):
     """Exponential segment lengths.
 
@@ -253,7 +250,9 @@ def _exponential_segment_lengths(
     rng = np.random.default_rng(seed)
 
     expo = rng.exponential(scale=1, size=n_segments)
-    expo = expo / (n_segments * minimal_relative_segment_length + expo.sum())
+    expo = (expo + minimal_relative_segment_length) / (
+        n_segments * minimal_relative_segment_length + expo.sum()
+    )
     assert expo.sum() == 1
 
     return _cascade_round(expo * n_observations)
@@ -267,7 +266,7 @@ def _cascade_round(x):
 
     """
 
-    if np.abs(x - np.round(x)) > 1e-12:
+    if np.abs(x.sum() - np.round(x.sum())) > 1e-12:
         raise ValueError("Values in x must sum to an integer value.")
 
     x_rounded = np.zeros(len(x), dtype=np.int_)
@@ -277,6 +276,6 @@ def _cascade_round(x):
         x_rounded[idx] = np.round(x[idx] + remainder)
         remainder += x[idx] - x_rounded[idx]
 
-    assert np.abs(remainder) < 1e-12
+    assert np.abs(remainder) < 1e-8
 
     return x_rounded
