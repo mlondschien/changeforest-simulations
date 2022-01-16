@@ -67,6 +67,7 @@ def benchmark(n_seeds, methods, datasets, continue_):
         methods = methods.split(" ")
 
     skip = {
+        "repeated_covertype": ["changekNN_bs"],
         "letters": ["ecp", "changekNN_bs", "changekNN_sbs", "multirank", "kcprs"],
         "covertype": [
             "multirank",
@@ -107,8 +108,15 @@ def benchmark(n_seeds, methods, datasets, continue_):
                 logger.info(f"Running {dataset}, {seed}, {method}.")
 
                 tic = perf_counter()
+                if "repeated" in dataset:
+                    minimal_relative_segment_length = 0.001
+                else:
+                    minimal_relative_segment_length = 0.02
+
                 estimate = estimate_changepoints(
-                    time_series, method, minimal_relative_segment_length=0.02
+                    time_series,
+                    method,
+                    minimal_relative_segment_length=minimal_relative_segment_length,
                 )
                 toc = perf_counter()
 
