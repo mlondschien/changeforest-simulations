@@ -2,6 +2,8 @@ import numpy as np
 import pytest
 
 from changeforest_simulations import simulate
+from changeforest_simulations._load import load_iris, load_letters
+from changeforest_simulations._simulate import simulate_from_data
 
 
 @pytest.mark.parametrize(
@@ -22,10 +24,27 @@ from changeforest_simulations import simulate
         ),
         ("change_in_mean", [0, 200, 400, 600], (600, 5)),
         ("change_in_covariance", [0, 200, 400, 600], (600, 5)),
+        ("repeated_covertype", None, (100000, 54)),
     ],
 )
 def test_simulate(scenario, expected_changepoints, expected_shape):
     changepoints, time_series = simulate(scenario)
 
-    np.testing.assert_array_equal(changepoints, expected_changepoints)
+    if expected_changepoints is not None:
+        np.testing.assert_array_equal(changepoints, expected_changepoints)
+
     assert time_series.shape == expected_shape
+
+
+@pytest.mark.parametrize(
+    "load, segment_sizes",
+    [(load_iris, [1, 2, 3, 4]), (load_iris, range(12)), (load_letters, range(100))],
+)
+def test_simulate_with_segment_sizes(load, segment_sizes):
+    data = load()
+
+    _, time_series = simulate_from_data(
+        data, segment_sizes=segment_sizes, minimal_relative_segment_length=0.001
+    )
+
+    assert time_series.shape[0] == sum(segment_sizes)
