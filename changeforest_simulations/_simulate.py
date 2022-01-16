@@ -81,7 +81,7 @@ def simulate_from_data(
     """
     rng = np.random.default_rng(seed)
 
-    data = data.reset_index()
+    data = data.reset_index(drop=True)
 
     value_counts = data[class_label].value_counts()
 
@@ -253,7 +253,7 @@ def _exponential_segment_lengths(
     expo = (expo + minimal_relative_segment_length) / (
         n_segments * minimal_relative_segment_length + expo.sum()
     )
-    assert expo.sum() == 1
+    assert np.abs(expo.sum() - 1) < 1e-12
 
     return _cascade_round(expo * n_observations)
 

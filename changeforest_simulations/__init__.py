@@ -1,9 +1,9 @@
 import pkg_resources
 
 from ._load import DATASETS, load
+from ._simulate import simulate
 from .methods import estimate_changepoints
 from .score import adjusted_rand_score
-from .simulate import simulate
 
 try:
     __version__ = pkg_resources.get_distribution(__name__).version
