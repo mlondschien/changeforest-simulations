@@ -266,7 +266,7 @@ def _cascade_round(x):
 
     """
 
-    if np.abs(x.sum() - np.round(x.sum())) > 1e-12:
+    if np.abs(x.sum() - np.round(x.sum())) > 1e-8:
         raise ValueError("Values in x must sum to an integer value.")
 
     x_rounded = np.zeros(len(x), dtype=np.int_)
