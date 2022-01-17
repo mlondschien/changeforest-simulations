@@ -25,6 +25,7 @@ from changeforest_simulations._simulate import simulate_from_data
         ("change_in_mean", [0, 200, 400, 600], (600, 5)),
         ("change_in_covariance", [0, 200, 400, 600], (600, 5)),
         ("repeated_covertype", None, (100000, 54)),
+        ("repeated_dry_beans", None, (5000, 16)),
     ],
 )
 def test_simulate(scenario, expected_changepoints, expected_shape):
@@ -44,7 +45,7 @@ def test_simulate_with_segment_sizes(load, segment_sizes):
     data = load()
 
     _, time_series = simulate_from_data(
-        data, segment_sizes=segment_sizes, minimal_relative_segment_length=0.001
+        data, segment_sizes=segment_sizes, minimal_relative_segment_length=None
     )
 
     assert time_series.shape[0] == sum(segment_sizes)

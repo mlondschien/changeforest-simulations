@@ -37,6 +37,9 @@ def simulate(scenario, seed=0, minimal_relative_segment_length=0.02):
     elif scenario == "repeated_covertype":
         change_points, data = simulate_repeated_covertype(seed=seed)
         return change_points, normalize(data)
+    elif scenario == "repeated_dry_beans":
+        change_points, data = simulate_repeated_dry_beans(seed=seed)
+        return change_points, normalize(data)
     elif scenario == "dirichlet":
         return simulate_dirichlet(seed=seed)
     elif scenario == "change_in_mean":
@@ -224,6 +227,15 @@ def simulate_repeated_covertype(seed=0):
     )
 
 
+def simulate_repeated_dry_beans(seed=0):
+    return simulate_from_data(
+        data=load("dry-beans"),
+        segment_sizes=_exponential_segment_lengths(100, 5000, 0.002, seed),
+        minimal_relative_segment_length=None,
+        seed=seed,
+    )
+
+
 def _exponential_segment_lengths(
     n_segments, n_observations, minimal_relative_segment_length=0.01, seed=0,
 ):
@@ -250,10 +262,10 @@ def _exponential_segment_lengths(
     rng = np.random.default_rng(seed)
 
     expo = rng.exponential(scale=1, size=n_segments)
-    expo = (expo + minimal_relative_segment_length) / (
-        n_segments * minimal_relative_segment_length + expo.sum()
-    )
+    expo = expo * (1 - minimal_relative_segment_length * n_segments) / expo.sum()
+    expo = expo + minimal_relative_segment_length
     assert np.abs(expo.sum() - 1) < 1e-12
+    assert np.min(expo) >= minimal_relative_segment_length
 
     return _cascade_round(expo * n_observations)
 
