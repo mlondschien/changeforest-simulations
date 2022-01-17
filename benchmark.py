@@ -85,6 +85,8 @@ def benchmark(n_seeds, methods, datasets, continue_):
         "white_wine": ["ecp"],
         "abalone": ["ecp"],
         "covertype": ["changeforest_bs"],
+        "repeated_dry_beans": ["ecp"],
+        "repeated_covertype": ["ecp"],
     }
 
     for seed in seeds:
@@ -109,7 +111,7 @@ def benchmark(n_seeds, methods, datasets, continue_):
 
                 tic = perf_counter()
                 if "repeated" in dataset:
-                    minimal_relative_segment_length = 0.001
+                    minimal_relative_segment_length = 0.002
                 else:
                     minimal_relative_segment_length = 0.02
 
