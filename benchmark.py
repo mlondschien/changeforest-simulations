@@ -15,12 +15,13 @@ logger = logging.getLogger(__file__)
 
 @click.command()
 @click.option("--n-seeds", default=100, help="Number of seeds to use for simulation.")
+@click.option("--seed-start", default=0, help="Seed from which to start iteration.")
 @click.option("--methods", default=None, help="Methods to benchmark. All if None.")
 @click.option("--datasets", default=None, help="Datasets to benchmark. All if None.")
 @click.option(
     "--continue", "continue_", is_flag=True, help="Continue from previous run."
 )
-def benchmark(n_seeds, methods, datasets, continue_):
+def benchmark(n_seeds, seed_start, methods, datasets, continue_):
 
     logging.basicConfig(level=logging.INFO)
 
@@ -35,61 +36,66 @@ def benchmark(n_seeds, methods, datasets, continue_):
         existing_results = pd.read_csv(file_path)[["dataset", "seed", "method"]]
         logger.info(f"Continuing {file_path} with {len(existing_results)} results.")
 
-    seeds = list(range(n_seeds))
-
     if datasets is None:
         datasets = [
             "iris",
+            "glass",
+            "wine",
+            "breast-cancer",
             "abalone",
             "dry-beans",
-            "breast-cancer",
-            "white_wine",
-            "glass",
-            "dirichlet",
-            "change_in_mean",
             "covertype",
+            "change_in_mean",
+            "change_in_covariance",
+            "dirichlet",
+            "repeated-dry-beans",
+            "repeated-covertype",
         ]
     else:
         datasets = datasets.split(" ")
 
     if methods is None:
         methods = [
-            "changeforest_bs__random_forest_n_trees=100",
-            "changeforest_bs__random_forest_n_trees=20",
+            "changeforest_bs",
+            # "changeforest_bs__random_forest_n_trees=20",
             "changekNN_bs",
             "change_in_mean_bs",
             "ecp",
             "multirank",
             "kernseg_rbf",
-            "kcprs",
+            # "kcprs",
         ]
     else:
         methods = methods.split(" ")
 
     skip = {
-        "repeated_covertype": ["changekNN_bs"],
-        "letters": ["ecp", "changekNN_bs", "changekNN_sbs", "multirank", "kcprs"],
+        "repeated-covertype": ["changekNN_bs", "multirank", "ecp"],
+        # "letters": ["ecp", "changekNN_bs", "changekNN_sbs", "multirank", "kcprs"],
         "covertype": [
             "multirank",
             "ecp",
             "changekNN_bs",
-            "changeKNN_sbs",
             "kernseg_rbf",
-            "changeforest_bs__random_forest_n_trees=500",
-            "changeforest_bs__random_forest_n_trees=100",
+            "changeforest_bs",
         ],
-        "dry-beans": ["ecp", "multirank"],
+        "dry-beans": ["multirank"],
+        "repeated-dry-beans": ["multirank"],
     }
 
     slow = {
-        "white_wine": ["ecp"],
-        "abalone": ["ecp"],
-        "covertype": ["changeforest_bs"],
-        "repeated_dry_beans": ["ecp"],
+        # "white_wine": ["ecp"],
+        # "abalone": ["ecp"],
+        # "covertype": ["changeforest_bs"],
+        "repeated-dry-beans": ["ecp"],
         "repeated_covertype": ["ecp"],
     }
 
-    for seed in seeds:
+    minimal_relative_segment_lengths = {
+        "repeated-dry-beans": 0.001,
+        "repeated-covertype": 0.001,
+    }
+
+    for seed in range(seed_start, seed_start + n_seeds):
         for dataset in datasets:
             change_points, time_series = simulate(dataset, seed=seed)
 
@@ -110,15 +116,12 @@ def benchmark(n_seeds, methods, datasets, continue_):
                 logger.info(f"Running {dataset}, {seed}, {method}.")
 
                 tic = perf_counter()
-                if "repeated" in dataset:
-                    minimal_relative_segment_length = 0.002
-                else:
-                    minimal_relative_segment_length = 0.02
-
                 estimate = estimate_changepoints(
                     time_series,
                     method,
-                    minimal_relative_segment_length=minimal_relative_segment_length,
+                    minimal_relative_segment_length=minimal_relative_segment_lengths.get(
+                        dataset, 0.01
+                    ),
                 )
                 toc = perf_counter()
 

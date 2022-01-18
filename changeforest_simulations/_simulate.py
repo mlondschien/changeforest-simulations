@@ -10,7 +10,7 @@ def normalize(X):
     return X / medians
 
 
-def simulate(scenario, seed=0, minimal_relative_segment_length=0.02):
+def simulate(scenario, seed=0):
     """Simulate time series with change points from scenario.
 
     Parameters
@@ -29,15 +29,13 @@ def simulate(scenario, seed=0, minimal_relative_segment_length=0.02):
     """
     if scenario in DATASETS:
         change_points, data = simulate_from_data(
-            load(scenario),
-            seed=seed,
-            minimal_relative_segment_length=minimal_relative_segment_length,
+            load(scenario), seed=seed, minimal_relative_segment_length=0.01
         )
         return change_points, normalize(data)
-    elif scenario == "repeated_covertype":
+    elif scenario == "repeated-covertype":
         change_points, data = simulate_repeated_covertype(seed=seed)
         return change_points, normalize(data)
-    elif scenario == "repeated_dry_beans":
+    elif scenario == "repeated-dry-beans":
         change_points, data = simulate_repeated_dry_beans(seed=seed)
         return change_points, normalize(data)
     elif scenario == "dirichlet":
@@ -54,7 +52,7 @@ def simulate_from_data(
     data,
     class_label="class",
     segment_sizes=None,
-    minimal_relative_segment_length=0.02,
+    minimal_relative_segment_length=0.01,
     seed=0,
 ):
     """Simulate time series with change points from labeled dataset.
@@ -68,7 +66,7 @@ def simulate_from_data(
     segment_sizes : list, optional, default=None
         List of sizes of segments to simulate. If `None`, segment sizes correspond to
         value counts of labels in data.
-    minimal_relative_segment_length : float, optional, default=0.02
+    minimal_relative_segment_length : float, optional, default=0.01
         Minimal relative length of simulated segments. Classes with smaller relative size
         are ignored.
     seed: int, optional, default=0
@@ -230,7 +228,7 @@ def simulate_repeated_covertype(seed=0):
 def simulate_repeated_dry_beans(seed=0):
     return simulate_from_data(
         data=load("dry-beans"),
-        segment_sizes=_exponential_segment_lengths(100, 5000, 0.002, seed),
+        segment_sizes=_exponential_segment_lengths(100, 10000, 0.001, seed),
         minimal_relative_segment_length=None,
         seed=seed,
     )
