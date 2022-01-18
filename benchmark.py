@@ -15,12 +15,13 @@ logger = logging.getLogger(__file__)
 
 @click.command()
 @click.option("--n-seeds", default=100, help="Number of seeds to use for simulation.")
+@click.option("--seed-start", default=0, help="Seed from which to start iteration.")
 @click.option("--methods", default=None, help="Methods to benchmark. All if None.")
 @click.option("--datasets", default=None, help="Datasets to benchmark. All if None.")
 @click.option(
     "--continue", "continue_", is_flag=True, help="Continue from previous run."
 )
-def benchmark(n_seeds, methods, datasets, continue_):
+def benchmark(n_seeds, seed_start, methods, datasets, continue_):
 
     logging.basicConfig(level=logging.INFO)
 
@@ -34,8 +35,6 @@ def benchmark(n_seeds, methods, datasets, continue_):
         file_path = sorted(_OUTPUT_FOLDER.glob("202*.csv"))[-1]
         existing_results = pd.read_csv(file_path)[["dataset", "seed", "method"]]
         logger.info(f"Continuing {file_path} with {len(existing_results)} results.")
-
-    seeds = list(range(n_seeds))
 
     if datasets is None:
         datasets = [
@@ -70,7 +69,7 @@ def benchmark(n_seeds, methods, datasets, continue_):
         methods = methods.split(" ")
 
     skip = {
-        "repeated_covertype": ["changekNN_bs", "multirank", "ecp"],
+        "repeated-covertype": ["changekNN_bs", "multirank", "ecp"],
         # "letters": ["ecp", "changekNN_bs", "changekNN_sbs", "multirank", "kcprs"],
         "covertype": [
             "multirank",
@@ -79,15 +78,16 @@ def benchmark(n_seeds, methods, datasets, continue_):
             "kernseg_rbf",
             "changeforest_bs",
         ],
-        "dry-beans": ["ecp", "multirank"],
+        "dry-beans": ["multirank"],
+        "repeated-dry-beans": ["multirank"],
     }
 
     slow = {
         # "white_wine": ["ecp"],
         # "abalone": ["ecp"],
         # "covertype": ["changeforest_bs"],
-        # "repeated-dry-beans": ["ecp"],
-        # "repeated_covertype": ["ecp"],
+        "repeated-dry-beans": ["ecp"],
+        "repeated_covertype": ["ecp"],
     }
 
     minimal_relative_segment_lengths = {
@@ -95,7 +95,7 @@ def benchmark(n_seeds, methods, datasets, continue_):
         "repeated-covertype": 0.001,
     }
 
-    for seed in seeds:
+    for seed in range(seed_start, seed_start + n_seeds):
         for dataset in datasets:
             change_points, time_series = simulate(dataset, seed=seed)
 
@@ -115,16 +115,13 @@ def benchmark(n_seeds, methods, datasets, continue_):
 
                 logger.info(f"Running {dataset}, {seed}, {method}.")
 
-                minimal_relative_segment_length = minimal_relative_segment_lengths.get(
-                    dataset, 0.01
-                )
-
                 tic = perf_counter()
-
                 estimate = estimate_changepoints(
                     time_series,
                     method,
-                    minimal_relative_segment_length=minimal_relative_segment_length,
+                    minimal_relative_segment_length=minimal_relative_segment_lengths.get(
+                        dataset, 0.01
+                    ),
                 )
                 toc = perf_counter()
 
