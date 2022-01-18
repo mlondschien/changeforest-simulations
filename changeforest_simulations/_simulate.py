@@ -32,7 +32,7 @@ def simulate(scenario, seed=0):
             load(scenario), seed=seed, minimal_relative_segment_length=0.01
         )
         return change_points, normalize(data)
-    elif scenario == "repeated_covertype":
+    elif scenario == "repeated-covertype":
         change_points, data = simulate_repeated_covertype(seed=seed)
         return change_points, normalize(data)
     elif scenario == "repeated-dry-beans":
