@@ -1,5 +1,5 @@
-import logging
 from datetime import datetime
+import logging
 from pathlib import Path
 from time import perf_counter
 
@@ -40,53 +40,58 @@ def benchmark(n_seeds, methods, datasets, continue_):
     if datasets is None:
         datasets = [
             "iris",
+            "glass",
+            "wine",
+            "breast-cancer",
             "abalone",
             "dry-beans",
-            "breast-cancer",
-            "white_wine",
-            "glass",
-            "dirichlet",
-            "change_in_mean",
             "covertype",
+            "change_in_mean",
+            "change_in_covariance",
+            "dirichlet",
+            "repeated-dry-beans"
         ]
     else:
         datasets = datasets.split(" ")
 
     if methods is None:
         methods = [
-            "changeforest_bs__random_forest_n_trees=100",
-            "changeforest_bs__random_forest_n_trees=20",
+            "changeforest_bs",
+            #"changeforest_bs__random_forest_n_trees=20",
             "changekNN_bs",
             "change_in_mean_bs",
             "ecp",
             "multirank",
             "kernseg_rbf",
-            "kcprs",
+            # "kcprs",
         ]
     else:
         methods = methods.split(" ")
 
     skip = {
-        "repeated_covertype": ["changekNN_bs"],
-        "letters": ["ecp", "changekNN_bs", "changekNN_sbs", "multirank", "kcprs"],
+        # "repeated_covertype": ["changekNN_bs"],
+        # "letters": ["ecp", "changekNN_bs", "changekNN_sbs", "multirank", "kcprs"],
         "covertype": [
             "multirank",
             "ecp",
             "changekNN_bs",
-            "changeKNN_sbs",
             "kernseg_rbf",
-            "changeforest_bs__random_forest_n_trees=500",
-            "changeforest_bs__random_forest_n_trees=100",
+            "changeforest_bs",
         ],
         "dry-beans": ["ecp", "multirank"],
     }
 
     slow = {
-        "white_wine": ["ecp"],
-        "abalone": ["ecp"],
-        "covertype": ["changeforest_bs"],
-        "repeated_dry_beans": ["ecp"],
-        "repeated_covertype": ["ecp"],
+        # "white_wine": ["ecp"],
+        # "abalone": ["ecp"],
+        # "covertype": ["changeforest_bs"],
+        # "repeated-dry-beans": ["ecp"],
+        # "repeated_covertype": ["ecp"],
+    }
+
+    minimal_relative_segment_lengths = {
+        "repeated-dry-beans": 0.001,
+        "repeated-covertype": 0.001,
     }
 
     for seed in seeds:
@@ -109,11 +114,9 @@ def benchmark(n_seeds, methods, datasets, continue_):
 
                 logger.info(f"Running {dataset}, {seed}, {method}.")
 
+                minimal_relative_segment_length = minimal_relative_segment_lengths.get(dataset, 0.01)
+
                 tic = perf_counter()
-                if "repeated" in dataset:
-                    minimal_relative_segment_length = 0.002
-                else:
-                    minimal_relative_segment_length = 0.02
 
                 estimate = estimate_changepoints(
                     time_series,

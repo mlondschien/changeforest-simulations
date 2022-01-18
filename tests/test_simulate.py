@@ -25,7 +25,7 @@ from changeforest_simulations._simulate import simulate_from_data
         ("change_in_mean", [0, 200, 400, 600], (600, 5)),
         ("change_in_covariance", [0, 200, 400, 600], (600, 5)),
         ("repeated_covertype", None, (100000, 54)),
-        ("repeated_dry_beans", None, (5000, 16)),
+        ("repeated-dry-beans", None, (5000, 16)),
     ],
 )
 def test_simulate(scenario, expected_changepoints, expected_shape):
