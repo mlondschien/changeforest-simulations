@@ -1,5 +1,5 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 from pathlib import Path
 from time import perf_counter
 
@@ -49,7 +49,7 @@ def benchmark(n_seeds, methods, datasets, continue_):
             "change_in_mean",
             "change_in_covariance",
             "dirichlet",
-            "repeated-dry-beans"
+            "repeated-dry-beans",
         ]
     else:
         datasets = datasets.split(" ")
@@ -57,7 +57,7 @@ def benchmark(n_seeds, methods, datasets, continue_):
     if methods is None:
         methods = [
             "changeforest_bs",
-            #"changeforest_bs__random_forest_n_trees=20",
+            # "changeforest_bs__random_forest_n_trees=20",
             "changekNN_bs",
             "change_in_mean_bs",
             "ecp",
@@ -114,7 +114,9 @@ def benchmark(n_seeds, methods, datasets, continue_):
 
                 logger.info(f"Running {dataset}, {seed}, {method}.")
 
-                minimal_relative_segment_length = minimal_relative_segment_lengths.get(dataset, 0.01)
+                minimal_relative_segment_length = minimal_relative_segment_lengths.get(
+                    dataset, 0.01
+                )
 
                 tic = perf_counter()
 

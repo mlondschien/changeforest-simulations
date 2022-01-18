@@ -28,7 +28,9 @@ def simulate(scenario, seed=0):
         Simulated time series.
     """
     if scenario in DATASETS:
-        change_points, data = simulate_from_data(load(scenario), seed=seed, minimal_relative_segment_length=0.01)
+        change_points, data = simulate_from_data(
+            load(scenario), seed=seed, minimal_relative_segment_length=0.01
+        )
         return change_points, normalize(data)
     elif scenario == "repeated_covertype":
         change_points, data = simulate_repeated_covertype(seed=seed)
@@ -233,10 +235,7 @@ def simulate_repeated_dry_beans(seed=0):
 
 
 def _exponential_segment_lengths(
-    n_segments,
-    n_observations,
-    minimal_relative_segment_length=0.01,
-    seed=0,
+    n_segments, n_observations, minimal_relative_segment_length=0.01, seed=0,
 ):
     """Exponential segment lengths.
 
