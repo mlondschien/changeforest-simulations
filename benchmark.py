@@ -67,7 +67,7 @@ def benchmark(n_seeds, methods, datasets, continue_):
         methods = methods.split(" ")
 
     skip = {
-        "repeated_covertype": ["changekNN_bs"],
+        "repeated_covertype": ["changekNN_bs", "kernseg_rbf"],
         "letters": ["ecp", "changekNN_bs", "changekNN_sbs", "multirank", "kcprs"],
         "covertype": [
             "multirank",
