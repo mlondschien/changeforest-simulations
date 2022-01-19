@@ -80,8 +80,8 @@ def benchmark(n_seeds, seed_start, methods, datasets, continue_):
         # "white_wine": ["ecp"],
         # "abalone": ["ecp"],
         # "covertype": ["changeforest_bs"],
-        "repeated-dry-beans": ["ecp"],
-        "repeated_covertype": ["ecp"],
+        # "repeated-dry-beans": ["ecp"],
+        # "repeated_covertype": ["ecp"],
     }
 
     minimal_relative_segment_lengths = {
