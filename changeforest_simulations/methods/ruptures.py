@@ -30,7 +30,8 @@ def kernseg(X, kernel, minimal_relative_segment_length, params=None, **kwargs):
     """
     algo = rpt.KernelCPD(kernel=kernel, params=params)
 
-    n_bkps_max = int(1 / minimal_relative_segment_length)
+    # ruptures requires n_bkps_max <= n / 2 - 2.
+    n_bkps_max = int(min(1 / minimal_relative_segment_length, X.shape[0] / 2 - 2))
     algo.fit(X).predict(n_bkps=n_bkps_max)
 
     segmentations_values = [[len(X)]] + list(algo.segmentations_dict.values())
