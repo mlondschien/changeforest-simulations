@@ -221,7 +221,7 @@ def simulate_change_in_covariance(seed=0):
 def simulate_repeated_covertype(seed=0):
     return simulate_from_data(
         data=load("covertype"),
-        segment_sizes=_exponential_segment_lengths(100, 100000, 0.001, seed),
+        segment_sizes=_exponential_segment_lengths(100, 50000, 0.001, seed),
         minimal_relative_segment_length=None,
         seed=seed,
     )
