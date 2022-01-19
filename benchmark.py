@@ -69,10 +69,10 @@ def benchmark(n_seeds, seed_start, methods, datasets, continue_):
         methods = methods.split(" ")
 
     skip = {
-        "repeated_covertype": ["changekNN_bs", "kernseg_rbf", "ecp", "multirank"],
+        "repeated-covertype": ["kernseg_rbf", "ecp", "multirank"],
         "letters": ["ecp", "changekNN_bs", "changekNN_sbs", "multirank", "kcprs"],
         "covertype": ["multirank", "ecp", "changekNN_bs", "kernseg_rbf"],
-        "dry-beans": ["multirank"],
+        "dry-beans": ["multirank", "ecp"],
         "repeated-dry-beans": ["multirank"],
     }
 
