@@ -49,7 +49,7 @@ def benchmark(n_seeds, seed_start, methods, datasets, continue_):
             "change_in_covariance",
             "dirichlet",
             "repeated-dry-beans",
-            "repeated-covertype",
+            # "repeated-covertype",
         ]
     else:
         datasets = datasets.split(" ")
@@ -69,7 +69,7 @@ def benchmark(n_seeds, seed_start, methods, datasets, continue_):
         methods = methods.split(" ")
 
     skip = {
-        "repeated-covertype": ["changekNN_bs", "multirank", "ecp"],
+        # "repeated-covertype": ["changekNN_bs", "multirank", "ecp"],
         # "letters": ["ecp", "changekNN_bs", "changekNN_sbs", "multirank", "kcprs"],
         "covertype": [
             "multirank",
@@ -86,8 +86,8 @@ def benchmark(n_seeds, seed_start, methods, datasets, continue_):
         # "white_wine": ["ecp"],
         # "abalone": ["ecp"],
         # "covertype": ["changeforest_bs"],
-        "repeated-dry-beans": ["ecp"],
-        "repeated_covertype": ["ecp"],
+        # "repeated-dry-beans": ["ecp"],
+        # "repeated_covertype": ["ecp"],
     }
 
     minimal_relative_segment_lengths = {
