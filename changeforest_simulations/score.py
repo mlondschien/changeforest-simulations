@@ -8,6 +8,10 @@ def adjusted_rand_score(true_changepoints, estimated_changepoints):
     Uses sklearn.metrics.adjusted_rand_score under the hood. See their documentation:
     https://scikit-learn.org/stable/modules/generated/sklearn.metrics.adjusted_rand_score.html
 
+    Examples
+    --------
+    >>> adjusted_rand_score([0, 50, 100, 150], [0, 100, 150])
+    0.5681159420289855
     """
     true_changepoints = np.array(true_changepoints, dtype=np.int_)
     estimated_changepoints = np.array(estimated_changepoints, dtype=np.int_)
