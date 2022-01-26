@@ -31,6 +31,8 @@ from changeforest_simulations._simulate import simulate_from_data
         ("repeated-covertype", None, (100000, 54)),
         ("repeated-dry-beans", None, (5000, 16)),
         ("repeated-wine", None, (5000, 12)),
+        ("glass-no-change", [0, 214], (214, 8)),
+        ("iris-no-change", [0, 150], (150, 4)),
     ],
 )
 def test_simulate(scenario, expected_changepoints, expected_shape):

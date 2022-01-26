@@ -51,6 +51,24 @@ def simulate(scenario, seed=0):
         raise ValueError(f"Scenario {scenario} not supported.")
 
 
+def simulate_no_change(scenario, seed=0, class_label="class"):
+    """Simulate time series without change points by shuffling data.
+
+    Parameters
+    ----------
+    scenario : str
+        One of ...
+    seed: int, optional, default=0
+        Random seed for reproducibility.
+    class_label : str, optional, default="class"
+        Column name of class labels in data.
+    """
+    rng = np.random.default_rng(seed)
+    X = load(scenario.rstrip("-no-change")).drop(columns=class_label).to_numpy()
+    rng.shuffle(X)  # This only shuffles along the first axis.
+    return np.array([0, len(X)]), X
+
+
 def simulate_from_data(
     data,
     class_label="class",
