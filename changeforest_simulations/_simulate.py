@@ -38,6 +38,9 @@ def simulate(scenario, seed=0):
     elif scenario == "repeated-dry-beans":
         change_points, data = simulate_repeated_dry_beans(seed=seed)
         return change_points, normalize(data)
+    elif scenario == "repeated-wine":
+        change_points, data = simulate_repeated_wine(seed=seed)
+        return change_points, normalize(data)
     elif scenario == "dirichlet":
         return simulate_dirichlet(seed=seed)
     elif scenario == "change_in_mean":
@@ -229,6 +232,15 @@ def simulate_repeated_dry_beans(seed=0):
     return simulate_from_data(
         data=load("dry-beans"),
         segment_sizes=_exponential_segment_lengths(100, 10000, 0.001, seed),
+        minimal_relative_segment_length=None,
+        seed=seed,
+    )
+
+
+def simulate_repeated_wine(seed=0):
+    return simulate_from_data(
+        data=load("wine"),
+        segment_sizes=_exponential_segment_lengths(100, 5000, 0.001, seed),
         minimal_relative_segment_length=None,
         seed=seed,
     )
