@@ -231,7 +231,7 @@ def simulate_repeated_covertype(seed=0):
 def simulate_repeated_dry_beans(seed=0):
     return simulate_from_data(
         data=load("dry-beans"),
-        segment_sizes=_exponential_segment_lengths(100, 10000, 0.001, seed),
+        segment_sizes=_exponential_segment_lengths(100, 5000, 0.001, seed),
         minimal_relative_segment_length=None,
         seed=seed,
     )
