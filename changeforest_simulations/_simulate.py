@@ -32,6 +32,9 @@ def simulate(scenario, seed=0):
             load(scenario), seed=seed, minimal_relative_segment_length=0.01
         )
         return change_points, normalize(data)
+    elif scenario.endswith("-no-change"):
+        changepoints, data = simulate_no_change(scenario, seed=seed)
+        return changepoints, normalize(data)
     elif scenario == "repeated-covertype":
         change_points, data = simulate_repeated_covertype(seed=seed)
         return change_points, normalize(data)
@@ -64,7 +67,11 @@ def simulate_no_change(scenario, seed=0, class_label="class"):
         Column name of class labels in data.
     """
     rng = np.random.default_rng(seed)
-    X = load(scenario.rstrip("-no-change")).drop(columns=class_label).to_numpy()
+
+    if not scenario.endswith("-no-change"):
+        raise ValueError(f"Scenario {scenario} not supported.")
+
+    X = load(scenario[:-10]).drop(columns=class_label).to_numpy()
     rng.shuffle(X)  # This only shuffles along the first axis.
     return np.array([0, len(X)]), X
 
