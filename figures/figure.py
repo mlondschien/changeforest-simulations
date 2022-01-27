@@ -9,31 +9,18 @@ from changeforest_simulations import adjusted_rand_score, simulate
 
 
 @click.command()
+@click.option("--method", default="random_forest")
 @click.option("--dataset", default="iris")
 @click.option("--seed", default=0)
 @click.option("--max-depth", default=5)
-def main(dataset, seed, max_depth):
+def main(method, dataset, seed, max_depth):
     changepoints, time_series = simulate(dataset, seed)
     if "repeated" in dataset:
         control = Control(minimal_relative_segment_length=0.001)
     else:
         control = Control(minimal_relative_segment_length=0.01)
 
-    result = changeforest(time_series, "random_forest", "bs", control)
-
-    plot(changepoints, result, max_depth, f"figures/{dataset}_{seed}.png")
-
-    print(f"True changeponts: {changepoints}.")
-    print(
-        f"Estimated changepoints: { [0] + list(result.split_points()) + [len(time_series)]}."
-    )
-    print(
-        f"score: {adjusted_rand_score(changepoints, [0] + list(result.split_points()) + [len(time_series)])}."
-    )
-
-
-def plot(true_changepoints, result, max_depth, filename):
-    true_changepoints = true_changepoints[1:-1]
+    result = changeforest(time_series, method, "bs", control)
 
     nodes = [result]
     plots = []
@@ -49,7 +36,7 @@ def plot(true_changepoints, result, max_depth, filename):
         plots.append(
             pn.ggplot()
             + pn.geom_vline(
-                xintercept=true_changepoints, colour="green", linetype="dashed"
+                xintercept=changepoints[1:-1], colour="green", linetype="dashed"
             )
         )
         # plots.append(pn.ggplot() + pn.geom_vline(xintercept=true_changepoints, colour="green", linetype="dashed"))
@@ -78,8 +65,12 @@ def plot(true_changepoints, result, max_depth, filename):
         nodes = new_nodes
 
     # https://github.com/has2k1/plotnine/issues/373
+    pn.options.figure_size = (10, 2 + 2 * len(plots))
     fig = (pn.ggplot() + pn.geom_blank(data=pd.DataFrame()) + pn.theme_void()).draw()
     gs = gridspec.GridSpec(len(plots), 1)
+
+    estimated_changepoints = [0] + list(result.split_points()) + [len(time_series)]
+    score = adjusted_rand_score(changepoints, estimated_changepoints)
 
     for i, plot in enumerate(plots):
         if i < len(plots) - 1:
@@ -87,8 +78,14 @@ def plot(true_changepoints, result, max_depth, filename):
 
         ax = fig.add_subplot(gs[i, 0])
         plot._draw_using_figure(fig, [ax])
+        fig.suptitle(f"{method}: {dataset} (ARI={score:.2f})")
 
-    pyplot.savefig(filename, dpi=300)
+    pyplot.tight_layout()
+    pyplot.savefig(f"figures/{dataset}_{method}_{seed}.png", dpi=300)
+
+    print(f"True changeponts: {changepoints}.")
+    print(f"Estimated changepoints: {estimated_changepoints}.")
+    print(f"score: {score}.")
 
 
 if __name__ == "__main__":
