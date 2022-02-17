@@ -223,5 +223,5 @@ def load(dataset):
         return load_breast_cancer()
     else:
         raise ValueError(
-            f"Invalid dataset name {dataset}. Availabel datasets are {DATASETS}."
+            f"Invalid dataset name {dataset}. Available datasets are {DATASETS}."
         )
