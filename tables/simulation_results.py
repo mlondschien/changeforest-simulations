@@ -29,7 +29,10 @@ def main(n, methods, datasets):
         lambda x: f"{np.mean(x):.3f} ({np.std(x):.3f})"
     )
     df_print = df_print.reset_index().pivot(index=["method"], columns=["dataset"])
-    print(df_print)
+    df_print.columns = df_print.get_level_values(level=1)
+    df_print = df_print[datasets]
+
+    print(df_print.to_latex())
 
     # time
     df_print = df.groupby(["method", "dataset"])["time"].apply(

@@ -38,4 +38,4 @@ axes[2, 0].set_xlabel("s")
 axes[2, 1].set_xlabel("s")
 
 plt.tight_layout(pad=1.5)
-plt.savefig("figures/two_step_search.png", dpi=300)
+plt.savefig("figures/two_step_search.eps", dpi=300)
