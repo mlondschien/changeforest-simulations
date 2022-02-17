@@ -54,7 +54,7 @@ knn_gain_curve = (
     [np.nan, np.nan] + [knn_gain(s, X) for s in range(2, n - 2)] + [np.nan, np.nan]
 )
 
-fig, axes = plt.subplots(ncols=2, figsize=(9, 3.5))
+fig, axes = plt.subplots(ncols=2, figsize=(11, 3))
 
 axes[0].plot(range(n), rf_gain_curve, "k")
 ymin, ymax = axes[0].get_ylim()
@@ -79,4 +79,4 @@ axes[1].set_xlabel("s")
 # axes[1].set_ylabel("gain")
 
 plt.tight_layout()
-plt.savefig("figures/gain.png", dpi=300)
+plt.savefig("figures/gains.eps", dpi=300)
