@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 from changeforest_simulations import DATASETS, load
 
@@ -35,6 +36,9 @@ def simulate(scenario, seed=0):
     elif scenario.endswith("-no-change"):
         changepoints, data = simulate_no_change(scenario, seed=seed)
         return changepoints, normalize(data)
+    elif scenario.endswith("-noise"):
+        changepoints, data = simulate_with_noise(scenario, seed=seed)
+        return changepoints, data
     elif scenario == "repeated-covertype":
         change_points, data = simulate_repeated_covertype(seed=seed)
         return change_points, normalize(data)
@@ -74,6 +78,55 @@ def simulate_no_change(scenario, seed=0, class_label="class"):
     X = load(scenario[:-10]).drop(columns=class_label).to_numpy()
     rng.shuffle(X)  # This only shuffles along the first axis.
     return np.array([0, len(X)]), X
+
+
+def simulate_with_noise(scenario, seed=0, class_label="class", signal_to_noise=1):
+    rng = np.random.default_rng(seed)
+
+    data = load(scenario[:-6])
+
+    y = data[class_label].to_numpy()
+
+    variances = (  # Compute variances separately for each class, take weighted mean.
+        data.groupby(class_label).var() * data.groupby(class_label).count()
+    ).sum(axis=0) / (data.shape[0] - data[class_label].nunique())
+    X = (data.drop(columns=class_label) / variances.apply(np.sqrt)).to_numpy()
+
+    value_counts = pd.value_counts(y)
+    segment_lengths = _exponential_segment_lengths(20, 10000, 0.001, seed)
+    indices = np.array([], dtype="int")
+    segment_id = None
+
+    for segment_length in segment_lengths:
+        available_segments = value_counts[
+            lambda x: (x >= segment_length).to_numpy() & (x.index != segment_id)
+        ]
+
+        if len(available_segments) == 0:
+            raise ValueError("Not enough data.")
+
+        segment_id = rng.choice(
+            available_segments.index,
+            1,
+            p=available_segments
+            / available_segments.sum(),  # probability is proportional to count
+        )[0]
+
+        indices = np.concatenate(
+            [
+                indices,
+                rng.choice(
+                    np.flatnonzero(y == segment_id), segment_length, replace=False,
+                ),
+            ]
+        )
+
+    noise = rng.normal(0, 1 / signal_to_noise, (len(indices), X.shape[1]))
+
+    return (
+        np.append([0], segment_lengths.cumsum()),
+        data.iloc[indices].drop(columns=class_label).to_numpy() + noise,
+    )
 
 
 def simulate_from_data(
