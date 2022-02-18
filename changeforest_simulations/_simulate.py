@@ -92,10 +92,46 @@ def simulate_with_noise(scenario, seed=0, class_label="class", signal_to_noise=1
     ).sum(axis=0) / (data.shape[0] - data[class_label].nunique())
     X = (data.drop(columns=class_label) / variances.apply(np.sqrt)).to_numpy()
 
-    value_counts = pd.value_counts(y)
     segment_lengths = _exponential_segment_lengths(20, 10000, 0.001, seed)
     indices = np.array([], dtype="int")
+
+    for _ in range(5):
+        try:
+            indices = _get_indices(segment_lengths, y, rng, True)
+        except ValueError:
+            continue
+
+        noise = rng.normal(0, 1 / signal_to_noise, (len(indices), X.shape[1]))
+
+        changepoints = np.append([0], segment_lengths.cumsum())
+        time_series = data.iloc[indices].drop(columns=class_label).to_numpy() + noise
+
+        return changepoints, time_series
+
+    raise ValueError("Not enough data")
+
+
+def _get_indices(segment_lengths, y, rng, replace=True):
+    """
+    Get indices for segments of lengths `segment_lengths`.
+
+    Parameters
+    ----------
+    segment_lengths : array-like of int
+        For consequtive values `start`, `end` of `segment_lengths`, indices
+        `indices[start:stop]` will be unique and correspond to a single value in `y`.
+    y : array-like
+        Array-like with class labels. For each segment, indices of that segment
+        correspond to entries in `y` with the same value.
+    rng : np.random.RandomState
+        Random number generator.
+    replace : bool, optional, default=True
+        Whether not to recycle indices for separate segments.
+    """
     segment_id = None
+    indices = np.array([], dtype="int")
+    value_counts = pd.value_counts(y)
+    available_indices = np.ones(len(y), dtype=np.bool_)
 
     for segment_length in segment_lengths:
         available_segments = value_counts[
@@ -105,28 +141,21 @@ def simulate_with_noise(scenario, seed=0, class_label="class", signal_to_noise=1
         if len(available_segments) == 0:
             raise ValueError("Not enough data.")
 
-        segment_id = rng.choice(
-            available_segments.index,
-            1,
-            p=available_segments
-            / available_segments.sum(),  # probability is proportional to count
-        )[0]
+        segment_id = rng.choice(available_segments.index, 1)[0]
 
-        indices = np.concatenate(
-            [
-                indices,
-                rng.choice(
-                    np.flatnonzero(y == segment_id), segment_length, replace=False,
-                ),
-            ]
+        new_indices = rng.choice(
+            np.flatnonzero((y == segment_id) & available_indices),
+            segment_length,
+            replace=False,
         )
 
-    noise = rng.normal(0, 1 / signal_to_noise, (len(indices), X.shape[1]))
+        if not replace:
+            value_counts.loc[segment_id] -= segment_length
+            available_indices[new_indices] = False
 
-    return (
-        np.append([0], segment_lengths.cumsum()),
-        data.iloc[indices].drop(columns=class_label).to_numpy() + noise,
-    )
+        indices = np.concatenate([indices, new_indices])
+
+    return indices
 
 
 def simulate_from_data(
@@ -191,50 +220,24 @@ def simulate_from_data(
 
         segment_sizes = value_counts.to_numpy()
 
+        return (
+            np.append([0], segment_sizes.cumsum()),
+            data.iloc[indices].drop(columns=class_label).to_numpy(),
+        )
+
     else:
-        segment_sizes = np.array(segment_sizes)
-        rng.shuffle(segment_sizes)
+        for _ in range(5):
+            try:
+                indices = _get_indices(segment_sizes, data[class_label].to_numpy(), rng)
+            except ValueError:
+                continue
 
-        available_indices = np.ones(len(data), dtype=np.bool_)
+            changepoints = np.append([0], np.array(segment_sizes).cumsum())
+            time_series = data.iloc[indices].drop(columns=class_label).to_numpy()
 
-        segment_id = None
+            return changepoints, time_series
 
-        indices = np.array([], dtype=np.int_)
-
-        for segment_size in segment_sizes:
-            available_segments = value_counts[
-                lambda x: (x >= segment_size).to_numpy() & (x.index != segment_id)
-            ]
-
-            if len(available_segments) == 0:
-                raise ValueError("Not enough data.")
-
-            segment_id = rng.choice(
-                available_segments.index,
-                1,
-                p=available_segments / available_segments.sum(),
-            )[0]
-
-            value_counts.loc[segment_id] -= segment_size
-
-            indices = np.append(
-                indices,
-                rng.choice(
-                    data[
-                        lambda x: (x["class"] == segment_id).to_numpy()
-                        & available_indices
-                    ].index,
-                    segment_size,
-                    replace=False,
-                ),
-            )
-
-            available_indices[indices] = False
-
-    return (
-        np.append([0], segment_sizes.cumsum()),
-        data.iloc[indices].drop(columns=class_label).to_numpy(),
-    )
+        raise ValueError("Not enough data")
 
 
 def simulate_dirichlet(seed=0):
