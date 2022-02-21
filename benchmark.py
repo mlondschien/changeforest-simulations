@@ -8,6 +8,7 @@ import pandas as pd
 
 from changeforest_simulations import adjusted_rand_score, simulate
 from changeforest_simulations.methods import estimate_changepoints
+from changeforest_simulations.utils import string_to_kwargs
 
 _OUTPUT_FOLDER = Path(__file__).parent.absolute() / "output"
 logger = logging.getLogger(__file__)
@@ -90,17 +91,15 @@ def benchmark(n_seeds, seed_start, methods, datasets, continue_):
         # "repeated_covertype": ["ecp"],
     }
 
-    minimal_relative_segment_lengths = {
-        "repeated-dry-beans": 0.001,
-        "repeated-covertype": 0.001,
-    }
-
     for seed in range(seed_start, seed_start + n_seeds):
         for dataset in datasets:
             change_points, time_series = simulate(dataset, seed=seed)
+            _, data_kwargs = string_to_kwargs(dataset)
+            minimal_relative_segment_length = 1 / data_kwargs.get("n_segments", 10) / 10
 
             for method in methods:
-                if time_series.shape[0] > 5000 and method == "ecp":
+
+                if time_series.shape[0] > 10000 and method == "ecp":
                     continue
 
                 if method in skip.get(dataset, []):
@@ -122,9 +121,7 @@ def benchmark(n_seeds, seed_start, methods, datasets, continue_):
                 estimate = estimate_changepoints(
                     time_series,
                     method,
-                    minimal_relative_segment_length=minimal_relative_segment_lengths.get(
-                        dataset, 0.01
-                    ),
+                    minimal_relative_segment_length=minimal_relative_segment_length,
                 )
                 toc = perf_counter()
 
