@@ -40,7 +40,7 @@ from changeforest_simulations._simulate import simulate_from_data
         ("abalone-no-change", [0, 4177], (4177, 9)),
         ("dry-beans-no-change", [0, 13611], (13611, 16)),
         ("covertype-no-change", [0, 581012], (581012, 54)),
-        ("dirichlet__n_observations=100__n_segments=10", None, (100, 20),),
+        ("dirichlet__n_observations=100__n_segments=10", None, (100, 20)),
     ],
 )
 def test_simulate(scenario, expected_changepoints, expected_shape):
