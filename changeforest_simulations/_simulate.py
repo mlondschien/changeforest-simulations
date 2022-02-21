@@ -28,16 +28,21 @@ def simulate(scenario, seed=0):
     numpy.ndarray
         Simulated time series.
     """
+    if "__" in scenario:
+        scenario, kwargs = scenario.split("__", 1)
+        kwargs = dict(kwargs.split("=") for kwargs in kwargs.split("__"))
+        kwargs = {k: int(v) if v.isdigit() else v for k, v in kwargs.items()}
+    else:
+        kwargs = {}
+
     if scenario in DATASETS:
-        change_points, data = simulate_from_data(
-            load(scenario), seed=seed, minimal_relative_segment_length=0.01
-        )
+        change_points, data = simulate_from_data(load(scenario), seed=seed, **kwargs)
         return change_points, normalize(data)
     elif scenario.endswith("-no-change"):
         changepoints, data = simulate_no_change(scenario, seed=seed)
         return changepoints, normalize(data)
     elif scenario.endswith("-noise"):
-        changepoints, data = simulate_with_noise(scenario, seed=seed)
+        changepoints, data = simulate_with_noise(scenario, seed=seed, **kwargs)
         return changepoints, data
     elif scenario == "repeated-covertype":
         change_points, data = simulate_repeated_covertype(seed=seed)
@@ -80,7 +85,7 @@ def simulate_no_change(scenario, seed=0, class_label="class"):
     return np.array([0, len(X)]), X
 
 
-def simulate_with_noise(scenario, seed=0, class_label="class", signal_to_noise=1):
+def simulate_with_noise(scenario, seed=0, class_label="class", signal_to_noise=2):
     rng = np.random.default_rng(seed)
 
     data = load(scenario[:-6])
@@ -92,7 +97,7 @@ def simulate_with_noise(scenario, seed=0, class_label="class", signal_to_noise=1
     ).sum(axis=0) / (data.shape[0] - data[class_label].nunique())
     X = (data.drop(columns=class_label) / variances.apply(np.sqrt)).to_numpy()
 
-    segment_lengths = _exponential_segment_lengths(20, 10000, 0.001, seed)
+    segment_lengths = _exponential_segment_lengths(100, 10000, 0.001, seed)
     indices = np.array([], dtype="int")
 
     for _ in range(5):
@@ -240,13 +245,29 @@ def simulate_from_data(
         raise ValueError("Not enough data")
 
 
-def simulate_dirichlet(seed=0):
+def simulate_dirichlet(
+    seed=0,
+    exponential_spacing=False,
+    n_segments=None,
+    n_observations=None,
+    minimal_relative_segment_length=None,
+):
     """
     Simulate histogram-valued dataset as described in Scenario 3, 6.1, [1].
 
     [1] S. Arlot, A. Celisse, Z. Harchaoui. A Kernel Multiple Change-point Algorithm
         via Model Selection, 2019
     """
+    if exponential_spacing:
+        if minimal_relative_segment_length is None:
+            minimal_relative_segment_length = 1 / n_segments / 10
+        segment_sizes = _exponential_segment_lengths(
+            n_segments, n_observations, minimal_relative_segment_length, seed
+        )
+        changepoints = np.array([0] + segment_sizes.cumsum())
+    else:
+        changepoints = [0, 100, 130, 220, 320, 370, 520, 620, 740, 790, 870, 1000]
+
     d = 20
     changepoints = [0, 100, 130, 220, 320, 370, 520, 620, 740, 790, 870, 1000]
     n_segments = len(changepoints) - 1
