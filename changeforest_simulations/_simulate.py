@@ -85,7 +85,18 @@ def simulate_no_change(scenario, seed=0, class_label="class"):
     return np.array([0, len(X)]), X
 
 
-def simulate_with_noise(scenario, seed=0, class_label="class", signal_to_noise=2):
+def simulate_with_noise(
+    scenario,
+    seed=0,
+    class_label="class",
+    signal_to_noise=2,
+    n_observations=10000,
+    n_segments=100,
+    minimal_relative_segment_length=None,
+):
+    if minimal_relative_segment_length is None:
+        minimal_relative_segment_length = 1 / n_segments / 10
+
     rng = np.random.default_rng(seed)
 
     data = load(scenario[:-6])
@@ -97,7 +108,9 @@ def simulate_with_noise(scenario, seed=0, class_label="class", signal_to_noise=2
     ).sum(axis=0) / (data.shape[0] - data[class_label].nunique())
     X = (data.drop(columns=class_label) / variances.apply(np.sqrt)).to_numpy()
 
-    segment_lengths = _exponential_segment_lengths(100, 10000, 0.001, seed)
+    segment_lengths = _exponential_segment_lengths(
+        n_segments, n_observations, minimal_relative_segment_length, seed
+    )
     indices = np.array([], dtype="int")
 
     for _ in range(5):
