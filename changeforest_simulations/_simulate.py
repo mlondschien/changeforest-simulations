@@ -1,6 +1,8 @@
 import numpy as np
+import pandas as pd
 
 from changeforest_simulations import DATASETS, load
+from changeforest_simulations.utils import string_to_kwargs
 
 
 def normalize(X):
@@ -27,14 +29,17 @@ def simulate(scenario, seed=0):
     numpy.ndarray
         Simulated time series.
     """
+    scenario, kwargs = string_to_kwargs(scenario)
+
     if scenario in DATASETS:
-        change_points, data = simulate_from_data(
-            load(scenario), seed=seed, minimal_relative_segment_length=0.01
-        )
+        change_points, data = simulate_from_data(load(scenario), seed=seed, **kwargs)
         return change_points, normalize(data)
     elif scenario.endswith("-no-change"):
         changepoints, data = simulate_no_change(scenario, seed=seed)
         return changepoints, normalize(data)
+    elif scenario.endswith("-noise"):
+        changepoints, data = simulate_with_noise(scenario, seed=seed, **kwargs)
+        return changepoints, data
     elif scenario == "repeated-covertype":
         change_points, data = simulate_repeated_covertype(seed=seed)
         return change_points, normalize(data)
@@ -45,7 +50,7 @@ def simulate(scenario, seed=0):
         change_points, data = simulate_repeated_wine(seed=seed)
         return change_points, normalize(data)
     elif scenario == "dirichlet":
-        return simulate_dirichlet(seed=seed)
+        return simulate_dirichlet(seed=seed, **kwargs)
     elif scenario == "change_in_mean":
         return simulate_change_in_mean(seed=seed)
     elif scenario == "change_in_covariance":
@@ -74,6 +79,99 @@ def simulate_no_change(scenario, seed=0, class_label="class"):
     X = load(scenario[:-10]).drop(columns=class_label).to_numpy()
     rng.shuffle(X)  # This only shuffles along the first axis.
     return np.array([0, len(X)]), X
+
+
+def simulate_with_noise(
+    scenario,
+    seed=0,
+    class_label="class",
+    signal_to_noise=1,
+    n_observations=10000,
+    n_segments=100,
+    minimal_relative_segment_length=None,
+):
+    if minimal_relative_segment_length is None:
+        minimal_relative_segment_length = 1 / n_segments / 10
+
+    rng = np.random.default_rng(seed)
+
+    data = load(scenario[:-6])
+
+    y = data[class_label].to_numpy()
+
+    variances = (  # Compute variances separately for each class, take weighted mean.
+        data.groupby(class_label).var() * data.groupby(class_label).count()
+    ).sum(axis=0) / (data.shape[0] - data[class_label].nunique())
+    X = (data.drop(columns=class_label) / variances.apply(np.sqrt)).to_numpy()
+
+    segment_lengths = _exponential_segment_lengths(
+        n_segments, n_observations, minimal_relative_segment_length, seed
+    )
+    indices = np.array([], dtype="int")
+
+    for _ in range(5):
+        try:
+            indices = _get_indices(segment_lengths, y, rng, True)
+        except ValueError:
+            continue
+
+        noise = rng.normal(0, 1 / signal_to_noise, (len(indices), X.shape[1]))
+
+        changepoints = np.append([0], segment_lengths.cumsum())
+        time_series = data.iloc[indices].drop(columns=class_label).to_numpy() + noise
+
+        return changepoints, time_series
+
+    raise ValueError("Not enough data")
+
+
+def _get_indices(segment_lengths, y, rng, replace=True):
+    """
+    Get indices for segments of lengths `segment_lengths`.
+
+    Parameters
+    ----------
+    segment_lengths : array-like of int
+        For consequtive values `start`, `end` of `segment_lengths`, indices
+        `indices[start:stop]` will be unique and correspond to a single value in `y`.
+    y : array-like
+        Array-like with class labels. For each segment, indices of that segment
+        correspond to entries in `y` with the same value.
+    rng : np.random.RandomState
+        Random number generator.
+    replace : bool, optional, default=True
+        Whether not to recycle indices for separate segments.
+    """
+    segment_id = None
+    indices = np.array([], dtype="int")
+    value_counts = pd.value_counts(y)
+    available_indices = np.ones(len(y), dtype=np.bool_)
+
+    for segment_length in segment_lengths:
+        available_segments = value_counts[lambda x: x.index != segment_id]
+        if not replace:
+            available_segments = available_segments[
+                lambda x: (x >= segment_length).to_numpy()
+            ]
+
+        if len(available_segments) == 0:
+            raise ValueError("Not enough data.")
+
+        segment_id = rng.choice(available_segments.index, 1)[0]
+
+        new_indices = rng.choice(
+            np.flatnonzero((y == segment_id) & available_indices),
+            segment_length,
+            replace=replace,
+        )
+
+        if not replace:
+            value_counts.loc[segment_id] -= segment_length
+            available_indices[new_indices] = False
+
+        indices = np.concatenate([indices, new_indices])
+
+    return indices
 
 
 def simulate_from_data(
@@ -138,61 +236,46 @@ def simulate_from_data(
 
         segment_sizes = value_counts.to_numpy()
 
+        return (
+            np.append([0], segment_sizes.cumsum()),
+            data.iloc[indices].drop(columns=class_label).to_numpy(),
+        )
+
     else:
-        segment_sizes = np.array(segment_sizes)
-        rng.shuffle(segment_sizes)
+        for _ in range(5):
+            try:
+                indices = _get_indices(segment_sizes, data[class_label].to_numpy(), rng)
+            except ValueError:
+                continue
 
-        available_indices = np.ones(len(data), dtype=np.bool_)
+            changepoints = np.append([0], np.array(segment_sizes).cumsum())
+            time_series = data.iloc[indices].drop(columns=class_label).to_numpy()
 
-        segment_id = None
+            return changepoints, time_series
 
-        indices = np.array([], dtype=np.int_)
-
-        for segment_size in segment_sizes:
-            available_segments = value_counts[
-                lambda x: (x >= segment_size).to_numpy() & (x.index != segment_id)
-            ]
-
-            if len(available_segments) == 0:
-                raise ValueError("Not enough data.")
-
-            segment_id = rng.choice(
-                available_segments.index,
-                1,
-                p=available_segments / available_segments.sum(),
-            )[0]
-
-            value_counts.loc[segment_id] -= segment_size
-
-            indices = np.append(
-                indices,
-                rng.choice(
-                    data[
-                        lambda x: (x["class"] == segment_id).to_numpy()
-                        & available_indices
-                    ].index,
-                    segment_size,
-                    replace=False,
-                ),
-            )
-
-            available_indices[indices] = False
-
-    return (
-        np.append([0], segment_sizes.cumsum()),
-        data.iloc[indices].drop(columns=class_label).to_numpy(),
-    )
+        raise ValueError("Not enough data")
 
 
-def simulate_dirichlet(seed=0):
+def simulate_dirichlet(
+    seed=0, n_segments=None, n_observations=None, minimal_relative_segment_length=None,
+):
     """
     Simulate histogram-valued dataset as described in Scenario 3, 6.1, [1].
 
     [1] S. Arlot, A. Celisse, Z. Harchaoui. A Kernel Multiple Change-point Algorithm
         via Model Selection, 2019
     """
+    if n_segments is not None or n_observations is not None:
+        if minimal_relative_segment_length is None:
+            minimal_relative_segment_length = 1 / n_segments / 10
+        segment_sizes = _exponential_segment_lengths(
+            n_segments, n_observations, minimal_relative_segment_length, seed
+        )
+        changepoints = np.array([0] + segment_sizes.cumsum())
+    else:
+        changepoints = [0, 100, 130, 220, 320, 370, 520, 620, 740, 790, 870, 1000]
+
     d = 20
-    changepoints = [0, 100, 130, 220, 320, 370, 520, 620, 740, 790, 870, 1000]
     n_segments = len(changepoints) - 1
     rng = np.random.default_rng(seed)
     params = rng.uniform(0, 0.2, n_segments * d).reshape((n_segments, d))
@@ -301,7 +384,6 @@ def _exponential_segment_lengths(
     expo = expo + minimal_relative_segment_length
     assert np.abs(expo.sum() - 1) < 1e-12
     assert np.min(expo) >= minimal_relative_segment_length
-
     return _cascade_round(expo * n_observations)
 
 
