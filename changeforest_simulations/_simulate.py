@@ -35,6 +35,7 @@ def simulate(scenario, seed=0):
     else:
         kwargs = {}
 
+    breakpoint()
     if scenario in DATASETS:
         change_points, data = simulate_from_data(load(scenario), seed=seed, **kwargs)
         return change_points, normalize(data)
@@ -54,7 +55,7 @@ def simulate(scenario, seed=0):
         change_points, data = simulate_repeated_wine(seed=seed)
         return change_points, normalize(data)
     elif scenario == "dirichlet":
-        return simulate_dirichlet(seed=seed)
+        return simulate_dirichlet(seed=seed, **kwargs)
     elif scenario == "change_in_mean":
         return simulate_change_in_mean(seed=seed)
     elif scenario == "change_in_covariance":
