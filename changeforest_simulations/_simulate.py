@@ -278,7 +278,6 @@ def simulate_dirichlet(
         changepoints = [0, 100, 130, 220, 320, 370, 520, 620, 740, 790, 870, 1000]
 
     d = 20
-    changepoints = [0, 100, 130, 220, 320, 370, 520, 620, 740, 790, 870, 1000]
     n_segments = len(changepoints) - 1
     rng = np.random.default_rng(seed)
     params = rng.uniform(0, 0.2, n_segments * d).reshape((n_segments, d))
@@ -387,7 +386,6 @@ def _exponential_segment_lengths(
     expo = expo + minimal_relative_segment_length
     assert np.abs(expo.sum() - 1) < 1e-12
     assert np.min(expo) >= minimal_relative_segment_length
-
     return _cascade_round(expo * n_observations)
 
 
