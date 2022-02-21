@@ -259,11 +259,7 @@ def simulate_from_data(
 
 
 def simulate_dirichlet(
-    seed=0,
-    exponential_spacing=False,
-    n_segments=None,
-    n_observations=None,
-    minimal_relative_segment_length=None,
+    seed=0, n_segments=None, n_observations=None, minimal_relative_segment_length=None,
 ):
     """
     Simulate histogram-valued dataset as described in Scenario 3, 6.1, [1].
@@ -271,7 +267,7 @@ def simulate_dirichlet(
     [1] S. Arlot, A. Celisse, Z. Harchaoui. A Kernel Multiple Change-point Algorithm
         via Model Selection, 2019
     """
-    if exponential_spacing:
+    if n_segments is not None or n_observations is not None:
         if minimal_relative_segment_length is None:
             minimal_relative_segment_length = 1 / n_segments / 10
         segment_sizes = _exponential_segment_lengths(
