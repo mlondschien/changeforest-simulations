@@ -32,6 +32,7 @@ from changeforest_simulations._simulate import simulate_from_data
         ("repeated-dry-beans", None, (5000, 16)),
         ("repeated-wine", None, (5000, 12)),
         ("wine-noise", None, (10000, 12)),
+        ("wine-noise__n_observations=100", None, (100, 12)),
         ("iris-no-change", [0, 150], (150, 4)),
         ("glass-no-change", [0, 214], (214, 8)),
         ("wine-no-change", [0, 6497], (6497, 12)),
