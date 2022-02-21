@@ -35,7 +35,6 @@ def simulate(scenario, seed=0):
     else:
         kwargs = {}
 
-    breakpoint()
     if scenario in DATASETS:
         change_points, data = simulate_from_data(load(scenario), seed=seed, **kwargs)
         return change_points, normalize(data)
