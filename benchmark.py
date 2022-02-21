@@ -100,6 +100,9 @@ def benchmark(n_seeds, seed_start, methods, datasets, continue_):
             change_points, time_series = simulate(dataset, seed=seed)
 
             for method in methods:
+                if time_series.shape[0] > 5000 and method == "ecp":
+                    continue
+
                 if method in skip.get(dataset, []):
                     continue
 

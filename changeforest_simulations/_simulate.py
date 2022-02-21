@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 
 from changeforest_simulations import DATASETS, load
+from changeforest_simulations.utils import string_to_kwargs
 
 
 def normalize(X):
@@ -28,12 +29,7 @@ def simulate(scenario, seed=0):
     numpy.ndarray
         Simulated time series.
     """
-    if "__" in scenario:
-        scenario, kwargs = scenario.split("__", 1)
-        kwargs = dict(kwargs.split("=") for kwargs in kwargs.split("__"))
-        kwargs = {k: int(v) if v.isdigit() else v for k, v in kwargs.items()}
-    else:
-        kwargs = {}
+    scenario, kwargs = string_to_kwargs(scenario)
 
     if scenario in DATASETS:
         change_points, data = simulate_from_data(load(scenario), seed=seed, **kwargs)
@@ -152,9 +148,11 @@ def _get_indices(segment_lengths, y, rng, replace=True):
     available_indices = np.ones(len(y), dtype=np.bool_)
 
     for segment_length in segment_lengths:
-        available_segments = value_counts[
-            lambda x: (x >= segment_length).to_numpy() & (x.index != segment_id)
-        ]
+        available_segments = value_counts[lambda x: x.index != segment_id]
+        if not replace:
+            available_segments = available_segments[
+                lambda x: (x >= segment_length).to_numpy()
+            ]
 
         if len(available_segments) == 0:
             raise ValueError("Not enough data.")
@@ -164,7 +162,7 @@ def _get_indices(segment_lengths, y, rng, replace=True):
         new_indices = rng.choice(
             np.flatnonzero((y == segment_id) & available_indices),
             segment_length,
-            replace=False,
+            replace=replace,
         )
 
         if not replace:

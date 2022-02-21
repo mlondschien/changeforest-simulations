@@ -1,5 +1,7 @@
 import numpy as np
 
+from changeforest_simulations.utils import string_to_kwargs
+
 from ._kernseg import kernseg
 from .changeforest import (
     change_in_mean_bs,
@@ -19,12 +21,8 @@ def estimate_changepoints(X, method, **kwargs):
 
     # Allow to pass kwargs to changeforest via the method name string.
     # E.g. method="changeforest_bs__random_forest_ntrees=20"
-    if "__" in method:
-        args = method.split("__")
-        method = args[0]
-        for arg in args[1:]:
-            key, value = arg.split("=")
-            kwargs[key] = float(value)
+    method, additional_kwargs = string_to_kwargs(method)
+    kwargs = {**kwargs, **additional_kwargs}
 
     if method == "ecp":
         return ecp(X, **kwargs)
