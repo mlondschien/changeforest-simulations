@@ -85,7 +85,7 @@ def simulate_with_noise(
     scenario,
     seed=0,
     class_label="class",
-    signal_to_noise=2,
+    signal_to_noise=1,
     n_observations=10000,
     n_segments=100,
     minimal_relative_segment_length=None,
