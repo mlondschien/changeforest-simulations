@@ -17,7 +17,7 @@ from .multirank.dynkw import autoDynKWRupt
 from .ruptures import kernseg_linear, kernseg_rbf
 
 
-def estimate_changepoints(X, method, **kwargs):
+def estimate_changepoints(X, method, minimal_relative_segment_length, **kwargs):
 
     # Allow to pass kwargs to changeforest via the method name string.
     # E.g. method="changeforest_bs__random_forest_ntrees=20"
@@ -25,29 +25,51 @@ def estimate_changepoints(X, method, **kwargs):
     kwargs = {**kwargs, **additional_kwargs}
 
     if method == "ecp":
-        return ecp(X, **kwargs)
+        return ecp(
+            X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
+        )
     elif method == "changeforest_bs":
-        return changeforest_bs(X, **kwargs)
+        return changeforest_bs(
+            X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
+        )
     elif method == "changeforest_sbs":
-        return changeforest_sbs(X, **kwargs)
+        return changeforest_sbs(
+            X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
+        )
     elif method == "changekNN_bs":
-        return changekNN_bs(X, **kwargs)
+        return changekNN_bs(
+            X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
+        )
     elif method == "changekNN_sbs":
-        return changekNN_sbs(X, **kwargs)
+        return changekNN_sbs(
+            X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
+        )
     elif method == "change_in_mean_bs":
-        return change_in_mean_bs(X, **kwargs)
+        return change_in_mean_bs(
+            X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
+        )
     elif method == "change_in_mean_sbs":
-        return change_in_mean_sbs(X, **kwargs)
+        return change_in_mean_sbs(
+            X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
+        )
     elif method == "multirank":
-        __, cpts = autoDynKWRupt(X.T)
+        __, cpts = autoDynKWRupt(X.T, Kmax=int(1 / minimal_relative_segment_length))
         return np.append([0], cpts[cpts != 0] + 1)
     elif method == "kernseg":
-        return kernseg(X, **kwargs)
+        return kernseg(
+            X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
+        )
     elif method == "kernseg_rbf":
-        return kernseg_rbf(X, **kwargs)
+        return kernseg_rbf(
+            X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
+        )
     elif method == "kernseg_linear":
-        return kernseg_linear(X, **kwargs)
+        return kernseg_linear(
+            X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
+        )
     elif method == "kcprs":
-        return kcprs(X, **kwargs)
+        return kcprs(
+            X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
+        )
     else:
         raise ValueError(f"Unknown method: {method}.")
