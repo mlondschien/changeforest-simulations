@@ -1,3 +1,6 @@
+# Code to collect data for the main results table in a csv file.
+# Call this script with
+# `python tables/main_results_table_collect.py`
 import logging
 from datetime import datetime
 from pathlib import Path
@@ -6,7 +9,7 @@ import click
 
 from changeforest_simulations import benchmark
 
-_OUTPUT_FOLDER = Path(__file__).parent.absolute() / "output"
+_OUTPUT_FOLDER = Path(__file__).parents[1].absolute() / "output"
 logger = logging.getLogger(__file__)
 
 
@@ -43,7 +46,6 @@ def main(n_seeds, seed_start, methods, datasets, continue_):
             "change_in_mean",
             "change_in_covariance",
             "dirichlet",
-            "repeated-dry-beans",
         ]
     else:
         datasets = datasets.split(" ")
