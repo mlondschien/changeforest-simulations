@@ -1,3 +1,6 @@
+# Script to aggregate data from main_results_table_collect to a table.
+# Call this script with
+# `python main_results_table_aggregate.py`
 from pathlib import Path
 
 import click
