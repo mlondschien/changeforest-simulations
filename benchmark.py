@@ -1,14 +1,10 @@
 import logging
 from datetime import datetime
 from pathlib import Path
-from time import perf_counter
 
 import click
-import pandas as pd
 
-from changeforest_simulations import adjusted_rand_score, simulate
-from changeforest_simulations.methods import estimate_changepoints
-from changeforest_simulations.utils import string_to_kwargs
+from changeforest_simulations import benchmark
 
 _OUTPUT_FOLDER = Path(__file__).parent.absolute() / "output"
 logger = logging.getLogger(__file__)
@@ -22,7 +18,7 @@ logger = logging.getLogger(__file__)
 @click.option(
     "--continue", "continue_", is_flag=True, help="Continue from previous run."
 )
-def benchmark(n_seeds, seed_start, methods, datasets, continue_):
+def main(n_seeds, seed_start, methods, datasets, continue_):
 
     logging.basicConfig(level=logging.INFO)
 
@@ -30,12 +26,10 @@ def benchmark(n_seeds, seed_start, methods, datasets, continue_):
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         file_path = _OUTPUT_FOLDER / f"{now}.csv"
         file_path.write_text("dataset,seed,method,score,n_cpts,time\n")
-        existing_results = pd.DataFrame(columns=["dataset", "seed", "method"])
         logger.info(f"Writing results to {file_path}.")
     else:
         file_path = sorted(_OUTPUT_FOLDER.glob("202*.csv"))[-1]
-        existing_results = pd.read_csv(file_path)[["dataset", "seed", "method"]]
-        logger.info(f"Continuing {file_path} with {len(existing_results)} results.")
+        logger.info(f"Continuing {file_path}.")
 
     if datasets is None:
         datasets = [
@@ -50,7 +44,6 @@ def benchmark(n_seeds, seed_start, methods, datasets, continue_):
             "change_in_covariance",
             "dirichlet",
             "repeated-dry-beans",
-            # "repeated-covertype",
         ]
     else:
         datasets = datasets.split(" ")
@@ -58,81 +51,20 @@ def benchmark(n_seeds, seed_start, methods, datasets, continue_):
     if methods is None:
         methods = [
             "changeforest_bs",
-            # "changeforest_bs__random_forest_n_trees=20",
             "changekNN_bs",
             "change_in_mean_bs",
             "ecp",
             "multirank",
             "kernseg_rbf",
-            # "kcprs",
         ]
     else:
         methods = methods.split(" ")
 
-    skip = {
-        # "repeated-covertype": ["changekNN_bs", "multirank", "ecp"],
-        # "letters": ["ecp", "changekNN_bs", "changekNN_sbs", "multirank", "kcprs"],
-        "covertype": [
-            "multirank",
-            "ecp",
-            "changekNN_bs",
-            "kernseg_rbf",
-            "changeforest_bs",
-        ],
-        "dry-beans": ["multirank"],
-        "repeated-dry-beans": ["multirank"],
-    }
-
-    slow = {
-        # "white_wine": ["ecp"],
-        # "abalone": ["ecp"],
-        # "covertype": ["changeforest_bs"],
-        # "repeated-dry-beans": ["ecp"],
-        # "repeated_covertype": ["ecp"],
-    }
-
     for seed in range(seed_start, seed_start + n_seeds):
         for dataset in datasets:
-            change_points, time_series = simulate(dataset, seed=seed)
-            _, data_kwargs = string_to_kwargs(dataset)
-            minimal_relative_segment_length = 1 / data_kwargs.get("n_segments", 10) / 10
-
             for method in methods:
-
-                if time_series.shape[0] > 10000 and method == "ecp":
-                    continue
-
-                if method in skip.get(dataset, []):
-                    continue
-
-                if (
-                    any(slow_method in method for slow_method in slow.get(dataset, []))
-                    and seed % 10 != 0
-                ):
-                    continue
-
-                if (dataset, seed, method) in existing_results.itertuples(index=False):
-                    logger.info(f"Skipping existing {dataset}, {seed}, {method}.")
-                    continue
-
-                logger.info(f"Running {dataset}, {seed}, {method}.")
-
-                tic = perf_counter()
-                estimate = estimate_changepoints(
-                    time_series,
-                    method,
-                    minimal_relative_segment_length=minimal_relative_segment_length,
-                )
-                toc = perf_counter()
-
-                score = adjusted_rand_score(change_points, estimate)
-                with open(file_path, "a") as f:
-                    f.write(
-                        f"{dataset},{seed},{method},{score},{len(estimate) - 2},{toc-tic}\n"
-                    )
-
-    print(pd.read_csv(file_path).groupby(["dataset", "method"]).mean())
+                benchmark(method, dataset, seed, file_path=file_path)
 
 
 if __name__ == "__main__":
-    benchmark()
+    main()
