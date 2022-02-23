@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from changeforest_simulations import DATASETS, load
+from changeforest_simulations._load import DATASETS, load
 from changeforest_simulations.utils import string_to_kwargs
 
 

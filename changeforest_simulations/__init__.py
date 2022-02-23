@@ -1,5 +1,6 @@
 import pkg_resources
 
+from ._benchmark import benchmark
 from ._load import DATASETS, load
 from ._simulate import simulate
 from .methods import estimate_changepoints
@@ -12,8 +13,9 @@ except Exception:
 
 __all__ = [
     "adjusted_rand_score",
-    "load",
-    "simulate",
+    "benchmark",
     "DATASETS",
     "estimate_changepoints",
+    "load",
+    "simulate",
 ]
