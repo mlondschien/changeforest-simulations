@@ -21,7 +21,7 @@ def main(n_seeds, seed_start, file):
     method_list = [
         "changeforest_bs",
         "changeforest_bs__random_forest_n_trees=20",
-        "changeforest_bs__random_forest_n_trees=400",
+        "changeforest_bs__random_forest_n_trees=500",
         "changekNN_bs",
         "change_in_mean_bs",
         "ecp",
