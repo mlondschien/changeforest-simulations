@@ -3,8 +3,9 @@ from time import perf_counter
 
 import pandas as pd
 
-from changeforest_simulations import adjusted_rand_score, simulate
+from changeforest_simulations._simulate import simulate
 from changeforest_simulations.methods import estimate_changepoints
+from changeforest_simulations.score import adjusted_rand_score
 from changeforest_simulations.utils import string_to_kwargs
 
 logger = logging.getLogger(__file__)
