@@ -16,7 +16,8 @@ logger = logging.getLogger(__file__)
 @click.option("--n-seeds", default=100, help="Number of seeds to use for simulation.")
 @click.option("--seed-start", default=0, help="Seed from which to start iteration.")
 @click.option("--file", default=None, help="Filename to use.")
-def main(n_seeds, seed_start, file):
+@click.option("--dataset", default=None, help="Datasets to use.")
+def main(n_seeds, seed_start, file, dataset):
 
     method_list = [
         "changeforest_bs",
@@ -30,16 +31,26 @@ def main(n_seeds, seed_start, file):
     ]
     n_segments_list = [5, 10, 20, 40, 80, 160]
     n_observations_list = [250, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000]
-    dataset_list = ["dirichlet", "dry-beans-noise", "breast-cancer-noise", "wine-noise"]
+
+    if dataset is None:
+        dataset_list = [
+            "dirichlet",
+            "dry-beans-noise",
+            "breast-cancer-noise",
+            "wine-noise",
+        ]
+    else:
+        dataset_list = [dataset]
 
     for seed in range(seed_start, seed_start + n_seeds):
 
         logging.basicConfig(level=logging.INFO)
-        file_path = _OUTPUT_FOLDER / f"{file}_{seed}.csv"
+        file_path = _OUTPUT_FOLDER / f"{file}_{dataset}_{seed}.csv"
         if file_path.exists():
-            raise ValueError(f"File {file_path} already exists.")
-
-        file_path.write_text("dataset,seed,method,score,n_cpts,time\n")
+            # raise ValueError(f"File {file_path} already exists.")
+            pass
+        else:
+            file_path.write_text("dataset,seed,method,score,n_cpts,time\n")
         logger.info(f"Writing results to {file_path}.")
 
         for dataset in dataset_list:
@@ -47,7 +58,12 @@ def main(n_seeds, seed_start, file):
                 for n_observations in n_observations_list:
                     dataset_name = f"{dataset}__n_segments={n_segments}__n_observations={n_observations}"
                     for method in method_list:
-                        if method == "ecp" and n_observations >= 32000:
+                        if (
+                            method == "ecp"
+                            and n_observations >= 32000
+                            or method == "multirank"
+                            and n_observations >= 64000
+                        ):
                             continue
                         benchmark(method, dataset_name, seed, file_path=file_path)
 
