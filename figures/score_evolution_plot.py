@@ -87,6 +87,8 @@ def main(dataset, file):
         axes[1, idx].set_ylabel("time")
         axes[1, idx].set_xscale("log")
         axes[1, idx].set_yscale("log")
+        if idx == len(unique_segments) - 1:
+            axes[1, idx].legend(loc="lower right")
         # axes[1, idx].legend(loc="lower right")
 
     plt.tight_layout()
