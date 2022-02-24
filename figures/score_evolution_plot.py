@@ -122,7 +122,8 @@ def main(dataset, file):
         axes[1, idx].set_ylabel("time")
         axes[1, idx].set_xscale("log")
         axes[1, idx].set_yscale("log")
-        # axes[1, idx].legend(loc="lower right")
+        if idx == len(unqiue_observations) - 1:
+            axes[1, idx].legend(loc="lower right")
 
     plt.tight_layout()
     plt.savefig(figures_path / f"evolution_{dataset}_by_n_segments.png", dpi=300)
