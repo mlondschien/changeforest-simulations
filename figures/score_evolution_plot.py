@@ -6,6 +6,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 output_path = Path(__file__).parents[1].absolute() / "score_evolution_output"
+figures_path = Path(__file__).parent
 
 
 @click.command()
@@ -89,7 +90,7 @@ def main(dataset, file):
         axes[1, idx].legend(loc="lower right")
 
     plt.tight_layout()
-    plt.savefig(f"figures/evolution_{dataset}_by_n_observations.png", dpi=300)
+    plt.savefig(figures_path / f"evolution_{dataset}_by_n_observations.png", dpi=300)
 
     unqiue_observations = sorted(df["n_observations"].unique())
     _, axes = plt.subplots(ncols=len(unqiue_observations), nrows=2, figsize=(12, 8))
@@ -124,7 +125,7 @@ def main(dataset, file):
         axes[1, idx].legend(loc="lower right")
 
     plt.tight_layout()
-    plt.savefig(f"figures/evolution_{dataset}_by_n_segments.png", dpi=300)
+    plt.savefig(figures_path / f"evolution_{dataset}_by_n_segments.png", dpi=300)
 
     df["n_by_n_segments_sq"] = df["n_observations"] / df["n_segments"] ** 2
     _, axes = plt.subplots(ncols=5, nrows=2, figsize=(12, 8))
@@ -162,7 +163,7 @@ def main(dataset, file):
         axes[1, idx].legend(loc="lower right")
 
     plt.tight_layout()
-    plt.savefig(f"figures/evolution_{dataset}_by_balanced.png", dpi=300)
+    plt.savefig(figures_path / f"evolution_{dataset}_by_balanced.png", dpi=300)
 
 
 if __name__ == "__main__":
