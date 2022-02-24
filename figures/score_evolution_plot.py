@@ -57,7 +57,7 @@ def main(dataset, file):
     )
 
     unique_segments = sorted(df["n_segments"].unique())
-    _, axes = plt.subplots(ncols=len(unique_segments), nrows=2, figsize=(12, 8))
+    _, axes = plt.subplots(ncols=len(unique_segments), nrows=2, figsize=(18, 8))
 
     for idx, n_segments in enumerate(unique_segments):
         df_plot = df[df["n_segments"] == n_segments].sort_values("n_observations")
@@ -77,7 +77,7 @@ def main(dataset, file):
                 label=method,
             )
 
-        axes[0, idx].legend(loc="lower right")
+        # axes[0, idx].legend(loc="lower right")
         axes[0, idx].set_title(f"n_segments={n_segments}")
         axes[0, idx].set_xlabel("n")
         axes[0, idx].set_ylabel("score")
@@ -87,13 +87,13 @@ def main(dataset, file):
         axes[1, idx].set_ylabel("time")
         axes[1, idx].set_xscale("log")
         axes[1, idx].set_yscale("log")
-        axes[1, idx].legend(loc="lower right")
+        # axes[1, idx].legend(loc="lower right")
 
     plt.tight_layout()
     plt.savefig(figures_path / f"evolution_{dataset}_by_n_observations.png", dpi=300)
 
     unqiue_observations = sorted(df["n_observations"].unique())
-    _, axes = plt.subplots(ncols=len(unqiue_observations), nrows=2, figsize=(12, 8))
+    _, axes = plt.subplots(ncols=len(unqiue_observations), nrows=2, figsize=(18, 8))
     for idx, n_observations in enumerate(unqiue_observations):
         df_plot = df[df["n_observations"] == n_observations].sort_values("n_segments")
 
@@ -112,7 +112,7 @@ def main(dataset, file):
                 label=method,
             )
 
-        axes[0, idx].legend(loc="lower right")
+        # axes[0, idx].legend(loc="lower right")
         axes[0, idx].set_title(f"n_observations={n_observations}")
         axes[0, idx].set_xlabel("n")
         axes[0, idx].set_ylabel("score")
@@ -122,13 +122,13 @@ def main(dataset, file):
         axes[1, idx].set_ylabel("time")
         axes[1, idx].set_xscale("log")
         axes[1, idx].set_yscale("log")
-        axes[1, idx].legend(loc="lower right")
+        # axes[1, idx].legend(loc="lower right")
 
     plt.tight_layout()
     plt.savefig(figures_path / f"evolution_{dataset}_by_n_segments.png", dpi=300)
 
     df["n_by_n_segments_sq"] = df["n_observations"] / df["n_segments"] ** 2
-    _, axes = plt.subplots(ncols=5, nrows=2, figsize=(12, 8))
+    _, axes = plt.subplots(ncols=5, nrows=2, figsize=(18, 8))
     values = sorted(df["n_by_n_segments_sq"].value_counts().index[0:5])
     for idx, n_by_n_segments_sq in enumerate(values):
         df_plot = df[df["n_by_n_segments_sq"] == n_by_n_segments_sq].sort_values(
@@ -150,7 +150,7 @@ def main(dataset, file):
                 label=method,
             )
 
-        axes[0, idx].legend(loc="lower right")
+        # axes[0, idx].legend(loc="lower right")
         axes[0, idx].set_title(f"n_by_n_segments_sq={n_by_n_segments_sq}")
         axes[0, idx].set_xlabel("n")
         axes[0, idx].set_ylabel("score")
@@ -160,7 +160,7 @@ def main(dataset, file):
         axes[1, idx].set_ylabel("time")
         axes[1, idx].set_xscale("log")
         axes[1, idx].set_yscale("log")
-        axes[1, idx].legend(loc="lower right")
+        # axes[1, idx].legend(loc="lower right")
 
     plt.tight_layout()
     plt.savefig(figures_path / f"evolution_{dataset}_by_balanced.png", dpi=300)
