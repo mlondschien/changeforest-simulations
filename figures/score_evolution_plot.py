@@ -5,26 +5,31 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-output_path = Path(__file__).parents[1].absolute() / "output"
-files = output_path.glob("202*.csv")
+output_path = Path(__file__).parents[1].absolute() / "score_evolution_output"
 
 
 @click.command()
-@click.option("-n", default=1)
 @click.option("--dataset", default=None)
-def main(n, dataset):
+@click.option("--file", default=None)
+def main(dataset, file):
     if dataset is None:
         raise ValueError("Please provide dataset name via --dataset argument")
-    last_file = sorted(files)[-int(n)]
-    df = pd.read_csv(last_file)
 
-    df = df[df["dataset"].str.split("__").str[0] == dataset]
+    files = output_path.glob(f"{file}_{dataset}_*.csv")
+    df = pd.concat([pd.read_csv(f) for f in files], axis=0)
+
+    df["n_segments"] = (
+        df["dataset"]
+        .str.split("__")
+        .apply(lambda x: dict([y.split("=") for y in x[1:]])["n_segments"])
+        .astype(int)
+    )
 
     df["n_observations"] = (
-        df["dataset"].str.split("__").str[2].str.split("=").str[1].astype(int)
-    )
-    df["n_segments"] = (
-        df["dataset"].str.split("__").str[1].str.split("=").str[1].astype(int)
+        df["dataset"]
+        .str.split("__")
+        .apply(lambda x: dict([y.split("=") for y in x[1:]])["n_observations"])
+        .astype(int)
     )
 
     duplicates = df[["method", "n_observations", "seed", "n_segments"]].duplicated()
@@ -119,9 +124,9 @@ def main(n, dataset):
     plt.tight_layout()
     plt.savefig(f"figures/evolution_{dataset}_by_n_segments.png", dpi=300)
 
-    df["n_by_n_segments_sq"] = df["n"] / df["n_segments"] ** 2
+    df["n_by_n_segments_sq"] = df["n_observations"] / df["n_segments"] ** 2
     _, axes = plt.subplots(ncols=4, nrows=2, figsize=(12, 8))
-    values = sorted(df["n_by_n_segments_sq"].value_counts().index[0:4])
+    values = sorted(df["n_by_n_segments_sq"].value_counts().index[0:5])
     for idx, n_by_n_segments_sq in enumerate(values):
         df_plot = df[df["n_by_n_segments_sq"] == n_by_n_segments_sq].sort_values(
             "n_observations"
