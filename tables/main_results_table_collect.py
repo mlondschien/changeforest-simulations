@@ -61,8 +61,8 @@ def main(n_seeds, seed_start, methods, datasets, file):
 
         for dataset in datasets:
             for method in methods:
-                # if method in ["ecp", "dry-beans"] and dataset == "dry-beans":
-                #    continue
+                if method == "multirank" and dataset == "dry-beans":
+                    continue  # Singular Matrix error
 
                 benchmark(method, dataset, seed, file_path=file_path)
 
