@@ -5,26 +5,32 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-output_path = Path(__file__).parents[1].absolute() / "output"
-files = output_path.glob("202*.csv")
+output_path = Path(__file__).parents[1].absolute() / "score_evolution_output"
+figures_path = Path(__file__).parent
 
 
 @click.command()
-@click.option("-n", default=1)
 @click.option("--dataset", default=None)
-def main(n, dataset):
+@click.option("--file", default=None)
+def main(dataset, file):
     if dataset is None:
         raise ValueError("Please provide dataset name via --dataset argument")
-    last_file = sorted(files)[-int(n)]
-    df = pd.read_csv(last_file)
 
-    df = df[df["dataset"].str.split("__").str[0] == dataset]
+    files = output_path.glob(f"{file}_{dataset}_*.csv")
+    df = pd.concat([pd.read_csv(f) for f in files], axis=0)
+
+    df["n_segments"] = (
+        df["dataset"]
+        .str.split("__")
+        .apply(lambda x: dict([y.split("=") for y in x[1:]])["n_segments"])
+        .astype(int)
+    )
 
     df["n_observations"] = (
-        df["dataset"].str.split("__").str[2].str.split("=").str[1].astype(int)
-    )
-    df["n_segments"] = (
-        df["dataset"].str.split("__").str[1].str.split("=").str[1].astype(int)
+        df["dataset"]
+        .str.split("__")
+        .apply(lambda x: dict([y.split("=") for y in x[1:]])["n_observations"])
+        .astype(int)
     )
 
     duplicates = df[["method", "n_observations", "seed", "n_segments"]].duplicated()
@@ -50,9 +56,10 @@ def main(n, dataset):
         .reset_index()
     )
 
-    _, axes = plt.subplots(ncols=4, nrows=2, figsize=(12, 8))
+    unique_segments = sorted(df["n_segments"].unique())
+    _, axes = plt.subplots(ncols=len(unique_segments), nrows=2, figsize=(45, 14))
 
-    for idx, n_segments in enumerate(sorted(df["n_segments"].unique())):
+    for idx, n_segments in enumerate(unique_segments):
         df_plot = df[df["n_segments"] == n_segments].sort_values("n_observations")
 
         for method in df_plot["method"].unique():
@@ -83,10 +90,11 @@ def main(n, dataset):
         axes[1, idx].legend(loc="lower right")
 
     plt.tight_layout()
-    plt.savefig(f"figures/evolution_{dataset}_by_n_observations.png", dpi=300)
+    plt.savefig(figures_path / f"evolution_{dataset}_by_n_observations.png", dpi=300)
 
-    _, axes = plt.subplots(ncols=4, nrows=2, figsize=(12, 8))
-    for idx, n_observations in enumerate(sorted(df["n_observations"].unique())[2:6]):
+    unqiue_observations = sorted(df["n_observations"].unique())
+    _, axes = plt.subplots(ncols=len(unqiue_observations), nrows=2, figsize=(45, 15))
+    for idx, n_observations in enumerate(unqiue_observations):
         df_plot = df[df["n_observations"] == n_observations].sort_values("n_segments")
 
         for method in df_plot["method"].unique():
@@ -117,11 +125,11 @@ def main(n, dataset):
         axes[1, idx].legend(loc="lower right")
 
     plt.tight_layout()
-    plt.savefig(f"figures/evolution_{dataset}_by_n_segments.png", dpi=300)
+    plt.savefig(figures_path / f"evolution_{dataset}_by_n_segments.png", dpi=300)
 
-    df["n_by_n_segments_sq"] = df["n"] / df["n_segments"] ** 2
-    _, axes = plt.subplots(ncols=4, nrows=2, figsize=(12, 8))
-    values = sorted(df["n_by_n_segments_sq"].value_counts().index[0:4])
+    df["n_by_n_segments_sq"] = df["n_observations"] / df["n_segments"] ** 2
+    _, axes = plt.subplots(ncols=5, nrows=2, figsize=(18, 8))
+    values = sorted(df["n_by_n_segments_sq"].value_counts().index[0:5])
     for idx, n_by_n_segments_sq in enumerate(values):
         df_plot = df[df["n_by_n_segments_sq"] == n_by_n_segments_sq].sort_values(
             "n_observations"
@@ -142,7 +150,7 @@ def main(n, dataset):
                 label=method,
             )
 
-        axes[0, idx].legend(loc="lower right")
+        # axes[0, idx].legend(loc="lower right")
         axes[0, idx].set_title(f"n_by_n_segments_sq={n_by_n_segments_sq}")
         axes[0, idx].set_xlabel("n")
         axes[0, idx].set_ylabel("score")
@@ -152,10 +160,10 @@ def main(n, dataset):
         axes[1, idx].set_ylabel("time")
         axes[1, idx].set_xscale("log")
         axes[1, idx].set_yscale("log")
-        axes[1, idx].legend(loc="lower right")
+        # axes[1, idx].legend(loc="lower right")
 
     plt.tight_layout()
-    plt.savefig(f"figures/evolution_{dataset}_by_balanced.png", dpi=300)
+    plt.savefig(figures_path / f"evolution_{dataset}_by_balanced.png", dpi=300)
 
 
 if __name__ == "__main__":
