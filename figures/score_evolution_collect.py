@@ -62,6 +62,8 @@ def main(n_seeds, seed_start, file, dataset):
                             continue
                         if method == "changekNN_bs" and n_observations >= 32000:
                             continue
+                        if method == "kernseg_rbf" and n_observations >= 64000:
+                            continue
 
                         benchmark(method, dataset_name, seed, file_path=file_path)
 
