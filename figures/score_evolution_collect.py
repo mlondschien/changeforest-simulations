@@ -30,7 +30,18 @@ def main(n_seeds, seed_start, file, dataset):
         "kernseg_rbf",
     ]
     n_segments_list = [5, 10, 20, 40, 80, 160]
-    n_observations_list = [250, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000]
+    n_observations_list = [
+        250,
+        500,
+        1000,
+        2000,
+        4000,
+        8000,
+        16000,
+        32000,
+        64000,
+        128000,
+    ]
 
     if dataset is None:
         dataset_list = [
