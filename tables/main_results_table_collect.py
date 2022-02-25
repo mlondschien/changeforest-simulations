@@ -2,7 +2,6 @@
 # Call this script with
 # `python tables/main_results_table_collect.py`
 import logging
-from datetime import datetime
 from pathlib import Path
 
 import click
@@ -18,21 +17,10 @@ logger = logging.getLogger(__file__)
 @click.option("--seed-start", default=0, help="Seed from which to start iteration.")
 @click.option("--methods", default=None, help="Methods to benchmark. All if None.")
 @click.option("--datasets", default=None, help="Datasets to benchmark. All if None.")
-@click.option(
-    "--continue", "continue_", is_flag=True, help="Continue from previous run."
-)
-def main(n_seeds, seed_start, methods, datasets, continue_):
+@click.option("--file", default=None, help="Filename to use.")
+def main(n_seeds, seed_start, methods, datasets, file):
 
     logging.basicConfig(level=logging.INFO)
-
-    if not continue_:
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        file_path = _OUTPUT_FOLDER / f"{now}.csv"
-        file_path.write_text("dataset,seed,method,score,n_cpts,time\n")
-        logger.info(f"Writing results to {file_path}.")
-    else:
-        file_path = sorted(_OUTPUT_FOLDER.glob("202*.csv"))[-1]
-        logger.info(f"Continuing {file_path}.")
 
     if datasets is None:
         datasets = [
@@ -42,7 +30,6 @@ def main(n_seeds, seed_start, methods, datasets, continue_):
             "breast-cancer",
             "abalone",
             "dry-beans",
-            "covertype",
             "change_in_mean",
             "change_in_covariance",
             "dirichlet",
@@ -63,8 +50,20 @@ def main(n_seeds, seed_start, methods, datasets, continue_):
         methods = methods.split(" ")
 
     for seed in range(seed_start, seed_start + n_seeds):
+
+        file_path = _OUTPUT_FOLDER / f"{file}_{seed}.csv"
+        if file_path.exists():
+            raise ValueError(f"File {file_path} already exists.")
+        else:
+            file_path.write_text("dataset,seed,method,score,n_cpts,time\n")
+
+        logger.info(f"Writing results to {file_path}.")
+
         for dataset in datasets:
             for method in methods:
+                if method == "multirank" and dataset == "dry-beans":
+                    continue  # Singular Matrix error
+
                 benchmark(method, dataset, seed, file_path=file_path)
 
 
