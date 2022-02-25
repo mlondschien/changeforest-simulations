@@ -58,12 +58,7 @@ def main(n_seeds, seed_start, file, dataset):
                 for n_observations in n_observations_list:
                     dataset_name = f"{dataset}__n_segments={n_segments}__n_observations={n_observations}"
                     for method in method_list:
-                        if (
-                            method == "ecp"
-                            and n_observations >= 32000
-                            or method == "multirank"
-                            and n_observations >= 64000
-                        ):
+                        if method in ["ecp", "multirank"] and n_observations >= 16000:
                             continue
                         benchmark(method, dataset_name, seed, file_path=file_path)
 
