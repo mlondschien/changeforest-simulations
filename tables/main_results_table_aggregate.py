@@ -7,17 +7,15 @@ import click
 import numpy as np
 import pandas as pd
 
-output_path = Path(__file__).parents[1].absolute() / "output"
-files = output_path.glob("202*.csv")
+_OUTPUT_PATH = Path(__file__).parents[1].absolute() / "output"
 
 
 @click.command()
-@click.option("-n", default=1)
-@click.option("--methods", default=None)
-@click.option("--datasets", default=None)
-def main(n, methods, datasets):
-    last_file = sorted(files)[-int(n)]
-    df = pd.read_csv(last_file)
+@click.option("--file", default=None, help="Filename to use.")
+@click.option("--datasets", default=None, help="Datasets to benchmark. All if None.")
+@click.option("--methods", default=None, help="Methods to benchmark. All if None.")
+def main(file, datasets, methods):
+    df = pd.concat([pd.read_csv(f) for f in _OUTPUT_PATH.glob("file_*.csv")])
 
     if methods is not None:
         methods = methods.split(" ")
