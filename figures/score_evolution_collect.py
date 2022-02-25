@@ -60,6 +60,9 @@ def main(n_seeds, seed_start, file, dataset):
                     for method in method_list:
                         if method in ["ecp", "multirank"] and n_observations >= 16000:
                             continue
+                        if method == "changekNN_bs" and n_observations >= 32000:
+                            continue
+
                         benchmark(method, dataset_name, seed, file_path=file_path)
 
 
