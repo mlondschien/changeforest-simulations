@@ -15,7 +15,7 @@ _OUTPUT_PATH = Path(__file__).parents[1].absolute() / "output"
 @click.option("--datasets", default=None, help="Datasets to benchmark. All if None.")
 @click.option("--methods", default=None, help="Methods to benchmark. All if None.")
 def main(file, datasets, methods):
-    df = pd.concat([pd.read_csv(f) for f in _OUTPUT_PATH.glob("file_*.csv")])
+    df = pd.concat([pd.read_csv(f) for f in _OUTPUT_PATH.glob(f"{file}_*.csv")])
 
     if methods is not None:
         methods = methods.split(" ")
@@ -30,7 +30,7 @@ def main(file, datasets, methods):
         lambda x: f"{np.mean(x):.3f} ({np.std(x):.3f})"
     )
     df_print = df_print.reset_index().pivot(index=["method"], columns=["dataset"])
-    df_print.columns = df_print.get_level_values(level=1)
+    df_print.columns = df_print.columns.get_level_values(level=1)
     df_print = df_print[datasets]
 
     print(df_print.to_latex())
