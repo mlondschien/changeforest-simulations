@@ -57,6 +57,9 @@ def benchmark(method, dataset, seed, file_path=None):
     }
 
     if file_path is not None:
+        if not file_path.exists():
+            raise ValueError(f"File {file_path} does not exist.")
+
         existing_results = pd.read_csv(file_path)[["dataset", "seed", "method"]]
         if not existing_results[
             lambda x: x["dataset"].eq(dataset)
