@@ -70,7 +70,7 @@ def fmt(x):
 
 
 def to_latex(df):
-    df.columns = df.get_level_values(level=1)
+    df.columns = df.columns.get_level_values(level=1)
     df = df.rename(columns=DATASET_RENAMING, copy=False)[DATASET_ORDERING]
 
     df.index = df.index.rename(METHOD_RENAMING)
