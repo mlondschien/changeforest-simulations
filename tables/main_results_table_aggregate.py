@@ -42,18 +42,8 @@ METHOD_ORDERING = [
 
 @click.command()
 @click.option("--file", default=None, help="Filename to use.")
-@click.option("--datasets", default=None, help="Datasets to benchmark. All if None.")
-@click.option("--methods", default=None, help="Methods to benchmark. All if None.")
-def main(file, datasets, methods):
+def main(file):
     df = pd.concat([pd.read_csv(f) for f in _OUTPUT_PATH.glob(f"{file}_*.csv")])
-
-    if methods is not None:
-        methods = methods.split(" ")
-        df = df[df["method"].isin(methods)]
-
-    if datasets is not None:
-        datasets = datasets.split(" ")
-        df = df[df["dataset"].isin(datasets)]
 
     # score
     df_score = df.groupby(["method", "dataset"])["score"].apply(
