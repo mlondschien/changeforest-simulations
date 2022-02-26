@@ -53,11 +53,16 @@ def main(file):
     to_latex(df_score)
 
     # time
-    df_print = df.groupby(["method", "dataset"])["time"].apply(
-        lambda x: fmt(np.mean(x))
+    df_time = df.groupby(["method", "dataset"])["time"].apply(lambda x: fmt(np.mean(x)))
+    df_time = df_time.reset_index().pivot(index=["method"], columns=["dataset"])
+    to_latex(df_time)
+
+    # n_unique
+    print("Comparing n_unique to n. These should be equal!")
+    df_n = df.groupby(["method", "dataset"])["seed"].apply(
+        lambda x: f"{len(x)} ({x.nunique()})"
     )
-    df_print = df_print.reset_index().pivot(index=["method"], columns=["dataset"])
-    to_latex(df_print)
+    print(df_n)
 
 
 def fmt(x):
