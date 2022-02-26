@@ -57,7 +57,7 @@ def main(file):
         lambda x: fmt(np.mean(x))
     )
     df_print = df_print.reset_index().pivot(index=["method"], columns=["dataset"])
-    to_latex(df_print.to_latex())
+    to_latex(df_print)
 
 
 def fmt(x):
