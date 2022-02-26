@@ -59,8 +59,11 @@ def main(file):
 
     # n_unique
     print("Comparing n_unique to n. These should be equal!")
-    df_n = df.groupby(["method", "dataset"])["seed"].apply(
-        lambda x: f"{len(x)} ({x.nunique()})"
+    df_n = (
+        df.groupby(["method", "dataset"])["seed"]
+        .apply(lambda x: f"{len(x)} ({x.nunique()})")
+        .reset_index()
+        .pivot(index=["method"], columns=["dataset"])
     )
     print(df_n)
 
