@@ -73,7 +73,7 @@ def to_latex(df):
     df.columns = df.columns.get_level_values(level=1)
     df = df.rename(columns=DATASET_RENAMING, copy=False)[DATASET_ORDERING]
 
-    df.index = df.index.rename(METHOD_RENAMING)
+    df = df.rename(METHOD_RENAMING)
     df = df.reindex(METHOD_ORDERING, axis=0)
 
     print(df.to_latex())
