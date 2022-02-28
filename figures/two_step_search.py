@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 
 from changeforest_simulations import simulate
 
-alpha, X = simulate("iris", seed=0)
+alpha, X = simulate("iris", seed=1)
 
 n = X.shape[0]
 
