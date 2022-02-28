@@ -5,7 +5,7 @@ from sklearn.neighbors import KNeighborsClassifier
 
 from changeforest_simulations import simulate
 
-alpha, X = simulate("iris")
+alpha, X = simulate("iris", seed=1)
 n = X.shape[0]
 
 
