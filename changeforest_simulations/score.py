@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.spatial.distance import cdist
 from sklearn.metrics import adjusted_rand_score as sklearn_adjusted_rand_score
 
 
@@ -29,3 +30,14 @@ def adjusted_rand_score(true_changepoints, estimated_changepoints):
         y_estimated[start:stop] = i
 
     return sklearn_adjusted_rand_score(y_true, y_estimated)
+
+
+def hausdorff_distance(true_changepoints, estimated_changepoints):
+    """Compute the Hausdorff distance between two sets of changepoints.
+
+    """
+    distances = cdist(
+        np.array(estimated_changepoints).reshape(-1, 1),
+        np.array(true_changepoints).reshape(-1, 1),
+    )
+    return max(distances.min(axis=0).max(), distances.min(axis=1).max())
