@@ -35,9 +35,18 @@ def adjusted_rand_score(true_changepoints, estimated_changepoints):
 def hausdorff_distance(true_changepoints, estimated_changepoints):
     """Compute the Hausdorff distance between two sets of changepoints.
 
-    """
+    This is the maximum distance from a true changepoint to its closest estimated
+    counterpart."""
     distances = cdist(
         np.array(estimated_changepoints).reshape(-1, 1),
         np.array(true_changepoints).reshape(-1, 1),
     )
-    return max(distances.min(axis=0).max(), distances.min(axis=1).max())
+    return distances.min(axis=0).max()
+
+
+def symmetric_hausdorff_distance(true_changepoints, estimated_changepoints):
+    """Compute the symmetric Hausdorff distance between two sets of changepoints."""
+    return max(
+        hausdorff_distance(true_changepoints, estimated_changepoints),
+        hausdorff_distance(estimated_changepoints, true_changepoints),
+    )

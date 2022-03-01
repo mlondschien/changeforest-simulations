@@ -4,7 +4,7 @@ from ._benchmark import benchmark
 from ._load import DATASETS, load
 from ._simulate import simulate
 from .methods import estimate_changepoints
-from .score import adjusted_rand_score, hausdorff_distance
+from .score import adjusted_rand_score, hausdorff_distance, symmetric_hausdorff_distance
 
 try:
     __version__ = pkg_resources.get_distribution(__name__).version
@@ -19,4 +19,5 @@ __all__ = [
     "hausdorff_distance",
     "load",
     "simulate",
+    "symmetric_hausdorff_distance",
 ]
