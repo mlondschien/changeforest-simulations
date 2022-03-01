@@ -45,6 +45,7 @@ def main(n_seeds, seed_start, methods, datasets, file):
             "ecp",
             "multirank",
             "kernseg_rbf",
+            "kernseg_linear",
         ]
     else:
         methods = methods.split(" ")

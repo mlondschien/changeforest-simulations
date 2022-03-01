@@ -14,6 +14,11 @@ def kernseg_linear(X, minimal_relative_segment_length, **kwargs):
     return kernseg(X, "linear", minimal_relative_segment_length, **kwargs)
 
 
+def kernseg_cosine(X, minimal_relative_segment_length, **kwargs):
+    """Wrapper around kernseg with a cosine kernel."""
+    return kernseg(X, "cosine", minimal_relative_segment_length, **kwargs)
+
+
 def kernseg(X, kernel, minimal_relative_segment_length, params=None, **kwargs):
     """
     Find change points using the kernel based method presented in [1].
@@ -31,7 +36,7 @@ def kernseg(X, kernel, minimal_relative_segment_length, params=None, **kwargs):
     algo = rpt.KernelCPD(kernel=kernel, params=params)
 
     # ruptures requires n_bkps_max <= n / 2 - 2.
-    n_bkps_max = int(min(1 / minimal_relative_segment_length, X.shape[0] / 2 - 2))
+    n_bkps_max = int(min(1 / minimal_relative_segment_length - 1, X.shape[0] / 2 - 2))
     algo.fit(X).predict(n_bkps=n_bkps_max)
 
     segmentations_values = [[len(X)]] + list(algo.segmentations_dict.values())
