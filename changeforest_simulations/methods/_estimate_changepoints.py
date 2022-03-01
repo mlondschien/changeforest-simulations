@@ -14,7 +14,7 @@ from .changeforest import (
 from .ecp import ecp
 from .kcprs import kcprs
 from .multirank.dynkw import autoDynKWRupt
-from .ruptures import kernseg_linear, kernseg_rbf
+from .ruptures import kernseg_cosine, kernseg_linear, kernseg_rbf
 
 
 def estimate_changepoints(X, method, minimal_relative_segment_length, **kwargs):
@@ -29,6 +29,11 @@ def estimate_changepoints(X, method, minimal_relative_segment_length, **kwargs):
             X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
         )
     elif method == "changeforest_bs":
+        if (
+            "random_forest_mtry" in additional_kwargs
+            and additional_kwargs["random_forest_mtry"] == "sqrt"
+        ):
+            kwargs["random_forest_mtry"] = int(np.sqrt(X.shape[1]))
         return changeforest_bs(
             X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
         )
@@ -45,8 +50,12 @@ def estimate_changepoints(X, method, minimal_relative_segment_length, **kwargs):
             X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
         )
     elif method == "change_in_mean_bs":
+        minimal_gain_to_split = np.log(X.shape[0]) * (1 + X.shape[1]) / X.shape[0]
         return change_in_mean_bs(
-            X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
+            X,
+            minimal_relative_segment_length=minimal_relative_segment_length,
+            minimal_gain_to_split=minimal_gain_to_split,
+            **kwargs,
         )
     elif method == "change_in_mean_sbs":
         return change_in_mean_sbs(
@@ -65,6 +74,10 @@ def estimate_changepoints(X, method, minimal_relative_segment_length, **kwargs):
         )
     elif method == "kernseg_linear":
         return kernseg_linear(
+            X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
+        )
+    elif method == "kernseg_cosine":
+        return kernseg_cosine(
             X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
         )
     elif method == "kcprs":

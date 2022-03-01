@@ -48,6 +48,7 @@ def test_method(method):
         # "kernseg",
         "kernseg_rbf",
         "kernseg_linear",
+        "kernseg_cosine"
         #   "kcprs",
     ],
 )

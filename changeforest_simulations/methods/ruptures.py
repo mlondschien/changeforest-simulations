@@ -14,6 +14,11 @@ def kernseg_linear(X, minimal_relative_segment_length, **kwargs):
     return kernseg(X, "linear", minimal_relative_segment_length, **kwargs)
 
 
+def kernseg_cosine(X, minimal_relative_segment_length, **kwargs):
+    """Wrapper around kernseg with a cosine kernel."""
+    return kernseg(X, "cosine", minimal_relative_segment_length, **kwargs)
+
+
 def kernseg(X, kernel, minimal_relative_segment_length, params=None, **kwargs):
     """
     Find change points using the kernel based method presented in [1].
