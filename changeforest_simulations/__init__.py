@@ -1,6 +1,6 @@
 import pkg_resources
 
-from ._benchmark import benchmark
+from ._benchmark import HEADER, benchmark
 from ._load import DATASETS, load
 from ._simulate import simulate
 from .methods import estimate_changepoints
@@ -17,6 +17,7 @@ __all__ = [
     "DATASETS",
     "estimate_changepoints",
     "hausdorff_distance",
+    "HEADER",
     "load",
     "simulate",
     "symmetric_hausdorff_distance",

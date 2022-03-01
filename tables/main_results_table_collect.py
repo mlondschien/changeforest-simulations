@@ -6,7 +6,7 @@ from pathlib import Path
 
 import click
 
-from changeforest_simulations import benchmark
+from changeforest_simulations import HEADER, benchmark
 
 _OUTPUT_FOLDER = Path(__file__).parents[1].absolute() / "output"
 logger = logging.getLogger(__file__)
@@ -55,7 +55,7 @@ def main(n_seeds, seed_start, methods, datasets, file):
         if file_path.exists():
             raise ValueError(f"File {file_path} already exists.")
         else:
-            file_path.write_text("dataset,seed,method,score,n_cpts,time\n")
+            file_path.write_text(HEADER)
 
         logger.info(f"Writing results to {file_path}.")
 
