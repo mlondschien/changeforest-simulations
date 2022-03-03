@@ -8,12 +8,12 @@ dependencies:
   - r-base
   - r-ecp
   - r-rfast  # for Rfast::Lchoose only
-  - r-kernlab  # Dependency of r-KernSeg
   - ruptures
   - rpy2
   - changeforest>=0.4.0
   - scikit-learn  # For adj. rand
   - numpy
   - openpyxl  # To read dry-beans excel file
-  - pandas  # For read.csv only. TODO: get rid of this
+  - pandas
   - click
+  - matplotlib
