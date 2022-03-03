@@ -20,7 +20,7 @@ DATASET_ORDERING = [
     "breast-cancer",
     "abalone",
     "dry-beans",
-    "total",
+    "mean",
 ]
 
 METHOD_RENAMING = {
@@ -52,7 +52,7 @@ def main(file):
     )
     df_score = df_score.reset_index().pivot(index=["method"], columns=["dataset"])
     df_mean = df.groupby(["method", "dataset"])["score"].mean().groupby("method").mean()
-    df_score[("score", "total")] = df_mean.apply("{:.3f}".format)
+    df_score[("score", "mean")] = df_mean.apply("{:.3f}".format)
     to_latex(df_score)
 
     # time
@@ -93,5 +93,3 @@ def to_latex(df):
 
 if __name__ == "__main__":
     main()
-
-# python tables/simulation_results.py -n1 --datasets 'change_in_mean change_in_covariance dirichlet iris glass wine breast-cancer abalone dry-beans repeated-dry-beans covertype' --methods 'change_in_mean_bs changeforest_bs__random_forest_max_depth=8 changekNN_bs ecp kernseg_rbf multirank'
