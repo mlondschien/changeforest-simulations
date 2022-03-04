@@ -32,10 +32,10 @@ METHOD_ORDERING = [
 # https://personal.sron.nl/~pault/#sec:qualitative
 COLORS = {
     "blue": "#4477AA",
-    "cyan": "#EE6677",
+    "cyan": "#66CCEE",
     "green": "#228833",
     "yellow": "#CCBB44",
-    "red": "#66CCEE",
+    "red": "#EE6677",
     "purple": "#AA3377",
     "grey": "#BBBBBB",
     "black": "#000000",
