@@ -109,6 +109,7 @@ def main(dataset, file):
 
     fig.suptitle(dataset.replace("-noise", "").replace("-", " "), fontsize=16)
     plt.tight_layout(pad=0.5)
+    plt.savefig(figures_path / f"evolution_{dataset}_by_n_observations.eps", dpi=300)
     plt.savefig(figures_path / f"evolution_{dataset}_by_n_observations.png", dpi=300)
 
     unqiue_observations = sorted(df["n_observations"].unique())
