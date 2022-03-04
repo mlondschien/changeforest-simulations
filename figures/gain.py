@@ -4,14 +4,14 @@ from matplotlib import pyplot as plt
 from sklearn.neighbors import KNeighborsClassifier
 
 from changeforest_simulations import simulate
+from changeforest_simulations.constants import COLORS
 
 alpha, X = simulate("iris", seed=1)
 n = X.shape[0]
 
-# https://davidmathlogic.com/colorblind/#%23D81B60-%231E88E5-%23FFC107-%23004D40
-red = "#D81B60"
-green = "#004D40"
-blue = "#1E88E5"
+red = COLORS["red"]
+green = COLORS["green"]
+blue = COLORS["blue"]
 
 
 def rf_gain(s, X):
