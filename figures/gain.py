@@ -8,6 +8,11 @@ from changeforest_simulations import simulate
 alpha, X = simulate("iris", seed=1)
 n = X.shape[0]
 
+# https://davidmathlogic.com/colorblind/#%23D81B60-%231E88E5-%23FFC107-%23004D40
+red = "#D81B60"
+green = "#004D40"
+blue = "#1E88E5"
+
 
 def rf_gain(s, X):
     n = X.shape[0]
@@ -58,22 +63,22 @@ fig, axes = plt.subplots(ncols=2, figsize=(11, 3))
 
 axes[0].plot(range(n), rf_gain_curve, "k")
 ymin, ymax = axes[0].get_ylim()
-axes[0].vlines(alpha[1:-1], ymin=ymin, ymax=ymax, linestyles="solid", color="green")
+axes[0].vlines(alpha[1:-1], ymin=ymin, ymax=ymax, linestyles="solid", color=green)
 axes[0].vlines(
     np.nanargmax(rf_gain_curve),
     ymin=np.nanmin(rf_gain_curve),
     ymax=np.nanmax(rf_gain_curve),
     linestyles="dashed",
-    color="red",
+    color=red,
 )
 axes[0].set_xlabel("s")
 axes[0].set_ylabel("gain")
 
 axes[1].plot(range(n), knn_gain_curve, "k")
 ymin, ymax = axes[1].get_ylim()
-axes[1].vlines(alpha[1:-1], ymin=ymax, ymax=ymin, linestyles="solid", color="green")
+axes[1].vlines(alpha[1:-1], ymin=ymax, ymax=ymin, linestyles="solid", color=green)
 axes[1].vlines(
-    np.nanargmax(knn_gain_curve), ymin=ymin, ymax=ymax, linestyles="dashed", color="red"
+    np.nanargmax(knn_gain_curve), ymin=ymin, ymax=ymax, linestyles="dashed", color=red
 )
 axes[1].set_xlabel("s")
 # axes[1].set_ylabel("gain")
