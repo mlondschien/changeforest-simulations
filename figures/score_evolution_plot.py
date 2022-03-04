@@ -16,6 +16,7 @@ output_path = Path(__file__).parents[1].absolute() / "score_evolution_output"
 figures_path = Path(__file__).parent
 
 plt.rc("axes", prop_cycle=cycler(color=list(COLOR_CYCLE)))
+plt.rcParams.update({"font.size": 12})
 
 
 @click.command()
@@ -104,10 +105,10 @@ def main(dataset, file):
         # axes[1, idx].legend(loc="lower right")
 
     axes[1, -1].legend(loc="lower right")
-    axes[0, 0].set_ylabel("score")
+    axes[0, 0].set_ylabel("mean adjusted Rand index")
     axes[1, 0].set_ylabel("time")
 
-    fig.suptitle(dataset.replace("-noise", "").replace("-", " "), fontsize=16)
+    fig.suptitle(dataset.replace("-noise", "").replace("-", " "))  # , fontsize=16)
     plt.tight_layout(pad=0.5)
     plt.savefig(figures_path / f"evolution_{dataset}_by_n_observations.eps", dpi=300)
     plt.savefig(figures_path / f"evolution_{dataset}_by_n_observations.png", dpi=300)
