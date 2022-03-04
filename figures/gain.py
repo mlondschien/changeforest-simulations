@@ -12,6 +12,7 @@ n = X.shape[0]
 red = COLORS["red"]
 green = COLORS["green"]
 blue = COLORS["blue"]
+plt.rcParams.update({"font.size": 12})
 
 
 def rf_gain(s, X):
@@ -59,7 +60,7 @@ knn_gain_curve = (
     [np.nan, np.nan] + [knn_gain(s, X) for s in range(2, n - 2)] + [np.nan, np.nan]
 )
 
-fig, axes = plt.subplots(ncols=2, figsize=(11, 3))
+fig, axes = plt.subplots(ncols=2, figsize=(16, 3))
 
 axes[0].plot(range(n), rf_gain_curve, "k")
 ymin, ymax = axes[0].get_ylim()
@@ -72,7 +73,7 @@ axes[0].vlines(
     color=red,
 )
 axes[0].set_xlabel("s")
-axes[0].set_ylabel("gain")
+axes[0].set_ylabel("gain(s)")
 
 axes[1].plot(range(n), knn_gain_curve, "k")
 ymin, ymax = axes[1].get_ylim()
@@ -85,3 +86,4 @@ axes[1].set_xlabel("s")
 
 plt.tight_layout()
 plt.savefig("figures/gains.eps", dpi=300)
+plt.savefig("figures/gains.png", dpi=300)
