@@ -7,38 +7,14 @@ import click
 import numpy as np
 import pandas as pd
 
+from changeforest_simulations.constants import (
+    DATASET_ORDERING,
+    DATASET_RENAMING,
+    METHOD_ORDERING,
+    METHOD_RENAMING,
+)
+
 _OUTPUT_PATH = Path(__file__).parents[1].absolute() / "output"
-
-DATASET_RENAMING = {"change_in_mean": "CIM", "change_in_covariance": "CIC"}
-DATASET_ORDERING = [
-    "CIM",
-    "CIC",
-    "dirichlet",
-    "iris",
-    "glass",
-    "wine",
-    "breast-cancer",
-    "abalone",
-    "dry-beans",
-    "mean",
-]
-
-METHOD_RENAMING = {
-    "change_in_mean_bs": "change in mean",
-    "changeforest_bs": "changeforest (ours)",
-    "changekNN_bs": "changekNN",
-    "ecp": "ECP",
-    "multirank": "MultiRank",
-    "kernseg_rbf": "KCP (rbf)",
-}
-METHOD_ORDERING = [
-    "change in mean",
-    "changeforest (ours)",
-    "changekNN",
-    "ECP",
-    "KCP (rbf)",
-    "MultiRank",
-]
 
 
 @click.command()
