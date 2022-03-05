@@ -4,6 +4,12 @@ from changeforest import Control, changeforest
 from matplotlib import pyplot as plt
 
 from changeforest_simulations import simulate
+from changeforest_simulations.constants import COLORS
+
+red = COLORS["red"]
+green = COLORS["green"]
+blue = COLORS["blue"]
+plt.rcParams.update({"font.size": 12})
 
 alpha, X = simulate("iris", seed=1)
 
@@ -14,36 +20,38 @@ result = changeforest(
 )
 gain_results = result.optimizer_result.gain_results
 
-fig, axes = plt.subplots(nrows=3, ncols=2, figsize=(11, 6))
+fig, axes = plt.subplots(nrows=4, ncols=2, figsize=(16, 7))
 
-for idx in range(3):
-    axes[idx, 0].plot(range(n), gain_results[idx].gain, "k")
+for idx in range(4):
+    axes[idx, 0].plot(range(n), gain_results[idx].gain, color="k")
     ymin, ymax = axes[idx, 0].get_ylim()
-    axes[idx, 0].vlines(alpha[1:-1], ymin=ymin, ymax=ymax, color="green")
+    axes[idx, 0].vlines(alpha[1:-1], ymin=ymin, ymax=ymax, color=green)
     axes[idx, 0].vlines(
         np.nanargmax(gain_results[idx].gain),
         ymin=ymin,
         ymax=ymax,
         linestyles="dashed",
-        color="red",
+        color=red,
     )
     axes[idx, 0].vlines(
-        gain_results[idx].guess, ymin=ymin, ymax=ymax, linestyles="dotted", color="blue"
+        gain_results[idx].guess, ymin=ymin, ymax=ymax, linestyles="dotted", color=blue
     )
     axes[idx, 0].set_ylabel("approx. gain")
 
     axes[idx, 1].scatter(range(n), gain_results[idx].predictions, s=2, c="k")
     axes[idx, 1].set_ylabel("proba. prediction")
 
-axes[2, 0].set_xlabel("s")
-axes[2, 1].set_xlabel("t")
+axes[-1, 0].set_xlabel("s")
+axes[-1, 1].set_xlabel("t")
 
-plt.tight_layout(pad=1.5)
+# plt.subplots_adjust(wspace=0, hspace=0)
+plt.tight_layout()
+plt.savefig("figures/two_step_search.png", dpi=300)
 plt.savefig("figures/two_step_search.eps", dpi=300)
 
 
 # two_step_search_biased.png
-fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(11, 3))
+fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(16, 3))
 
 y = np.zeros(n, dtype="float")
 s = 75
@@ -68,11 +76,11 @@ gain = log_likelihoods[1, :].sum() + np.concatenate(
 
 axes[0].plot(range(n), gain, "k")
 ymin, ymax = axes[0].get_ylim()
-axes[0].vlines(alpha[1:-1], ymin=ymin, ymax=ymax, color="green")
+axes[0].vlines(alpha[1:-1], ymin=ymin, ymax=ymax, color=green)
 axes[0].vlines(
-    np.nanargmax(gain), ymin=ymin, ymax=ymax, linestyles="dashed", color="red",
+    np.nanargmax(gain), ymin=ymin, ymax=ymax, linestyles="dashed", color=red,
 )
-axes[0].vlines(s, ymin=ymin, ymax=ymax, linestyles="dotted", color="blue")
+axes[0].vlines(s, ymin=ymin, ymax=ymax, linestyles="dotted", color=blue)
 axes[0].set_ylabel("approx. gain")
 axes[0].set_xlabel("s")
 
@@ -82,3 +90,4 @@ axes[1].set_xlabel("t")
 
 plt.tight_layout()
 plt.savefig("figures/two_step_search_biased.eps", dpi=300)
+plt.savefig("figures/two_step_search_biased.png", dpi=300)
