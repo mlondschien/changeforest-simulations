@@ -41,6 +41,9 @@ def main(n_seeds, seed_start, methods, datasets, file):
     if methods is None:
         methods = [
             "changeforest_bs",
+            "changeforest_bs__model_selection_alpha=0.02",
+            "changeforest_bs__model_selection_n_permutations=499",
+            "changeforest_bs__model_selection_n_permutations=499__model_selection_alpha=0.02",
             "changekNN_bs",
             "change_in_mean_bs",
             "ecp",
