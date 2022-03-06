@@ -4,12 +4,14 @@ import click
 import numpy as np
 import pandas as pd
 
-_OUTPUT_PATH = Path(__file__).parent.absolute() / "output"
+__PATH = Path(__file__).parent.absolute()
 
 
 @click.command()
 @click.option("--file")
-def main(file):
+@click.option("--folder", default="output")
+def main(file, folder):
+    _OUTPUT_PATH = __PATH / folder
     df = pd.concat([pd.read_csv(f) for f in _OUTPUT_PATH.glob(f"{file}_*.csv")])
 
     print(
