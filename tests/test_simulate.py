@@ -39,6 +39,9 @@ from changeforest_simulations._simulate import simulate_from_data
         ("breast-cancer-no-change", [0, 458], (458, 9)),
         ("abalone-no-change", [0, 689], (689, 9)),
         ("dry-beans-no-change", [0, 3546], (3546, 16)),
+        ("dirichlet-no-change", [0, 150], (150, 20)),
+        ("change_in_mean-no-change", [0, 200], (200, 5)),
+        ("change_in_covariance-no-change", [0, 200], (200, 5)),
         ("dirichlet__n_observations=100__n_segments=10", None, (100, 20)),
     ],
 )

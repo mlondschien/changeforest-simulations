@@ -76,16 +76,23 @@ def simulate_no_change(scenario, seed=0, class_label="class"):
     if not scenario.endswith("-no-change"):
         raise ValueError(f"Scenario {scenario} not supported.")
 
-    data = load(scenario[:-10])
-    values, counts = np.unique(data[class_label], return_counts=True)
-    most_frequent = values[np.argmax(counts)]
+    if scenario == "change_in_mean-no-change":
+        X = simulate_change_in_mean(seed=seed)[1][0:200, :]
+    elif scenario == "change_in_covariance-no-change":
+        X = simulate_change_in_covariance(seed=seed)[1][0:200, :]
+    elif scenario == "dirichlet-no-change":
+        X = simulate_dirichlet(seed=seed)[1][370:520, :]
+    else:
+        data = load(scenario[:-10])
+        values, counts = np.unique(data[class_label], return_counts=True)
+        most_frequent = values[np.argmax(counts)]
 
-    X = (
-        data[lambda x: x[class_label] == most_frequent]
-        .drop(columns=class_label)
-        .to_numpy()
-    )
-    rng.shuffle(X)  # This only shuffles along the first axis.
+        X = (
+            data[lambda x: x[class_label] == most_frequent]
+            .drop(columns=class_label)
+            .to_numpy()
+        )
+        rng.shuffle(X)  # This only shuffles along the first axis.
 
     return np.array([0, len(X)]), X
 
