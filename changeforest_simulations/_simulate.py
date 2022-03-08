@@ -298,7 +298,7 @@ def simulate_dirichlet(
 
     X = np.zeros((changepoints[-1], d))
     for idx, (start, end) in enumerate(zip(changepoints[:-1], changepoints[1:])):
-        X[start:end, :] = np.random.dirichlet(params[idx, :], end - start)
+        X[start:end, :] = rng.dirichlet(params[idx, :], end - start)
 
     return np.array(changepoints), X
 
