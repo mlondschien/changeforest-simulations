@@ -20,13 +20,11 @@ plt.rcParams.update({"font.size": 12})
 
 
 @click.command()
-@click.option("--dataset", default=None)
 @click.option("--file", default=None)
-def main(dataset, file):
-    if dataset is None:
-        raise ValueError("Please provide dataset name via --dataset argument")
-
-    files = output_path.glob(f"{file}_{dataset}_*.csv")
+def main(file):
+    files = []
+    files.extend(output_path.glob(f"{file}_dirichlet_*.csv"))
+    files.extend(output_path.glob(f"{file}_dry-beans-noise_*.csv"))
     df = pd.concat([pd.read_csv(f) for f in files], axis=0)
 
     df["n_segments"] = (
@@ -43,16 +41,19 @@ def main(dataset, file):
         .astype(int)
     )
 
+    df["dataset"] = df["dataset"].str.split("__").str[0]
     df["method"] = df["method"].replace(METHOD_RENAMING)
     df = df[lambda x: x["method"].isin(METHOD_ORDERING)]
 
-    duplicates = df[["method", "n_observations", "seed", "n_segments"]].duplicated()
+    duplicates = df[
+        ["dataset", "method", "seed", "n_segments", "n_observations"]
+    ].duplicated()
     if duplicates.any():
         print(f"There were {duplicates.sum()} duplicates:")
         df = df[~duplicates]
 
     df = (
-        df.groupby(["method", "n_observations", "n_segments"])
+        df.groupby(["dataset", "method", "n_observations", "n_segments"])
         .apply(
             lambda x: pd.Series(
                 {
@@ -70,121 +71,59 @@ def main(dataset, file):
     )
 
     segments = [10, 20, 40, 80]
-    fig, axes = plt.subplots(ncols=len(segments), nrows=2, figsize=(16, 7))
+    fig, axes = plt.subplots(ncols=len(segments), nrows=3, figsize=(16, 11))
 
     for idx, n_segments in enumerate(segments):
-        df_plot = df[df["n_segments"] == n_segments].sort_values("n_observations")
+        df_plot = df[df["n_segments"].eq(n_segments)].sort_values("n_observations")
 
         for method in METHOD_ORDERING:
-            df_filtered = df_plot[lambda x: x["method"] == method]
+            df_method = df_plot[lambda x: x["method"].eq(method)]
+            df_dirichlet = df_method[lambda x: x["dataset"].eq("dirichlet")]
+            df_dry_beans = df_method[lambda x: x["dataset"].eq("dry-beans-noise")]
+
             axes[0, idx].errorbar(
-                df_filtered["n_observations"],
-                df_filtered["mean_score"],
-                yerr=df_filtered["sd_score"],
+                df_dirichlet["n_observations"],
+                df_dirichlet["mean_score"],
+                yerr=df_dirichlet["sd_score"],
                 label=method,
             )
             axes[1, idx].errorbar(
-                df_filtered["n_observations"],
-                df_filtered["mean_time"],
-                yerr=df_filtered["sd_time"],
+                df_dry_beans["n_observations"],
+                df_dry_beans["mean_score"],
+                yerr=df_dry_beans["sd_score"],
+                label=method,
+            )
+            axes[2, idx].errorbar(
+                df_dry_beans["n_observations"],
+                df_dry_beans["mean_time"],
+                yerr=df_dry_beans["sd_time"],
                 label=method,
             )
 
-        # axes[0, idx].legend(loc="lower right")
         axes[0, idx].set_title(f"{n_segments} segments")
-        # axes[0, idx].set_xlabel("n")
-        # axes[0, idx].set_ylabel("score")
         axes[0, idx].set_xscale("log")
         # Expand range between ~0.8 - 1.
         axes[0, idx].set_yscale("function", functions=(np.exp, np.log))
 
-        axes[1, idx].set_xlabel("n")
-        # axes[1, idx].set_ylabel("time")
         axes[1, idx].set_xscale("log")
-        axes[1, idx].set_yscale("log")
-        # axes[1, idx].legend(loc="lower right")
+        axes[1, idx].set_yscale("function", functions=(np.exp, np.log))
 
-    axes[1, -1].legend(loc="lower right")
-    axes[0, 0].set_ylabel("mean adjusted Rand index")
-    axes[1, 0].set_ylabel("time")
+        axes[2, idx].set_xlabel("n")
+        axes[2, idx].set_xscale("log")
+        axes[2, idx].set_yscale("log")
 
-    fig.suptitle(dataset.replace("-noise", "").replace("-", " "))  # , fontsize=16)
-    plt.tight_layout(pad=0.5)
-    plt.savefig(figures_path / f"evolution_{dataset}_by_n_observations.eps", dpi=300)
-    plt.savefig(figures_path / f"evolution_{dataset}_by_n_observations.png", dpi=300)
+    axes[-1, -1].legend(loc="lower right")
+    axes[0, 0].set_ylabel("avg. adj. Rand index")
+    axes[1, 0].set_ylabel("avg. adj. Rand index")
+    axes[2, 0].set_ylabel("time (s)")
 
-    unqiue_observations = sorted(df["n_observations"].unique())
-    _, axes = plt.subplots(ncols=len(unqiue_observations), nrows=2, figsize=(45, 15))
-    for idx, n_observations in enumerate(unqiue_observations):
-        df_plot = df[df["n_observations"] == n_observations].sort_values("n_segments")
-
-        for method in METHOD_ORDERING:
-            df_filtered = df_plot[lambda x: x["method"] == method]
-            axes[0, idx].errorbar(
-                df_filtered["n_segments"],
-                df_filtered["mean_score"],
-                yerr=df_filtered["sd_score"],
-                label=method,
-            )
-            axes[1, idx].errorbar(
-                df_filtered["n_segments"],
-                df_filtered["mean_time"],
-                yerr=df_filtered["sd_time"],
-                label=method,
-            )
-
-        axes[0, idx].legend(loc="lower right")
-        axes[0, idx].set_title(f"n_observations={n_observations}")
-        axes[0, idx].set_xlabel("n")
-        axes[0, idx].set_ylabel("score")
-        axes[0, idx].set_xscale("log")
-
-        axes[1, idx].set_xlabel("n")
-        axes[1, idx].set_ylabel("time")
-        axes[1, idx].set_xscale("log")
-        axes[1, idx].set_yscale("log")
-        axes[1, idx].legend(loc="lower right")
-
+    plt.figtext(0.485, 0.97, "dirichlet", {"size": 18})
+    plt.figtext(0.48, 0.644, "dry beans", {"size": 18})
+    plt.figtext(0.48, 0.326, "dry beans", {"size": 18})
     plt.tight_layout()
-    plt.savefig(figures_path / f"evolution_{dataset}_by_n_segments.png", dpi=300)
-
-    df["n_by_n_segments_sq"] = df["n_observations"] / df["n_segments"] ** 2
-    _, axes = plt.subplots(ncols=5, nrows=2, figsize=(18, 8))
-    values = sorted(df["n_by_n_segments_sq"].value_counts().index[0:5])
-    for idx, n_by_n_segments_sq in enumerate(values):
-        df_plot = df[df["n_by_n_segments_sq"] == n_by_n_segments_sq].sort_values(
-            "n_observations"
-        )
-
-        for method in df_plot["method"].unique():
-            df_filtered = df_plot[lambda x: x["method"] == method]
-            axes[0, idx].errorbar(
-                df_filtered["n_observations"],
-                df_filtered["mean_score"],
-                yerr=df_filtered["sd_score"],
-                label=method,
-            )
-            axes[1, idx].errorbar(
-                df_filtered["n_observations"],
-                df_filtered["mean_time"],
-                yerr=df_filtered["sd_time"],
-                label=method,
-            )
-
-        # axes[0, idx].legend(loc="lower right")
-        axes[0, idx].set_title(f"n_by_n_segments_sq={n_by_n_segments_sq}")
-        axes[0, idx].set_xlabel("n")
-        axes[0, idx].set_ylabel("score")
-        axes[0, idx].set_xscale("log")
-
-        axes[1, idx].set_xlabel("n")
-        axes[1, idx].set_ylabel("time")
-        axes[1, idx].set_xscale("log")
-        axes[1, idx].set_yscale("log")
-        # axes[1, idx].legend(loc="lower right")
-
-    plt.tight_layout()
-    plt.savefig(figures_path / f"evolution_{dataset}_by_balanced.png", dpi=300)
+    plt.subplots_adjust(top=0.94, hspace=0.28)
+    plt.savefig(figures_path / "evolution_by_n_observations.eps", dpi=300)
+    plt.savefig(figures_path / "evolution_by_n_observations.png", dpi=300)
 
 
 if __name__ == "__main__":
