@@ -16,6 +16,9 @@ def string_to_kwargs(string):
             except ValueError:
                 pass
 
+        if v == "None":
+            v = None
+
         kwargs[k] = v
 
     return first_value, kwargs
