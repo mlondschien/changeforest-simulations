@@ -16,6 +16,7 @@ from changeforest_simulations.utils import string_to_kwargs
             "method__n_observations=10__some=value",
             ("method", {"some": "value", "n_observations": 10}),
         ),
+        ("method__kwarg=None", ("method", {"kwarg": None})),
     ],
 )
 def test_string_to_kwargs(string, kwargs):
