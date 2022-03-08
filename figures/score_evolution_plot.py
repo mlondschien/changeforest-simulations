@@ -122,7 +122,6 @@ def main(file):
     plt.figtext(0.48, 0.326, "dry beans", {"size": 18})
     plt.tight_layout()
     plt.subplots_adjust(top=0.94, hspace=0.28)
-    # fig.suptitle(dataset.replace("-noise", "").replace("-", " "))  # , fontsize=16)
     plt.savefig(figures_path / "evolution_by_n_observations.eps", dpi=300)
     plt.savefig(figures_path / "evolution_by_n_observations.png", dpi=300)
 
