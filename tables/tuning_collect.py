@@ -14,7 +14,9 @@ logger = logging.getLogger(__file__)
 
 @click.command()
 @click.option("--file", default=None, help="Filename to use.")
-def main(file):
+@click.option("--n-seeds", default=100, help="Number of seeds to use for simulation.")
+@click.option("--seed-start", default=0, help="Seed from which to start iteration.")
+def main(file, n_seeds, seed_start):
     _OUTPUT_FOLDER.mkdir(exist_ok=True)
 
     logging.basicConfig(level=logging.INFO)
@@ -31,7 +33,7 @@ def main(file):
         "dirichlet",
     ]
 
-    for seed in range(0, 500):
+    for seed in range(seed_start, seed_start + n_seeds):
         file_path = _OUTPUT_FOLDER / f"{file}_{seed}.csv"
         if file_path.exists():
             raise ValueError(f"File {file_path} already exists.")
