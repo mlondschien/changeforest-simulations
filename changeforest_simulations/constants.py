@@ -5,9 +5,9 @@ DATASET_ORDERING = [
     "dirichlet",
     "iris",
     "glass",
-    "wine",
     "breast-cancer",
     "abalone",
+    "wine",
     "dry-beans",
     "average",
 ]

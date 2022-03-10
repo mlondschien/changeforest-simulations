@@ -1,6 +1,7 @@
 # Script to aggregate data from main_results_table_collect to a table.
 # Call this script with
 # `python main_results_table_aggregate.py`
+import json
 from pathlib import Path
 
 import click
@@ -22,7 +23,7 @@ _OUTPUT_PATH = Path(__file__).parents[1].absolute() / "output"
 def main(file):
     df = pd.concat([pd.read_csv(f) for f in _OUTPUT_PATH.glob(f"{file}_*.csv")])
 
-    # score
+    # ARI
     df_score = df.groupby(["method", "dataset"])["score"].apply(
         lambda x: f"{np.mean(x):.3f} ({np.std(x):.3f})"
     )
@@ -36,12 +37,51 @@ def main(file):
         )
     )
     df_score[("score", "average")] = df_mean
-    to_latex(df_score)
+    to_latex(df_score, split=True)
 
     # time
     df_time = df.groupby(["method", "dataset"])["time"].apply(lambda x: fmt(np.mean(x)))
     df_time = df_time.reset_index().pivot(index=["method"], columns=["dataset"])
     to_latex(df_time)
+
+    df["n"] = df["true_changepoints"].apply(lambda x: json.loads(x)[-1])
+    df["symmetric_hausdorff"] = df["symmetric_hausdorff"] / df["n"]
+
+    # mean hausdorff distances
+    print("Mean hausdorff distance")
+    df_score = df.groupby(["method", "dataset"])["symmetric_hausdorff"].apply(
+        lambda x: f"{np.median(x):.3f} ({np.std(x):.3f})"
+    )
+    df_score = df_score.reset_index().pivot(index=["method"], columns=["dataset"])
+    df_mean = (
+        df.groupby(["method", "dataset"])[["symmetric_hausdorff"]]
+        .apply(lambda x: pd.Series({"mean": x.mean(), "std": x.std()}))
+        .groupby(["method"])
+        .apply(
+            lambda x: f"{x['mean'].mean():.3f} ({np.sqrt(x['std'].pow(2).mean()):.3f})"
+        )
+    )
+    df_score[("score", "average")] = df_mean
+    to_latex(df_score, split=True)
+
+    # meidan hausdorff distances
+    print("Median hausdorff distance")
+    df_score = (
+        df.groupby(["method", "dataset"])["symmetric_hausdorff"]
+        .median()
+        .reset_index()
+        .pivot(index=["method"], columns=["dataset"])
+    )
+    df_score[("symmetric_hausdorff", "average")] = df_score.mean(axis=1)
+    df_score = df_score.applymap("{:.3f}".format)
+    to_latex(df_score)
+
+    # n_cpts
+    df_n_cpts = df.groupby(["method", "dataset"])["n_cpts"].apply(
+        lambda x: f"{np.mean(x):.2f}"
+    )
+    df_n_cpts = df_n_cpts.reset_index().pivot(index=["method"], columns=["dataset"])
+    to_latex(df_n_cpts)
 
     # n_unique
     print("Comparing n_unique to n. These should be equal!")
@@ -63,7 +103,7 @@ def fmt(x):
         return f"{x:.2f}"
 
 
-def to_latex(df):
+def to_latex(df, split=False):
     df.columns = df.columns.get_level_values(level=1)
     df = df.rename(columns=DATASET_RENAMING, copy=False)
     df = df[[x for x in DATASET_ORDERING if x in df]]
@@ -71,7 +111,12 @@ def to_latex(df):
     df = df.rename(METHOD_RENAMING)
     df = df.reindex(METHOD_ORDERING, axis=0)
 
-    print(df.to_latex())
+    if split:
+        print(df[df.columns[:5]].to_latex())
+        print(df[df.columns[5:]].to_latex())
+
+    else:
+        print(df.to_latex())
 
 
 if __name__ == "__main__":
