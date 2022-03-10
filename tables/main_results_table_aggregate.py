@@ -27,8 +27,15 @@ def main(file):
         lambda x: f"{np.mean(x):.3f} ({np.std(x):.3f})"
     )
     df_score = df_score.reset_index().pivot(index=["method"], columns=["dataset"])
-    df_mean = df.groupby(["method", "dataset"])["score"].mean().groupby("method").mean()
-    df_score[("score", "mean")] = df_mean.apply("{:.3f}".format)
+    df_mean = (
+        df.groupby(["method", "dataset"])[["score"]]
+        .apply(lambda x: pd.Series({"mean": x.mean(), "std": x.std()}))
+        .groupby(["method"])
+        .apply(
+            lambda x: f"{x['mean'].mean():.3f} ({np.sqrt(x['std'].pow(2).mean()):.3f})"
+        )
+    )
+    df_score[("score", "average")] = df_mean
     to_latex(df_score)
 
     # time

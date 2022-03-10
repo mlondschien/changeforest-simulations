@@ -9,7 +9,7 @@ DATASET_ORDERING = [
     "breast-cancer",
     "abalone",
     "dry-beans",
-    "mean",
+    "average",
 ]
 
 METHOD_RENAMING = {
