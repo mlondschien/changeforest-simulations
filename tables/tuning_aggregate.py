@@ -4,6 +4,7 @@
 from pathlib import Path
 
 import click
+import numpy as np
 import pandas as pd
 
 from changeforest_simulations.constants import DATASET_ORDERING, DATASET_RENAMING
@@ -33,10 +34,24 @@ def main(file):
         .pivot(index=parameters, columns=["dataset"])
     )
     df_mean = (
-        df.groupby(["dataset"] + parameters)["score"].mean().groupby(parameters).mean()
+        df.groupby(["dataset"] + parameters)[["score"]]
+        .apply(lambda x: pd.Series({"mean": x.mean(), "std": x.std()}))
+        .groupby(parameters)
+        .apply(
+            lambda x: f"{x['mean'].mean():.3f} ({np.sqrt(x['std'].pow(2).mean()):.3f})"
+        )
     )
-    df_score[("score", "mean")] = df_mean.apply("{:.3f}".format)
+    df_score[("score", "mean")] = df_mean
     to_latex(df_score)
+
+    df_time = (
+        df.groupby(["dataset"] + parameters)["time"]
+        .apply(lambda x: fmt(np.mean(x)))
+        .reset_index()
+        .pivot(index=parameters, columns=["dataset"])
+    )
+
+    to_latex(df_time)
 
 
 def to_latex(df):
@@ -45,6 +60,15 @@ def to_latex(df):
     df = df[[x for x in DATASET_ORDERING if x in df]]
     print(df)
     print(df.to_latex())
+
+
+def fmt(x):
+    if np.log10(x) > 1:
+        return f"{x:.0f}"
+    elif np.log10(x) > 0:
+        return f"{x:.1f}"
+    else:
+        return f"{x:.2f}"
 
 
 if __name__ == "__main__":
