@@ -13,6 +13,7 @@ dependencies:
   - changeforest>=0.4.0
   - scikit-learn  # For adj. rand
   - numpy
+  - scipy>=1.5  # mad
   - openpyxl  # To read dry-beans excel file
   - pandas
   - click
