@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from scipy.stats import median_abs_deviation
 
 from changeforest_simulations._load import DATASETS, load
 from changeforest_simulations.utils import string_to_kwargs
@@ -7,9 +8,12 @@ from changeforest_simulations.utils import string_to_kwargs
 
 def normalize(X):
     """Normalize time series by median pairwise distances."""
-    medians = np.median(np.abs(X[1:, :] - X[:-1, :]), axis=0)
-    medians[medians == 0] = 1
-    return X / medians
+    pairwise_distances = X[1:, :] - X[:-1, :]
+    # If the x_i are i.i.d. N(0, 1 \sigma), then the x_i - x_{i-1} are N(0, 2 \sigma).
+    # Since sqrt(2) * MAD(x_i) is an estimator for \sigma, so is MAD(x_i - x_{i-1}).
+    mad = median_abs_deviation(pairwise_distances, axis=0)
+    mad[mad == 0] = 1
+    return X / mad
 
 
 def simulate(scenario, seed=0):
