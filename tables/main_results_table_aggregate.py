@@ -50,7 +50,7 @@ def main(file):
     # mean hausdorff distances
     print("Mean hausdorff distance")
     df_score = df.groupby(["method", "dataset"])["symmetric_hausdorff"].apply(
-        lambda x: f"{np.median(x):.3f} ({np.std(x):.3f})"
+        lambda x: f"{np.mean(x):.3f} ({np.std(x):.3f})"
     )
     df_score = df_score.reset_index().pivot(index=["method"], columns=["dataset"])
     df_mean = (
