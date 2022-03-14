@@ -6,7 +6,8 @@ from sklearn.linear_model import LinearRegression
 
 def kernseg_rbf(X, minimal_relative_segment_length, **kwargs):
     """Wrapper around kernseg with a radial basis function kernel."""
-    return kernseg(X, "rbf", minimal_relative_segment_length, params={"gamma": 0.1})
+    gamma = kwargs.get("gamma", 0.1)
+    return kernseg(X, "rbf", minimal_relative_segment_length, params={"gamma": gamma})
 
 
 def kernseg_linear(X, minimal_relative_segment_length, **kwargs):
