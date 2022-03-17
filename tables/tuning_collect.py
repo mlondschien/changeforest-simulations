@@ -44,7 +44,7 @@ def main(file, n_seeds, seed_start):
         for dataset in datasets:
             for n_trees in [20, 100, 500]:
                 for max_depth in [2, 8, None]:
-                    for mtry in [1, "sqrt", None]:
+                    for mtry in [1, "default", None]:
                         method = f"changeforest_bs__random_forest_n_estimators={n_trees}__random_forest_max_depth={max_depth}__random_forest_max_features={mtry}"
                         benchmark(method, dataset, seed, file_path=file_path)
 
