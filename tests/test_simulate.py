@@ -3,7 +3,7 @@ import pytest
 
 from changeforest_simulations import simulate
 from changeforest_simulations._load import load_iris, load_letters
-from changeforest_simulations._simulate import simulate_from_data
+from changeforest_simulations._simulate import normalize, simulate_from_data
 
 
 @pytest.mark.parametrize(
@@ -66,3 +66,14 @@ def test_simulate_with_segment_sizes(load, segment_sizes):
     )
 
     assert time_series.shape[0] == sum(segment_sizes)
+
+
+def test_normalize():
+    rng = np.random.default_rng(0)
+    X = rng.normal(0, 1, (1000, 3))
+    X[:, 1] = X[:, 1] * 2.0
+    X[:, 2] = X[:, 2] / 10.0
+
+    X_normalized = normalize(X)
+
+    np.testing.assert_almost_equal(np.std(X_normalized, axis=0), [1, 1, 1], decimal=1)
