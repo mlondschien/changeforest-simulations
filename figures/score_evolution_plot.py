@@ -14,7 +14,7 @@ from changeforest_simulations.constants import (
     METHOD_RENAMING,
 )
 
-output_path = Path(__file__).parents[1].absolute() / "score_evolution_output"
+_OUTPUT_PATH = Path(__file__).parents[1].absolute() / "output" / "score_evolution"
 figures_path = Path(__file__).parent
 
 plt.rc("axes", prop_cycle=cycler(color=list(COLOR_CYCLE)))
@@ -24,9 +24,12 @@ plt.rcParams.update({"font.size": FIGURE_FONT_SIZE})
 @click.command()
 @click.option("--file", default=None)
 def main(file):
+    _OUTPUT_PATH.mkdir(exist_ok=True)
+
     files = []
-    files.extend(output_path.glob(f"{file}_dirichlet_*.csv"))
-    files.extend(output_path.glob(f"{file}_dry-beans-noise_*.csv"))
+    files.extend(_OUTPUT_PATH.glob(f"{file}_dirichlet_*.csv"))
+    files.extend(_OUTPUT_PATH.glob(f"{file}_dry-beans-noise_*.csv"))
+
     df = pd.concat([pd.read_csv(f) for f in files], axis=0)
 
     df["n_segments"] = (

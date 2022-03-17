@@ -8,7 +8,7 @@ import click
 
 from changeforest_simulations import HEADER, benchmark
 
-_OUTPUT_FOLDER = Path(__file__).parents[1].absolute() / "output"
+_OUTPUT_FOLDER = Path(__file__).parents[1].absolute() / "output" / "main"
 logger = logging.getLogger(__file__)
 
 
@@ -19,6 +19,7 @@ logger = logging.getLogger(__file__)
 @click.option("--datasets", default=None, help="Datasets to benchmark. All if None.")
 @click.option("--file", default=None, help="Filename to use.")
 def main(n_seeds, seed_start, methods, datasets, file):
+    _OUTPUT_FOLDER.mkdir(exist_ok=True)
 
     logging.basicConfig(level=logging.INFO)
 

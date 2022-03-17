@@ -8,7 +8,7 @@ import click
 
 from changeforest_simulations import HEADER, benchmark
 
-_OUTPUT_FOLDER = Path(__file__).parents[1].absolute() / "output_no_change"
+_OUTPUT_FOLDER = Path(__file__).parents[1].absolute() / "output" / "false_positive"
 logger = logging.getLogger(__file__)
 
 

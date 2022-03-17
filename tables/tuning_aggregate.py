@@ -10,7 +10,7 @@ import pandas as pd
 from changeforest_simulations.constants import DATASET_ORDERING, DATASET_RENAMING
 from changeforest_simulations.utils import string_to_kwargs
 
-_OUTPUT_PATH = Path(__file__).parents[1].absolute() / "output_tuning"
+_OUTPUT_PATH = Path(__file__).parents[1].absolute() / "output" / "tuning"
 
 
 @click.command()

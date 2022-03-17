@@ -13,7 +13,7 @@ from changeforest_simulations.constants import (
     METHOD_RENAMING,
 )
 
-_OUTPUT_PATH = Path(__file__).parents[1].absolute() / "output_no_change"
+_OUTPUT_PATH = Path(__file__).parents[1].absolute() / "output" / "no_change"
 
 
 @click.command()

@@ -8,7 +8,7 @@ import click
 
 from changeforest_simulations import HEADER, benchmark
 
-_OUTPUT_FOLDER = Path(__file__).parents[1].absolute() / "output_tuning"
+_OUTPUT_FOLDER = Path(__file__).parents[1].absolute() / "output" / "tuning"
 logger = logging.getLogger(__file__)
 
 
