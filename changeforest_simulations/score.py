@@ -37,11 +37,12 @@ def hausdorff_distance(true_changepoints, estimated_changepoints):
 
     This is the maximum distance from a true changepoint to its closest estimated
     counterpart."""
+    n = true_changepoints[-1]
     distances = cdist(
         np.array(estimated_changepoints).reshape(-1, 1),
         np.array(true_changepoints).reshape(-1, 1),
     )
-    return distances.min(axis=0).max()
+    return distances.min(axis=0).max() / n
 
 
 def symmetric_hausdorff_distance(true_changepoints, estimated_changepoints):
