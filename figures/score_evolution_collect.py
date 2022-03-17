@@ -8,7 +8,7 @@ import click
 
 from changeforest_simulations import HEADER, benchmark
 
-_OUTPUT_FOLDER = Path(__file__).parents[1].absolute() / "score_evolution_output"
+_OUTPUT_FOLDER = Path(__file__).parents[1].absolute() / "output" / "score_evolution"
 logger = logging.getLogger(__file__)
 
 
@@ -19,6 +19,7 @@ logger = logging.getLogger(__file__)
 @click.option("--dataset", default=None, help="Datasets to use.")
 @click.option("--append", is_flag=True, help="Don't raise if csv already exists.")
 def main(n_seeds, seed_start, file, dataset, append):
+    _OUTPUT_FOLDER.mkdir(exist_ok=True)
 
     method_list = [
         "changeforest_bs",
