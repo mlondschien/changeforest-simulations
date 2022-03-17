@@ -8,6 +8,8 @@ from matplotlib import pyplot as plt
 
 from changeforest_simulations.constants import (
     COLOR_CYCLE,
+    FIGURE_FONT_SIZE,
+    FIGURE_WIDTH,
     METHOD_ORDERING,
     METHOD_RENAMING,
 )
@@ -16,7 +18,7 @@ output_path = Path(__file__).parents[1].absolute() / "score_evolution_output"
 figures_path = Path(__file__).parent
 
 plt.rc("axes", prop_cycle=cycler(color=list(COLOR_CYCLE)))
-plt.rcParams.update({"font.size": 12})
+plt.rcParams.update({"font.size": FIGURE_FONT_SIZE})
 
 
 @click.command()
@@ -58,10 +60,10 @@ def main(file):
             lambda x: pd.Series(
                 {
                     "mean_score": x["score"].mean(),
-                    "sd_score": x["score"].std() / np.sqrt(len(x)),
+                    "sd_score": 2 * x["score"].std() / np.sqrt(len(x)),
                     "median_score": x["score"].median(),
                     "mean_time": x["time"].mean(),
-                    "sd_time": x["time"].std() / np.sqrt(len(x)),
+                    "sd_time": 2 * x["time"].std() / np.sqrt(len(x)),
                     "mean_n_cpts": x["n_cpts"].mean(),
                     "n": x["seed"].count(),
                 }
@@ -70,8 +72,10 @@ def main(file):
         .reset_index()
     )
 
-    segments = [10, 20, 40, 80]
-    fig, axes = plt.subplots(ncols=len(segments), nrows=3, figsize=(16, 11))
+    segments = [20, 80]
+    fig, axes = plt.subplots(
+        ncols=len(segments), nrows=2, figsize=(FIGURE_WIDTH, FIGURE_WIDTH * 2 / 3)
+    )
 
     for idx, n_segments in enumerate(segments):
         df_plot = df[df["n_segments"].eq(n_segments)].sort_values("n_observations")
@@ -93,35 +97,24 @@ def main(file):
                 yerr=df_dry_beans["sd_score"],
                 label=method,
             )
-            axes[2, idx].errorbar(
-                df_dry_beans["n_observations"],
-                df_dry_beans["mean_time"],
-                yerr=df_dry_beans["sd_time"],
-                label=method,
-            )
 
-        axes[0, idx].set_title(f"{n_segments} segments")
+        axes[0, idx].set_title(f"{n_segments} segments", {"size": 16})
         axes[0, idx].set_xscale("log")
         # Expand range between ~0.8 - 1.
         axes[0, idx].set_yscale("function", functions=(np.exp, np.log))
 
         axes[1, idx].set_xscale("log")
         axes[1, idx].set_yscale("function", functions=(np.exp, np.log))
-
-        axes[2, idx].set_xlabel("n")
-        axes[2, idx].set_xscale("log")
-        axes[2, idx].set_yscale("log")
+        axes[1, idx].set_xlabel("sample size (n)")
 
     axes[-1, -1].legend(loc="lower right")
     axes[0, 0].set_ylabel("avg. adj. Rand index")
     axes[1, 0].set_ylabel("avg. adj. Rand index")
-    axes[2, 0].set_ylabel("time (s)")
 
     plt.figtext(0.485, 0.97, "dirichlet", {"size": 18})
-    plt.figtext(0.48, 0.644, "dry beans", {"size": 18})
-    plt.figtext(0.48, 0.326, "dry beans", {"size": 18})
+    plt.figtext(0.48, 0.478, "dry beans", {"size": 18})
     plt.tight_layout()
-    plt.subplots_adjust(top=0.94, hspace=0.28)
+    plt.subplots_adjust(top=0.92, hspace=0.2)
     plt.savefig(figures_path / "evolution_by_n_observations.eps", dpi=300)
     plt.savefig(figures_path / "evolution_by_n_observations.png", dpi=300)
 
