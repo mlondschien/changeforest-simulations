@@ -17,29 +17,37 @@ logger = logging.getLogger(__file__)
 @click.option("--seed-start", default=0, help="Seed from which to start iteration.")
 @click.option("--file", default=None, help="Filename to use.")
 @click.option("--dataset", default=None, help="Datasets to use.")
-def main(n_seeds, seed_start, file, dataset):
+@click.option("--append", is_flag=True, help="Don't raise if csv already exists.")
+def main(n_seeds, seed_start, file, dataset, append):
 
     method_list = [
         "changeforest_bs",
-        "changeforest_bs__random_forest_n_trees=20",
-        "changeforest_bs__random_forest_n_trees=500",
         "changekNN_bs",
         "change_in_mean_bs",
         "ecp",
         "multirank",
         "kernseg_rbf",
     ]
-    n_segments_list = [5, 10, 20, 40, 80, 160]
+    n_segments_list = [20, 80]
     n_observations_list = [
         250,
+        353,
         500,
+        707,
         1000,
+        1414,
         2000,
+        2828,
         4000,
+        5656,
         8000,
+        11313,
         16000,
+        22627,
         32000,
+        45254,
         64000,
+        90509,
         128000,
     ]
 
@@ -47,8 +55,6 @@ def main(n_seeds, seed_start, file, dataset):
         dataset_list = [
             "dirichlet",
             "dry-beans-noise",
-            "breast-cancer-noise",
-            "wine-noise",
         ]
     else:
         dataset_list = [dataset]
@@ -57,9 +63,8 @@ def main(n_seeds, seed_start, file, dataset):
 
         logging.basicConfig(level=logging.INFO)
         file_path = _OUTPUT_FOLDER / f"{file}_{dataset}_{seed}.csv"
-        if file_path.exists():
-            # raise ValueError(f"File {file_path} already exists.")
-            pass
+        if file_path.exists() and not append:
+            raise ValueError(f"File {file_path} already exists.")
         else:
             file_path.write_text(HEADER)
         logger.info(f"Writing results to {file_path}.")
@@ -69,11 +74,11 @@ def main(n_seeds, seed_start, file, dataset):
                 for n_observations in n_observations_list:
                     dataset_name = f"{dataset}__n_segments={n_segments}__n_observations={n_observations}"
                     for method in method_list:
-                        if method in ["ecp", "multirank"] and n_observations >= 16000:
+                        if method in ["ecp", "multirank"] and n_observations > 16000:
                             continue
-                        if method == "changekNN_bs" and n_observations >= 32000:
+                        if method == "changekNN_bs" and n_observations > 32000:
                             continue
-                        if method == "kernseg_rbf" and n_observations >= 64000:
+                        if method == "kernseg_rbf" and n_observations > 64000:
                             continue
 
                         benchmark(method, dataset_name, seed, file_path=file_path)
