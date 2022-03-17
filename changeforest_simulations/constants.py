@@ -49,3 +49,6 @@ COLOR_CYCLE = [
     COLORS["yellow"],  # KCP (rbf)
     COLORS["green"],  # MultiRank
 ]
+
+FIGURE_FONT_SIZE = 12
+FIGURE_WIDTH = 12
