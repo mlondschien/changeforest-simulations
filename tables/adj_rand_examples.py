@@ -1,4 +1,5 @@
 from changeforest_simulations import adjusted_rand_score
+from changeforest_simulations.score import symmetric_hausdorff_distance
 
 for true_changepoints, estimated_changepoints, comment in [
     # ([0, 50, 100, 150], [0, 50, 100, 150]),
@@ -29,5 +30,5 @@ for true_changepoints, estimated_changepoints, comment in [
     ([0, 17, 46, 55, 68, 144, 214], [0, 214], "no segmentation"),
 ]:
     print(
-        f"{', '.join(map(str, true_changepoints))} & {', '.join(map(str, estimated_changepoints))} & {adjusted_rand_score(true_changepoints, estimated_changepoints):.2f} & {comment} \\\\"
+        f"{', '.join(map(str, true_changepoints))} & {', '.join(map(str, estimated_changepoints))} & {adjusted_rand_score(true_changepoints, estimated_changepoints):.2f} & {symmetric_hausdorff_distance(true_changepoints, estimated_changepoints):.3f} & {comment} \\\\"
     )
