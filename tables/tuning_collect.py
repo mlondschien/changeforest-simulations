@@ -16,7 +16,8 @@ logger = logging.getLogger(__file__)
 @click.option("--file", default=None, help="Filename to use.")
 @click.option("--n-seeds", default=100, help="Number of seeds to use for simulation.")
 @click.option("--seed-start", default=0, help="Seed from which to start iteration.")
-def main(file, n_seeds, seed_start):
+@click.option("--append", is_flag=True, help="Don't raise if csv already exists.")
+def main(file, n_seeds, seed_start, append):
     _OUTPUT_FOLDER.mkdir(exist_ok=True)
 
     logging.basicConfig(level=logging.INFO)
@@ -35,7 +36,7 @@ def main(file, n_seeds, seed_start):
 
     for seed in range(seed_start, seed_start + n_seeds):
         file_path = _OUTPUT_FOLDER / f"{file}_{seed}.csv"
-        if file_path.exists():
+        if file_path.exists() and not append:
             raise ValueError(f"File {file_path} already exists.")
         else:
             file_path.write_text(HEADER)

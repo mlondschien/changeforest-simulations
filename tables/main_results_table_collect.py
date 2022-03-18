@@ -18,7 +18,8 @@ logger = logging.getLogger(__file__)
 @click.option("--methods", default=None, help="Methods to benchmark. All if None.")
 @click.option("--datasets", default=None, help="Datasets to benchmark. All if None.")
 @click.option("--file", default=None, help="Filename to use.")
-def main(n_seeds, seed_start, methods, datasets, file):
+@click.option("--append", is_flag=True, help="Don't raise if csv already exists.")
+def main(n_seeds, seed_start, methods, datasets, file, append):
     _OUTPUT_FOLDER.mkdir(exist_ok=True)
 
     logging.basicConfig(level=logging.INFO)
@@ -54,7 +55,7 @@ def main(n_seeds, seed_start, methods, datasets, file):
     for seed in range(seed_start, seed_start + n_seeds):
 
         file_path = _OUTPUT_FOLDER / f"{file}_{seed}.csv"
-        if file_path.exists():
+        if file_path.exists() and not append:
             raise ValueError(f"File {file_path} already exists.")
         else:
             file_path.write_text(HEADER)
