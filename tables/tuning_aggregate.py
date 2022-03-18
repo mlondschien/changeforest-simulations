@@ -41,8 +41,9 @@ def main(file):
             lambda x: f"{x['mean'].mean():.3f} ({np.sqrt(x['std'].pow(2).mean()):.3f})"
         )
     )
-    df_score[("score", "mean")] = df_mean
-    to_latex(df_score)
+    df_score[("score", "average")] = df_mean
+    print("\n" + "#" * 50 + "\nScore\n" + "#" * 50 + "\n")
+    to_latex(df_score, split=True)
 
     df_time = (
         df.groupby(["dataset"] + parameters)["time"]
@@ -50,16 +51,21 @@ def main(file):
         .reset_index()
         .pivot(index=parameters, columns=["dataset"])
     )
-
+    print("\n" + "#" * 50 + "\nTime\n" + "#" * 50 + "\n")
     to_latex(df_time)
 
 
-def to_latex(df):
+def to_latex(df, split=False):
     df.columns = df.columns.get_level_values(level=1)
     df = df.rename(columns=DATASET_RENAMING, copy=False)
     df = df[[x for x in DATASET_ORDERING if x in df]]
-    print(df)
-    print(df.to_latex())
+
+    if split:
+        print(df[df.columns[:5]].to_latex())
+        print(df[df.columns[5:]].to_latex())
+
+    else:
+        print(df.to_latex())
 
 
 def fmt(x):
