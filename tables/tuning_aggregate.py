@@ -41,7 +41,7 @@ def main(file):
             lambda x: f"{x['mean'].mean():.3f} ({np.sqrt(x['std'].pow(2).mean()):.3f})"
         )
     )
-    df_score[("score", "mean")] = df_mean
+    df_score[("score", "average")] = df_mean
     print("\n" + "#" * 50 + "\nScore\n" + "#" * 50 + "\n")
     to_latex(df_score, split=True)
 
