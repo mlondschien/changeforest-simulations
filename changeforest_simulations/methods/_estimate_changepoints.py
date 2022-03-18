@@ -50,11 +50,9 @@ def estimate_changepoints(X, method, minimal_relative_segment_length, **kwargs):
             X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
         )
     elif method == "change_in_mean_bs":
-        minimal_gain_to_split = np.log(X.shape[0]) * (1 + X.shape[1]) / X.shape[0]
         return change_in_mean_bs(
             X,
             minimal_relative_segment_length=minimal_relative_segment_length,
-            minimal_gain_to_split=minimal_gain_to_split,
             **kwargs,
         )
     elif method == "change_in_mean_sbs":
