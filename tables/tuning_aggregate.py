@@ -60,9 +60,6 @@ def to_latex(df, split=False):
     df = df.rename(columns=DATASET_RENAMING, copy=False)
     df = df[[x for x in DATASET_ORDERING if x in df]]
 
-    # df = df.rename(METHOD_RENAMING)
-    # df = df.reindex(METHOD_ORDERING, axis=0)
-
     if split:
         print(df[df.columns[:5]].to_latex())
         print(df[df.columns[5:]].to_latex())
