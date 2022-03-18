@@ -7,7 +7,12 @@ import click
 import numpy as np
 import pandas as pd
 
-from changeforest_simulations.constants import DATASET_ORDERING, DATASET_RENAMING
+from changeforest_simulations.constants import (
+    DATASET_ORDERING,
+    DATASET_RENAMING,
+    METHOD_ORDERING,
+    METHOD_RENAMING,
+)
 from changeforest_simulations.utils import string_to_kwargs
 
 _OUTPUT_PATH = Path(__file__).parents[1].absolute() / "output" / "tuning"
@@ -42,7 +47,8 @@ def main(file):
         )
     )
     df_score[("score", "mean")] = df_mean
-    to_latex(df_score)
+    print("#" * 20 + "\nScore\n" + "# * 20")
+    to_latex(df_score, split=True)
 
     df_time = (
         df.groupby(["dataset"] + parameters)["time"]
@@ -50,16 +56,24 @@ def main(file):
         .reset_index()
         .pivot(index=parameters, columns=["dataset"])
     )
-
+    print("#" * 20 + "\nTime\n" + "# * 20")
     to_latex(df_time)
 
 
-def to_latex(df):
+def to_latex(df, split=False):
     df.columns = df.columns.get_level_values(level=1)
     df = df.rename(columns=DATASET_RENAMING, copy=False)
     df = df[[x for x in DATASET_ORDERING if x in df]]
-    print(df)
-    print(df.to_latex())
+
+    df = df.rename(METHOD_RENAMING)
+    df = df.reindex(METHOD_ORDERING, axis=0)
+
+    if split:
+        print(df[df.columns[:5]].to_latex())
+        print(df[df.columns[5:]].to_latex())
+
+    else:
+        print(df.to_latex())
 
 
 def fmt(x):
