@@ -64,8 +64,9 @@ def main(n_seeds, seed_start, file, dataset, append):
 
         logging.basicConfig(level=logging.INFO)
         file_path = _OUTPUT_FOLDER / f"{file}_{dataset}_{seed}.csv"
-        if file_path.exists() and not append:
-            raise ValueError(f"File {file_path} already exists.")
+        if file_path.exists():
+            if not append:
+                raise ValueError(f"File {file_path} already exists.")
         else:
             file_path.write_text(HEADER)
         logger.info(f"Writing results to {file_path}.")

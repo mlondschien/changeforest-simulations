@@ -33,8 +33,9 @@ def main(file, n_seeds, seed_start, append):
 
     for seed in range(seed_start, seed_start + n_seeds):
         file_path = _OUTPUT_FOLDER / f"{file}_{seed}.csv"
-        if file_path.exists() and not append:
-            raise ValueError(f"File {file_path} already exists.")
+        if file_path.exists():
+            if not append:
+                raise ValueError(f"File {file_path} already exists.")
         else:
             file_path.write_text(HEADER)
 
