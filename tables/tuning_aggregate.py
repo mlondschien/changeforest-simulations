@@ -42,7 +42,7 @@ def main(file):
         )
     )
     df_score[("score", "mean")] = df_mean
-    print("#" * 20 + "\nScore\n" + "# * 20")
+    print("\n" + "#" * 50 + "\nScore\n" + "#" * 50 + "\n")
     to_latex(df_score, split=True)
 
     df_time = (
@@ -51,7 +51,7 @@ def main(file):
         .reset_index()
         .pivot(index=parameters, columns=["dataset"])
     )
-    print("#" * 20 + "\nTime\n" + "# * 20")
+    print("\n" + "#" * 50 + "\nTime\n" + "#" * 50 + "\n")
     to_latex(df_time)
 
 
