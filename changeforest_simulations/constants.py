@@ -50,5 +50,5 @@ COLOR_CYCLE = [
     COLORS["green"],  # MultiRank
 ]
 
-FIGURE_FONT_SIZE = 12
+FIGURE_FONT_SIZE = 14
 FIGURE_WIDTH = 12
