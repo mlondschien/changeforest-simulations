@@ -19,7 +19,7 @@ from changeforest_simulations import estimate_changepoints, simulate
         # "kernseg",
         "kernseg_rbf",
         "kernseg_linear",
-        # "kcprs",
+        "decon",
         # "mnwbs"  # mnwbs takes 5-10s on iris.
     ],
 )

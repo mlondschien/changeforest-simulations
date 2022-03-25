@@ -2,7 +2,7 @@ from rpy2.robjects import default_converter, numpy2ri, r
 from rpy2.robjects.conversion import localconverter
 
 
-def kcprs(X, minimal_relative_segment_length):
+def decon(X, minimal_relative_segment_length):
     min_size = int(minimal_relative_segment_length * X.shape[0])
     Kmax = int(1 / minimal_relative_segment_length)
 
