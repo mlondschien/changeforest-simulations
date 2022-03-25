@@ -21,6 +21,7 @@ from changeforest_simulations import estimate_changepoints, simulate
         "kernseg_linear",
         # "kcprs",
         # "mnwbs"  # mnwbs takes 5-10s on iris.
+        "rulsif",
     ],
 )
 def test_method(method):
