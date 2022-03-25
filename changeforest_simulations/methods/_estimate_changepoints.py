@@ -13,6 +13,7 @@ from .changeforest import (
 )
 from .ecp import ecp
 from .kcprs import kcprs
+from .mnwbs._mnwbs import mnwbs
 from .multirank.dynkw import autoDynKWRupt
 from .ruptures import kernseg_cosine, kernseg_linear, kernseg_rbf
 
@@ -80,6 +81,10 @@ def estimate_changepoints(X, method, minimal_relative_segment_length, **kwargs):
         )
     elif method == "kcprs":
         return kcprs(
+            X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
+        )
+    elif method == "mnwbs":
+        return mnwbs(
             X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
         )
     else:
