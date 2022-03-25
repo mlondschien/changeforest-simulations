@@ -52,3 +52,5 @@ COLOR_CYCLE = [
 
 FIGURE_FONT_SIZE = 14
 FIGURE_WIDTH = 12
+DOTTED_LINEWIDTH = 2.5
+X_MARKER_KWARGS = {"marker": "x", "color": COLORS["green"], "linewidth": 10, "s": 2}

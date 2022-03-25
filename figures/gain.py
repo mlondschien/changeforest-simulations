@@ -4,7 +4,12 @@ from matplotlib import pyplot as plt
 from sklearn.neighbors import KNeighborsClassifier
 
 from changeforest_simulations import simulate
-from changeforest_simulations.constants import COLORS, FIGURE_FONT_SIZE, FIGURE_WIDTH
+from changeforest_simulations.constants import (
+    COLORS,
+    DOTTED_LINEWIDTH,
+    FIGURE_FONT_SIZE,
+    FIGURE_WIDTH,
+)
 
 alpha, X = simulate("change_in_covariance", seed=2)
 n = X.shape[0]
@@ -76,17 +81,27 @@ axes[0].vlines(
     ymax=np.nanmax(rf_gain_curve),
     linestyles="dotted",
     color=red,
+    linewidth=DOTTED_LINEWIDTH,
 )
 ymin, _ = axes[0].get_ylim()
-axes[0].plot(alpha[1:-1], [ymin] * (len(alpha) - 2), "x", color=green)
+axes[0].scatter(
+    alpha[1:-1], [ymin] * (len(alpha) - 2), marker="x", s=2, color=green, linewidth=10
+)
 axes[0].set_xlabel("split")
 axes[0].set_ylabel("gain")
 
 axes[1].plot(range(n), knn_gain_curve, "k")
 ymin, ymax = axes[1].get_ylim()
-axes[1].plot(alpha[1:-1], [ymin] * (len(alpha) - 2), "x", color=green)
+axes[1].scatter(
+    alpha[1:-1], [ymin] * (len(alpha) - 2), marker="x", s=2, color=green, linewidth=10
+)
 axes[1].vlines(
-    np.nanargmax(knn_gain_curve), ymin=ymin, ymax=ymax, linestyles="dotted", color=red
+    np.nanargmax(knn_gain_curve),
+    ymin=ymin,
+    ymax=ymax,
+    linestyles="dotted",
+    color=red,
+    linewidth=DOTTED_LINEWIDTH,
 )
 axes[1].set_xlabel("split")
 # axes[1].set_ylabel("gain")
