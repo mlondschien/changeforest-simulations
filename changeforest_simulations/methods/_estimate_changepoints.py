@@ -11,8 +11,8 @@ from .changeforest import (
     changekNN_bs,
     changekNN_sbs,
 )
+from .decon import decon
 from .ecp import ecp
-from .kcprs import kcprs
 from .multirank.dynkw import autoDynKWRupt
 from .ruptures import kernseg_cosine, kernseg_linear, kernseg_rbf
 
@@ -78,8 +78,8 @@ def estimate_changepoints(X, method, minimal_relative_segment_length, **kwargs):
         return kernseg_cosine(
             X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
         )
-    elif method == "kcprs":
-        return kcprs(
+    elif method == "decon":
+        return decon(
             X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
         )
     else:
