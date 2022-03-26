@@ -38,7 +38,7 @@ ymin_proba = -0.05
 ymax_proba = 1.05
 proba_range = (-0.1, 1.1)
 
-fig, axes = plt.subplots(nrows=4, ncols=2, figsize=(FIGURE_WIDTH, FIGURE_WIDTH / 2))
+fig, axes = plt.subplots(nrows=4, ncols=2, figsize=(FIGURE_WIDTH, FIGURE_WIDTH * 2 / 3))
 
 for idx in range(4):
     axes[idx, 0].plot(range(n), gain_results[idx].gain, color="k")
@@ -77,7 +77,10 @@ for idx in range(4):
         alpha[1:-1], [ymin_proba] * (len(alpha) - 2), **X_MARKER_KWARGS
     )
     axes[idx, 1].scatter(range(n), gain_results[idx].predictions, s=2, c="k")
-    axes[idx, 1].set_ylabel("probability\npredictions")
+    axes[idx, 1].set_ylabel("proba. predictions")
+    if idx < 3:
+        axes[idx, 0].set_xticklabels([])
+        axes[idx, 1].set_xticklabels([])
 
 axes[-1, 0].set_xlabel("split")
 axes[-1, 1].set_xlabel("t")
@@ -141,9 +144,7 @@ ymax = 1.05
 axes[1].vlines(
     s, ymin=ymin, ymax=ymax, linestyles="dashed", color=blue, linewidth=DOTTED_LINEWIDTH
 )
-axes[1].plot(
-    alpha[1:-1], [ymin] * (len(alpha) - 2), "x", color=green, linewidth=DOTTED_LINEWIDTH
-)
+axes[1].scatter(alpha[1:-1], [ymin] * (len(alpha) - 2), **X_MARKER_KWARGS)
 
 plt.tight_layout()
 plt.savefig("figures/two_step_search_biased.eps", dpi=300)
