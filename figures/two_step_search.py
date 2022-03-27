@@ -4,7 +4,13 @@ from changeforest import Control, changeforest
 from matplotlib import pyplot as plt
 
 from changeforest_simulations import simulate
-from changeforest_simulations.constants import COLORS, FIGURE_FONT_SIZE, FIGURE_WIDTH
+from changeforest_simulations.constants import (
+    COLORS,
+    DOTTED_LINEWIDTH,
+    FIGURE_FONT_SIZE,
+    FIGURE_WIDTH,
+    X_MARKER_KWARGS,
+)
 
 red = COLORS["red"]
 green = COLORS["green"]
@@ -32,7 +38,7 @@ ymin_proba = -0.05
 ymax_proba = 1.05
 proba_range = (-0.1, 1.1)
 
-fig, axes = plt.subplots(nrows=4, ncols=2, figsize=(FIGURE_WIDTH, FIGURE_WIDTH / 2))
+fig, axes = plt.subplots(nrows=4, ncols=2, figsize=(FIGURE_WIDTH, FIGURE_WIDTH * 2 / 3))
 
 for idx in range(4):
     axes[idx, 0].plot(range(n), gain_results[idx].gain, color="k")
@@ -44,6 +50,7 @@ for idx in range(4):
         ymax=ymax_gain,
         linestyles="dashed",
         color=blue,
+        linewidth=DOTTED_LINEWIDTH,
     )
     axes[idx, 0].vlines(
         np.nanargmax(gain_results[idx].gain),
@@ -51,8 +58,9 @@ for idx in range(4):
         ymax=ymax_gain,
         linestyles="dotted",
         color=red,
+        linewidth=DOTTED_LINEWIDTH,
     )
-    axes[idx, 0].plot(alpha[1:-1], [ymin_gain] * (len(alpha) - 2), "x", color=green)
+    axes[idx, 0].scatter(alpha[1:-1], [ymin_gain] * (len(alpha) - 2), **X_MARKER_KWARGS)
     axes[idx, 0].set_ylabel("approx. gain")
 
     axes[idx, 1].set_ylim(*proba_range)
@@ -62,11 +70,17 @@ for idx in range(4):
         ymax=ymax_proba,
         linestyles="dashed",
         color=blue,
+        linewidth=DOTTED_LINEWIDTH,
     )
 
-    axes[idx, 1].plot(alpha[1:-1], [ymin_proba] * (len(alpha) - 2), "x", color=green)
+    axes[idx, 1].scatter(
+        alpha[1:-1], [ymin_proba] * (len(alpha) - 2), **X_MARKER_KWARGS
+    )
     axes[idx, 1].scatter(range(n), gain_results[idx].predictions, s=2, c="k")
-    axes[idx, 1].set_ylabel("probability\npredictions")
+    axes[idx, 1].set_ylabel("proba. predictions")
+    if idx < 3:
+        axes[idx, 0].set_xticklabels([])
+        axes[idx, 1].set_xticklabels([])
 
 axes[-1, 0].set_xlabel("split")
 axes[-1, 1].set_xlabel("t")
@@ -106,10 +120,17 @@ gain = log_likelihoods[1, :].sum() + np.concatenate(
 axes[0].plot(range(n), gain, "k")
 ymin, ymax = axes[0].get_ylim()
 # axes[0].vlines(alpha[1:-1], ymin=ymin, ymax=ymax, color=green)
-axes[0].plot(alpha[1:-1], [ymin] * (len(alpha) - 2), "x", color=green)
-axes[0].vlines(s, ymin=ymin, ymax=ymax, linestyles="dashed", color=blue)
+axes[0].scatter(alpha[1:-1], [ymin] * (len(alpha) - 2), **X_MARKER_KWARGS)
 axes[0].vlines(
-    np.nanargmax(gain), ymin=ymin, ymax=ymax, linestyles="dotted", color=red,
+    s, ymin=ymin, ymax=ymax, linestyles="dashed", color=blue, linewidth=DOTTED_LINEWIDTH
+)
+axes[0].vlines(
+    np.nanargmax(gain),
+    ymin=ymin,
+    ymax=ymax,
+    linestyles="dotted",
+    color=red,
+    linewidth=DOTTED_LINEWIDTH,
 )
 axes[0].set_ylabel("approx. gain")
 axes[0].set_xlabel("split")
@@ -120,8 +141,10 @@ axes[1].set_xlabel("t")
 axes[1].set_ylim(-0.1, 1.1)
 ymin = -0.05
 ymax = 1.05
-axes[1].vlines(s, ymin=ymin, ymax=ymax, linestyles="dashed", color=blue)
-axes[1].plot(alpha[1:-1], [ymin] * (len(alpha) - 2), "x", color=green)
+axes[1].vlines(
+    s, ymin=ymin, ymax=ymax, linestyles="dashed", color=blue, linewidth=DOTTED_LINEWIDTH
+)
+axes[1].scatter(alpha[1:-1], [ymin] * (len(alpha) - 2), **X_MARKER_KWARGS)
 
 plt.tight_layout()
 plt.savefig("figures/two_step_search_biased.eps", dpi=300)

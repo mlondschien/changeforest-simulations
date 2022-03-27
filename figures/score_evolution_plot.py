@@ -24,13 +24,7 @@ plt.rcParams.update({"font.size": FIGURE_FONT_SIZE})
 @click.command()
 @click.option("--file", default=None)
 def main(file):
-    _OUTPUT_PATH.mkdir(exist_ok=True)
-
-    files = []
-    files.extend(_OUTPUT_PATH.glob(f"{file}_dirichlet_*.csv"))
-    files.extend(_OUTPUT_PATH.glob(f"{file}_dry-beans-noise_*.csv"))
-
-    df = pd.concat([pd.read_csv(f) for f in files], axis=0)
+    df = pd.concat([pd.read_csv(f) for f in _OUTPUT_PATH.glob(f"{file}_*.csv")], axis=0)
 
     df["n_segments"] = (
         df["dataset"]
@@ -46,16 +40,18 @@ def main(file):
         .astype(int)
     )
 
+    df = df[lambda x: x["n_observations"] <= 64000]
+
     df["dataset"] = df["dataset"].str.split("__").str[0]
     df["method"] = df["method"].replace(METHOD_RENAMING)
     df = df[lambda x: x["method"].isin(METHOD_ORDERING)]
 
-    duplicates = df[
-        ["dataset", "method", "seed", "n_segments", "n_observations"]
-    ].duplicated()
-    if duplicates.any():
-        print(f"There were {duplicates.sum()} duplicates:")
-        df = df[~duplicates]
+    index_columns = ["dataset", "method", "n_segments", "n_observations"]
+    if df[index_columns + ["seed"]].duplicated().any():
+        raise ValueError("There were duplicates.")
+
+    if not df.groupby(index_columns).size().eq(500).all():
+        raise ValueError("Not 500 unique seeds per combination.")
 
     df = (
         df.groupby(["dataset", "method", "n_observations", "n_segments"])
@@ -76,9 +72,9 @@ def main(file):
     )
 
     segments = [20, 80]
-    fig, axes = plt.subplots(
-        ncols=len(segments), nrows=2, figsize=(FIGURE_WIDTH, FIGURE_WIDTH * 2 / 3)
-    )
+    figsize = (FIGURE_WIDTH, FIGURE_WIDTH * 2 / 3)
+
+    _, axes = plt.subplots(ncols=len(segments), nrows=2, figsize=figsize)
 
     for idx, n_segments in enumerate(segments):
         df_plot = df[df["n_segments"].eq(n_segments)].sort_values("n_observations")
@@ -115,11 +111,69 @@ def main(file):
     axes[1, 0].set_ylabel("avg. adj. Rand index")
 
     plt.figtext(0.485, 0.97, "dirichlet", {"size": 18})
-    plt.figtext(0.48, 0.478, "dry beans", {"size": 18})
+    plt.figtext(0.48, 0.482, "dry beans", {"size": 18})
     plt.tight_layout()
     plt.subplots_adjust(top=0.92, hspace=0.2)
     plt.savefig(figures_path / "evolution_by_n_observations.eps", dpi=300)
     plt.savefig(figures_path / "evolution_by_n_observations.png", dpi=300)
+
+    figsize = (FIGURE_WIDTH, FIGURE_WIDTH * 0.4)
+    _, axes = plt.subplots(ncols=len(segments), nrows=1, figsize=figsize)
+
+    min_time = df.loc[lambda x: x["dataset"].eq("dirichlet"), "mean_time"].min()
+    max_time = df.loc[lambda x: x["dataset"].eq("dirichlet"), "mean_time"].max()
+    ymin = np.exp(np.log(min_time) - 0.1 * np.log(max_time / min_time))
+    ymax = np.exp(np.log(max_time) + 0.1 * np.log(max_time / min_time))
+
+    for idx, n_segments in enumerate(segments):
+        df_plot = df[df["n_segments"].eq(n_segments) & df["dataset"].eq("dirichlet")]
+
+        for method in METHOD_ORDERING:
+            df_method = df_plot[lambda x: x["method"].eq(method)]
+
+            axes[idx].plot(
+                df_method["n_observations"],
+                df_method["mean_time"],
+                # yerr=df_method["sd_time"],
+                label=method,
+            )
+
+        axes[idx].set_title(f"{n_segments} segments", {"size": 16})
+        axes[idx].set_xscale("log")
+        axes[idx].set_yscale("log")
+        axes[idx].set_xlabel("sample size (n)")
+        axes[idx].set_ylim(ymin, ymax)
+
+    axes[-1].legend(loc="lower right")
+    # axes[1].set_yticklabels([])
+    axes[0].set_ylabel("time (s)")
+    plt.figtext(0.485, 0.95, "dirichlet", {"size": 18})
+    plt.tight_layout()
+    plt.subplots_adjust(top=0.88)
+    plt.savefig(figures_path / "evolution_time.eps", dpi=300)
+    plt.savefig(figures_path / "evolution_time.png", dpi=300)
+
+    df_display = (
+        df.groupby(["method", "dataset", "n_segments"])
+        .apply(
+            lambda x: pd.DataFrame(
+                {
+                    "threshold": [0.8, 0.95],
+                    "val": [
+                        x.loc[lambda x: x["mean_score"] > thr, "n_observations"].min()
+                        / x["n_segments"].min()
+                        for thr in [0.8, 0.95]
+                    ],
+                }
+            )
+        )
+        .reset_index()
+    ).drop(columns="level_3")
+    print(
+        df_display.pivot(
+            index=["method", "threshold"], columns=["dataset", "n_segments"]
+        )
+    )
 
 
 if __name__ == "__main__":
