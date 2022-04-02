@@ -1,7 +1,6 @@
 # Script to aggregate data from main_results_table_collect to a table.
 # Call this script with
 # `python main_results_table_aggregate.py`
-import json
 from pathlib import Path
 
 import click
@@ -43,9 +42,6 @@ def main(file):
     df_time = df.groupby(["method", "dataset"])["time"].apply(lambda x: fmt(np.mean(x)))
     df_time = df_time.reset_index().pivot(index=["method"], columns=["dataset"])
     to_latex(df_time)
-
-    df["n"] = df["true_changepoints"].apply(lambda x: json.loads(x)[-1])
-    df["symmetric_hausdorff"] = df["symmetric_hausdorff"] / df["n"]
 
     # mean hausdorff distances
     print("Mean hausdorff distance")
