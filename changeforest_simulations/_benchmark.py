@@ -54,7 +54,7 @@ def benchmark(method, dataset, seed, file_path=None, verify=False):
             logger.info(f"Skipping {seed} {dataset} {method}.")
             return
         if not existing_results.empty and verify:
-            existing_results = existing_results.loc[0].to_dict()
+            existing_results = existing_results.iloc[0].to_dict()
             result = benchmark(method, dataset, seed, None, False)
             if (
                 str(result["estimated_changepoints"])
