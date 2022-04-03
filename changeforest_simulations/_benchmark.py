@@ -63,6 +63,8 @@ def benchmark(method, dataset, seed, file_path=None, verify=False):
                 raise ValueError(
                     f"Inconsistent result for method={method}, dataset={dataset}, seed={seed}."
                 )
+            else:
+                return
 
     logger.info(f"Running {seed} {dataset} {method}.")
 
