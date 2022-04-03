@@ -19,7 +19,7 @@ logger = logging.getLogger(__file__)
 @click.option("--datasets", default=None, help="Datasets to benchmark. All if None.")
 @click.option("--file", default=None, help="Filename to use.")
 @click.option("--append", is_flag=True, help="Don't raise if csv already exists.")
-@click.option("--verify", is_flat=True)
+@click.option("--verify", is_flag=True)
 def main(n_seeds, seed_start, methods, datasets, file, append, verify):
     _OUTPUT_FOLDER.mkdir(exist_ok=True)
 
