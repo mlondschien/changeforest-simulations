@@ -67,9 +67,9 @@ def main(file):
         .median()
         .reset_index()
         .pivot(index=["method"], columns=["dataset"])
-    )
+    ) * 100
     df_score[("symmetric_hausdorff", "average")] = df_score.mean(axis=1)
-    df_score = df_score.applymap("{:.3f}".format)
+    df_score = df_score.applymap("{:.1f}".format)
     to_latex(df_score)
 
     # n_cpts
