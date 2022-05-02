@@ -104,8 +104,7 @@ axes[1].vlines(
     linewidth=DOTTED_LINEWIDTH,
 )
 axes[1].set_xlabel("split")
-# axes[1].set_ylabel("gain")
 
 plt.tight_layout()
-plt.savefig("figures/gains.eps", dpi=300)
-plt.savefig("figures/gains.png", dpi=300)
+plt.savefig("figures/gain_curves.eps", dpi=300)
+plt.savefig("figures/gain_curves.png", dpi=300)
