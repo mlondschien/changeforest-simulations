@@ -63,7 +63,7 @@ axes[0].set_xlabel("split")
 
 axes[1].scatter(range(n), predictions, s=2, c="k")
 axes[1].set_ylabel("proba. predictions")
-axes[1].set_xlabel("t")
+axes[1].set_xlabel("time")
 axes[1].set_ylim(-0.1, 1.1)
 ymin = -0.05
 ymax = 1.05

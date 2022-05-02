@@ -82,7 +82,7 @@ for idx in range(4):
         axes[idx, 1].set_xticklabels([])
 
 axes[-1, 0].set_xlabel("split")
-axes[-1, 1].set_xlabel("t")
+axes[-1, 1].set_xlabel("time")
 
 fig.align_ylabels(axes[:, 0])
 fig.align_ylabels(axes[:, 1])
