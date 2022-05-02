@@ -5,11 +5,13 @@ import numpy as np
 import pandas as pd
 from cycler import cycler
 from matplotlib import pyplot as plt
+from sklearn.linear_model import LinearRegression
 
 from changeforest_simulations.constants import (
     COLOR_CYCLE,
     FIGURE_FONT_SIZE,
     FIGURE_WIDTH,
+    LINEWIDTH,
     METHOD_ORDERING,
     METHOD_RENAMING,
 )
@@ -53,6 +55,7 @@ def main(file):
     if not df.groupby(index_columns).size().eq(500).all():
         raise ValueError("Not 500 unique seeds per combination.")
 
+    breakpoint()
     df = (
         df.groupby(["dataset", "method", "n_observations", "n_segments"])
         .apply(
@@ -70,11 +73,12 @@ def main(file):
         )
         .reset_index()
     )
-
+    breakpoint()
     segments = [20, 80]
-    figsize = (FIGURE_WIDTH, FIGURE_WIDTH * 2 / 3)
+    figsize = (FIGURE_WIDTH, FIGURE_WIDTH * 1 / 2)
 
-    _, axes = plt.subplots(ncols=len(segments), nrows=2, figsize=figsize)
+    fig, axes = plt.subplots(ncols=len(segments), nrows=2, figsize=figsize)
+    labels = []
 
     for idx, n_segments in enumerate(segments):
         df_plot = df[df["n_segments"].eq(n_segments)].sort_values("n_observations")
@@ -84,18 +88,23 @@ def main(file):
             df_dirichlet = df_method[lambda x: x["dataset"].eq("dirichlet")]
             df_dry_beans = df_method[lambda x: x["dataset"].eq("dry-beans-noise")]
 
-            axes[0, idx].errorbar(
+            label = axes[0, idx].errorbar(
                 df_dirichlet["n_observations"],
                 df_dirichlet["mean_score"],
                 yerr=df_dirichlet["sd_score"],
                 label=method,
+                linewidth=LINEWIDTH,
             )
             axes[1, idx].errorbar(
                 df_dry_beans["n_observations"],
                 df_dry_beans["mean_score"],
                 yerr=df_dry_beans["sd_score"],
                 label=method,
+                linewidth=LINEWIDTH,
             )
+
+            if idx == 0:
+                labels += [label[0]]
 
         axes[0, idx].set_title(f"{n_segments} segments", {"size": 16})
         axes[0, idx].set_xscale("log")
@@ -106,24 +115,26 @@ def main(file):
         axes[1, idx].set_yscale("function", functions=(np.exp, np.log))
         axes[1, idx].set_xlabel("sample size (n)")
 
-    axes[-1, -1].legend(loc="lower right")
     axes[0, 0].set_ylabel("avg. adj. Rand index")
     axes[1, 0].set_ylabel("avg. adj. Rand index")
 
-    plt.figtext(0.485, 0.97, "dirichlet", {"size": 18})
-    plt.figtext(0.48, 0.482, "dry beans", {"size": 18})
+    fig.legend(labels, METHOD_ORDERING, loc=7)
+    plt.figtext(0.49 * 0.78, 0.965, "dirichlet", {"size": 18})
+    plt.figtext(0.485 * 0.78, 0.49, "dry beans", {"size": 18})
     plt.tight_layout()
-    plt.subplots_adjust(top=0.92, hspace=0.2)
-    plt.savefig(figures_path / "evolution_by_n_observations.eps", dpi=300)
-    plt.savefig(figures_path / "evolution_by_n_observations.png", dpi=300)
+    plt.subplots_adjust(top=0.92, hspace=0.25, right=0.8)
+    plt.savefig(figures_path / "evolution_performance.eps", dpi=300)
+    plt.savefig(figures_path / "evolution_performance.png", dpi=300)
 
-    figsize = (FIGURE_WIDTH, FIGURE_WIDTH * 0.4)
-    _, axes = plt.subplots(ncols=len(segments), nrows=1, figsize=figsize)
+    figsize = (FIGURE_WIDTH, FIGURE_WIDTH * 0.3)
+    fig, axes = plt.subplots(ncols=len(segments), nrows=1, figsize=figsize)
 
     min_time = df.loc[lambda x: x["dataset"].eq("dirichlet"), "mean_time"].min()
     max_time = df.loc[lambda x: x["dataset"].eq("dirichlet"), "mean_time"].max()
     ymin = np.exp(np.log(min_time) - 0.1 * np.log(max_time / min_time))
     ymax = np.exp(np.log(max_time) + 0.1 * np.log(max_time / min_time))
+
+    labels = []
 
     for idx, n_segments in enumerate(segments):
         df_plot = df[df["n_segments"].eq(n_segments) & df["dataset"].eq("dirichlet")]
@@ -131,25 +142,41 @@ def main(file):
         for method in METHOD_ORDERING:
             df_method = df_plot[lambda x: x["method"].eq(method)]
 
-            axes[idx].plot(
+            label = axes[idx].plot(
                 df_method["n_observations"],
                 df_method["mean_time"],
-                # yerr=df_method["sd_time"],
                 label=method,
+                linewidth=LINEWIDTH,
             )
+            if idx == 0:
+                labels += label
 
+            df_lm = df_method[lambda x: x["n_observations"] >= 1000]
+            lm = LinearRegression().fit(
+                X=np.log(df_lm[["n_observations"]]), y=np.log(df_lm["mean_time"])
+            )
+            print(f"{method} - {n_segments} segments: {lm.coef_[0]}")
+
+        labels += axes[idx].plot(
+            [250, 64000], [250 / 2 / 1e5, 64000 / 2 / 1e5], "--", color="grey"
+        )
+        axes[idx].plot(
+            [250, 64000],
+            [250 / 1e6 / 2, 64000 * 64000 / 250 / 1e6 / 2],
+            "--",
+            color="grey",
+        )
         axes[idx].set_title(f"{n_segments} segments", {"size": 16})
         axes[idx].set_xscale("log")
         axes[idx].set_yscale("log")
         axes[idx].set_xlabel("sample size (n)")
         axes[idx].set_ylim(ymin, ymax)
 
-    axes[-1].legend(loc="lower right")
-    # axes[1].set_yticklabels([])
+    # https://stackoverflow.com/a/43439132
+    fig.legend(labels, METHOD_ORDERING + ["linear / quadratic"], loc=7)
     axes[0].set_ylabel("time (s)")
-    plt.figtext(0.485, 0.95, "dirichlet", {"size": 18})
     plt.tight_layout()
-    plt.subplots_adjust(top=0.88)
+    plt.subplots_adjust(top=0.88, right=0.8)
     plt.savefig(figures_path / "evolution_time.eps", dpi=300)
     plt.savefig(figures_path / "evolution_time.png", dpi=300)
 

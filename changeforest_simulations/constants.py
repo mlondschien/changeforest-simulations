@@ -14,18 +14,18 @@ DATASET_ORDERING = [
 
 METHOD_RENAMING = {
     "change_in_mean_bs": "change in mean",
-    "changeforest_bs": "changeforest (ours)",
+    "changeforest_bs": "changeforest",
     "changekNN_bs": "changekNN",
     "ecp": "ECP",
     "multirank": "MultiRank",
-    "kernseg_rbf": "KCP (rbf)",
+    "kernseg_rbf": "KCP",
 }
 METHOD_ORDERING = [
     "change in mean",
-    "changeforest (ours)",
+    "changeforest",
     "changekNN",
     "ECP",
-    "KCP (rbf)",
+    "KCP",
     "MultiRank",
 ]
 
@@ -44,13 +44,14 @@ COLORS = {
 COLOR_CYCLE = [
     COLORS["cyan"],  # change in mean
     COLORS["black"],  # ours
-    COLORS["grey"],  # changekNN
+    COLORS["purple"],  # changekNN
     COLORS["red"],  # ECP
     COLORS["yellow"],  # KCP (rbf)
     COLORS["green"],  # MultiRank
 ]
 
 FIGURE_FONT_SIZE = 14
-FIGURE_WIDTH = 12
+FIGURE_WIDTH = 13
+LINEWIDTH = 2.5
 DOTTED_LINEWIDTH = 2.5
 X_MARKER_KWARGS = {"marker": "x", "color": COLORS["green"], "linewidth": 10, "s": 2}
