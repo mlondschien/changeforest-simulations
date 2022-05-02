@@ -15,17 +15,18 @@ from changeforest_simulations.constants import (
 
 @click.command()
 @click.option("--method", default="random_forest")
-@click.option("--dataset", default="iris")
+@click.option("--dataset", default="abalone")
 @click.option("--seed", default=0)
-@click.option("--max-depth", default=5)
-def main(method, dataset, seed, max_depth):
+@click.option("--max-depth", default=6)
+@click.option("--segmentation", default="bs")
+def main(method, dataset, seed, max_depth, segmentation):
     changepoints, time_series = simulate(dataset, seed)
     n = time_series.shape[0]
     delta = 0.01
     minimal_segment_length = int(np.ceil(n * delta))
 
     control = Control(minimal_relative_segment_length=delta)
-    result = changeforest(time_series, method, "bs", control)
+    result = changeforest(time_series, method, segmentation, control)
     print(
         f"""\
 True change points: {changepoints}
@@ -57,8 +58,8 @@ ARI: {adjusted_rand_score(changepoints, [0] + result.split_points() + [n])}"""
                 result = node.optimizer_result.gain_results[-1]
                 gains[-1].append(np.full(n, np.nan))
                 gains[-1][-1][
-                    (node.start + minimal_segment_length) : (
-                        node.stop - minimal_segment_length
+                    (result.start + minimal_segment_length) : (
+                        result.stop - minimal_segment_length
                     )
                 ] = result.gain[minimal_segment_length:-minimal_segment_length]
                 if result.guess is not None:
@@ -78,7 +79,7 @@ ARI: {adjusted_rand_score(changepoints, [0] + result.split_points() + [n])}"""
     plt.rcParams.update({"font.size": FIGURE_FONT_SIZE})
 
     fig, axes = plt.subplots(
-        nrows=depth, figsize=(FIGURE_WIDTH, depth * FIGURE_WIDTH / 5)
+        nrows=depth, figsize=(FIGURE_WIDTH, depth * FIGURE_WIDTH / 6)
     )
     if depth == 1:
         axes = [axes]
