@@ -2,7 +2,7 @@ DATASET_RENAMING = {"change_in_mean": "CIM", "change_in_covariance": "CIC"}
 DATASET_ORDERING = [
     "CIM",
     "CIC",
-    "dirichlet",
+    "Dirichlet",
     "iris",
     "glass",
     "breast-cancer",
@@ -13,6 +13,7 @@ DATASET_ORDERING = [
 ]
 
 METHOD_RENAMING = {
+    "dirichlet": "Dirichlet",
     "change_in_mean_bs": "change in mean",
     "changeforest_bs": "changeforest",
     "changekNN_bs": "changekNN",
