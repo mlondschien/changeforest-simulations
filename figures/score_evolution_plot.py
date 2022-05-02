@@ -55,7 +55,6 @@ def main(file):
     if not df.groupby(index_columns).size().eq(500).all():
         raise ValueError("Not 500 unique seeds per combination.")
 
-    breakpoint()
     df = (
         df.groupby(["dataset", "method", "n_observations", "n_segments"])
         .apply(
@@ -73,7 +72,6 @@ def main(file):
         )
         .reset_index()
     )
-    breakpoint()
     segments = [20, 80]
     figsize = (FIGURE_WIDTH, FIGURE_WIDTH * 1 / 2)
 
