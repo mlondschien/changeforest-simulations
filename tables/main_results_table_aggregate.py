@@ -1,6 +1,3 @@
-# Script to aggregate data from main_results_table_collect to a table.
-# Call this script with
-# `python main_results_table_aggregate.py`
 import warnings
 from pathlib import Path
 
@@ -95,7 +92,7 @@ def to_latex(df, latex=True, split=False):
             else:
                 print(df.to_latex())
     else:
-        with pd.option_context("display.max_rows", None, "display.max_columns", None):
+        with pd.option_context("display.max_rows", None, "display.width", None):
             print(df)
 
 

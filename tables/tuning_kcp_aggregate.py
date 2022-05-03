@@ -1,3 +1,4 @@
+import warnings
 from pathlib import Path
 
 import click
@@ -11,6 +12,7 @@ _OUTPUT_PATH = Path(__file__).parents[1].absolute() / "output" / "tuning_kcp"
 
 @click.command()
 @click.option("--latex", is_flag=True, help="Output in LaTeX format.")
+@click.option("--file", default=None, help="Filename to use.")
 def main(file, latex):
     df = pd.concat([pd.read_csv(f) for f in _OUTPUT_PATH.glob(f"{file}_*.csv")])
 
@@ -29,8 +31,7 @@ def main(file, latex):
         )
     )
     df_score[("score", "average")] = df_mean
-    print("\n" + "#" * 50 + "\nScore\n" + "#" * 50 + "\n")
-    to_latex(df_score, split=True)
+    to_latex(df_score, split=True, latex=latex)
 
 
 def to_latex(df, split=False, latex=True):
@@ -39,14 +40,16 @@ def to_latex(df, split=False, latex=True):
     df = df[[x for x in DATASET_ORDERING if x in df]]
 
     if latex:
-        if split:
-            print(df[df.columns[:5]].to_latex())
-            print(df[df.columns[5:]].to_latex())
+        with warnings.catch_warnings():
+            warnings.simplefilter(action="ignore", category=FutureWarning)
+            if split:
+                print(df[df.columns[:5]].to_latex())
+                print(df[df.columns[5:]].to_latex())
 
-        else:
-            print(df.to_latex())
+            else:
+                print(df.to_latex())
     else:
-        with pd.option_context("display.max_rows", None, "display.max_columns", None):
+        with pd.option_context("display.max_rows", None, "display.width", None):
             print(df)
 
 

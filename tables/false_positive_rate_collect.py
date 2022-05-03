@@ -1,6 +1,3 @@
-# Code to collect data for the main results table in a csv file.
-# Call this script with
-# `python tables/false_positive_rate_collect.py`
 import logging
 from pathlib import Path
 

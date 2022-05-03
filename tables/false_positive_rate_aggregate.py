@@ -1,6 +1,3 @@
-# Script to aggregate data from main_results_table_collect to a table.
-# Call this script with
-# `python false_positive_rate_aggregate.py`
 from pathlib import Path
 
 import click
@@ -42,7 +39,7 @@ def to_latex(df, latex=True):
     if latex:
         print(df.to_latex())
     else:
-        with pd.option_context("display.max_rows", None, "display.max_columns", None):
+        with pd.option_context("display.max_rows", None, "display.width", None):
             print(df)
 
 

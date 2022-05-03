@@ -1,6 +1,4 @@
-# Script to aggregate data from main_results_table_collect to a table.
-# Call this script with
-# `python false_positive_rate_aggregate.py`
+import warnings
 from pathlib import Path
 
 import click
@@ -62,14 +60,18 @@ def to_latex(df, split=False, latex=True):
     df = df[[x for x in DATASET_ORDERING if x in df]]
 
     if latex:
-        if split:
-            print(df[df.columns[:5]].to_latex())
-            print(df[df.columns[5:]].to_latex())
+        with warnings.catch_warnings():
+            warnings.simplefilter(action="ignore", category=FutureWarning)
+            if split:
+                print(df[df.columns[:5]].to_latex())
+                print(df[df.columns[5:]].to_latex())
 
-        else:
-            print(df.to_latex())
+            else:
+                print(df.to_latex())
     else:
-        with pd.option_context("display.max_rows", None, "display.max_columns", None):
+        with pd.option_context(
+            "display.max_rows", None, "display.width", None, "display.width", None
+        ):
             print(df)
 
 
