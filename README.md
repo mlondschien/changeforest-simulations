@@ -18,7 +18,7 @@ Importantly, results in [1] are based on `changeforest=0.6.0`.
 The `figures` folder contains Python scripts to reproduce figures in [1].
 
 | Figure | script | output filename |
-| :--- | :--- | :---| 
+| ---: | :--- | :---| 
 | 1 | `gain_curves.py` | `gain_curves.eps` |
 | 2 | `two_step_search.py` | `two_step_search.eps` |
 | 3 | `two_step_search_biased.py` | `two_step_search_biased.eps` |
@@ -44,17 +44,18 @@ For our setting, calling `python figures/score_evolution_collect.py --file chang
 The `tables` folder contains Python scripts to reproduce tables in [1].
 
 | Table | script |
+| ---: | :--- | 
 | 1 | `adj_rand_examples.py` |
-| 2 | `main_results_table_*` |
-| 3 | `main_results_table_*` |
-| 4 | `false_positive_rate_*` |
-| 5 | `main_results_table_*` |
-| 6 | `main_results_table_*` |
-| 7 | `tuning_*` |
-| 8 | `tuning_*` |
-| 9 | `tuning_kcp_*` |
+| 2 | `main_results_table_*.py` |
+| 3 | `main_results_table_*.py` |
+| 4 | `false_positive_rate_*.py` |
+| 5 | `main_results_table_*.py` |
+| 6 | `main_results_table_*.py` |
+| 7 | `tuning_*.py` |
+| 8 | `tuning_*.py` |
+| 9 | `tuning_kcp_*.py` |
 
-All scripts will both print the tables in a display-friendly manner and produce latex code.
+All scripts will both print the tables in a display-friendly manner, unless supplied with the argument `--latex`.
 
 All tables except Table 1 display the result of extensive simulation studies.
 For this, the `*_collect.py` scripts collect simulation results in `csv` files.

@@ -15,7 +15,8 @@ _OUTPUT_PATH = Path(__file__).parents[1].absolute() / "output" / "tuning"
 
 @click.command()
 @click.option("--file", default=None, help="Filename to use.")
-def main(file):
+@click.option("--latex", is_flag=True, help="Output in LaTeX format.")
+def main(file, latex):
     df = pd.concat([pd.read_csv(f) for f in _OUTPUT_PATH.glob(f"{file}_*.csv")])
 
     parameters = [
@@ -42,8 +43,8 @@ def main(file):
         )
     )
     df_score[("score", "average")] = df_mean
-    print("\n" + "#" * 50 + "\nScore\n" + "#" * 50 + "\n")
-    to_latex(df_score, split=True)
+    print("\n\nScores by dataset and parameter:\n")
+    to_latex(df_score, split=True, latex=latex)
 
     df_time = (
         df.groupby(["dataset"] + parameters)["time"]
@@ -51,21 +52,25 @@ def main(file):
         .reset_index()
         .pivot(index=parameters, columns=["dataset"])
     )
-    print("\n" + "#" * 50 + "\nTime\n" + "#" * 50 + "\n")
-    to_latex(df_time)
+    print("\n\nTimes by dataset and parameter:\n")
+    to_latex(df_time, latex=latex)
 
 
-def to_latex(df, split=False):
+def to_latex(df, split=False, latex=True):
     df.columns = df.columns.get_level_values(level=1)
     df = df.rename(columns=DATASET_RENAMING, copy=False)
     df = df[[x for x in DATASET_ORDERING if x in df]]
 
-    if split:
-        print(df[df.columns[:5]].to_latex())
-        print(df[df.columns[5:]].to_latex())
+    if latex:
+        if split:
+            print(df[df.columns[:5]].to_latex())
+            print(df[df.columns[5:]].to_latex())
 
+        else:
+            print(df.to_latex())
     else:
-        print(df.to_latex())
+        with pd.option_context("display.max_rows", None, "display.max_columns", None):
+            print(df)
 
 
 def fmt(x):
