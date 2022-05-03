@@ -126,8 +126,8 @@ ARI: {adjusted_rand_score(changepoints, [0] + result.split_points() + [n])}"""
     axes[-1].set_xlabel("split")
     fig.align_ylabels(axes)
     plt.tight_layout()
-    plt.savefig(f"figures/binary_segmentation_{dataset}_{method}_{seed}.png", dpi=300)
-    plt.savefig(f"figures/binary_segmentation_{dataset}_{method}_{seed}.eps", dpi=300)
+    plt.savefig(f"figures/binary_segmentation_{dataset}_{seed}.png", dpi=300)
+    plt.savefig(f"figures/binary_segmentation_{dataset}_{seed}.eps", dpi=300)
 
 
 if __name__ == "__main__":

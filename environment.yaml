@@ -10,7 +10,7 @@ dependencies:
   - r-rfast  # for Rfast::Lchoose only
   - ruptures
   - rpy2
-  - changeforest>=0.4.0
+  - changeforest=0.6.0
   - scikit-learn  # For adj. rand
   - numpy
   - scipy>=1.5  # mad
