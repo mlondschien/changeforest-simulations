@@ -14,6 +14,7 @@ DATASET_ORDERING = [
     "wine",
     "dry-beans",
     "average",
+    "worst",
 ]
 
 METHOD_RENAMING = {

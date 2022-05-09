@@ -19,13 +19,16 @@ _OUTPUT_PATH = Path(__file__).parents[1].absolute() / "output" / "false_positive
 def main(file, latex):
     df = pd.concat([pd.read_csv(f) for f in _OUTPUT_PATH.glob(f"{file}_*.csv")])
     df["false_positive"] = df["n_cpts"] > 0
-    df = (
-        df.groupby(["dataset", "method"])["false_positive"]
-        .apply(lambda x: f"{100 * x.mean():.2f}")
+    df_grouped = df.groupby(["dataset", "method"])["false_positive"].mean() * 100
+    df_display = (
+        df_grouped.apply(lambda x: f"{x:.2f}")
         .reset_index()
         .pivot(index="method", columns=["dataset"])
     )
-    to_latex(df, latex=latex)
+    df_display[("false_positive", "worst-no-change")] = (
+        df_grouped.groupby("method").max().apply(lambda x: f"{x:.2f}")
+    )
+    to_latex(df_display, latex=latex)
 
 
 def to_latex(df, latex=True):

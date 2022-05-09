@@ -34,7 +34,11 @@ def main(file, latex):
             lambda x: f"{x['mean'].mean():.3f} ({np.sqrt(x['std'].pow(2).mean()):.3f})"
         )
     )
+
     df_score[("score", "average")] = df_mean
+
+    df_worst = df.groupby(["method", "dataset"])["score"].mean().groupby("method").min()
+    df_score[("score", "worst")] = df_worst.apply(lambda x: f"{x:.3f}")
     print("\n\nMean adjusted Rand indices (Table 2):\n")
     to_latex(df_score, latex=latex, split=True)
 

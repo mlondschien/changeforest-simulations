@@ -117,8 +117,8 @@ def main(file):
     axes[1, 0].set_ylabel("avg. adj. Rand index")
 
     fig.legend(labels, METHOD_ORDERING, loc=7)
-    plt.figtext(0.49 * 0.78, 0.965, "dirichlet", {"size": 18})
-    plt.figtext(0.485 * 0.78, 0.49, "dry beans", {"size": 18})
+    plt.figtext(0.49 * 0.8, 0.965, "Dirichlet", {"size": 18})
+    plt.figtext(0.485 * 0.8, 0.49, "dry beans", {"size": 18})
     plt.tight_layout()
     plt.subplots_adjust(top=0.92, hspace=0.25, right=0.8)
     plt.savefig(figures_path / "evolution_performance.eps", dpi=300)
