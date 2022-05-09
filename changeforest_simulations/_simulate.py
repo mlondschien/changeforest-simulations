@@ -277,7 +277,10 @@ def simulate_from_data(
 
 
 def simulate_dirichlet(
-    seed=0, n_segments=None, n_observations=None, minimal_relative_segment_length=None,
+    seed=0,
+    n_segments=None,
+    n_observations=None,
+    minimal_relative_segment_length=None,
 ):
     """
     Simulate histogram-valued dataset as described in Scenario 3, 6.1, [1].
@@ -375,7 +378,10 @@ def simulate_repeated_wine(seed=0):
 
 
 def _exponential_segment_lengths(
-    n_segments, n_observations, minimal_relative_segment_length=0.01, seed=0,
+    n_segments,
+    n_observations,
+    minimal_relative_segment_length=0.01,
+    seed=0,
 ):
     """Exponential segment lengths.
 

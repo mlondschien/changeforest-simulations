@@ -99,7 +99,9 @@ def benchmark(n_seeds, seed_start, methods, datasets, continue_):
 
                 tic = perf_counter()
                 estimate = estimate_changepoints(
-                    time_series, method, minimal_relative_segment_length=0.01,
+                    time_series,
+                    method,
+                    minimal_relative_segment_length=0.01,
                 )
                 toc = perf_counter()
 
