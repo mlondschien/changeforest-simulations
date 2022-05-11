@@ -80,3 +80,5 @@ To run benchmarks for your method
 
  The `**kwargs` argument can be used to parametrize your method.
  If your method can take an additional parameter `voltage`, you can benchmark your method with different parameter configurations by passing those via the name, e.g., `--methods "staubsauger__voltage=120 staubstauger__voltage=230"`.
+
+[1] Malte Londschien, Peter Bühlmann, Solt Kovács, 2022. _Random Forests for Change Point Detection_, https://arxiv.org/abs/2205.04997
