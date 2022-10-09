@@ -1,6 +1,7 @@
 __pycache__
 .vscode
-output
 *.csv
+.DS_store
 
+output/
 applications/

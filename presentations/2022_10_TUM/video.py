@@ -16,7 +16,7 @@ means = [-1, 2]
 
 X = get_data(changepoints, means)
 
-fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 4))
+fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(14, 4))
 axes[0].plot(X, color="black")
 
 for (start, stop), mean in zip(zip(changepoints[:-1], changepoints[1:]), means):
@@ -82,6 +82,12 @@ def animate(frame):
     )
 
 
-ani = animation.FuncAnimation(fig, animate, split_candidates, interval=40, blit=True)
+ani = animation.FuncAnimation(
+    fig,
+    animate,
+    list(range(10, 79)) + 10 * [79] + list(range(79, 190)),
+    interval=40,
+    blit=True,
+)
 
 ani.save(figures / "video.mp4", fps=30, dpi=300)
