@@ -23,7 +23,7 @@ def main(file, latex):
 
     # ARI
     df_score = df.groupby(["method", "dataset"])["score"].apply(
-        lambda x: f"{np.mean(x):.3f} ({np.std(x):.3f})"
+        lambda x: f"{np.mean(x):.2f} ({np.std(x):.2f})"
     )
     df_score = df_score.reset_index().pivot(index=["method"], columns=["dataset"])
     df_mean = (
@@ -31,14 +31,15 @@ def main(file, latex):
         .apply(lambda x: pd.Series({"mean": x.mean(), "std": x.std()}))
         .groupby(["method"])
         .apply(
-            lambda x: f"{x['mean'].mean():.3f} ({np.sqrt(x['std'].pow(2).mean()):.3f})"
+            lambda x: f"{x['mean'].mean():.3f} ({np.sqrt(x['std'].pow(2).mean()):.2f})"
         )
     )
 
     df_score[("score", "average")] = df_mean
 
     df_worst = df.groupby(["method", "dataset"])["score"].mean().groupby("method").min()
-    df_score[("score", "worst")] = df_worst.apply(lambda x: f"{x:.3f}")
+    df_score[("score", "worst")] = df_worst.apply(lambda x: f"{x:.2f}")
+
     print("\n\nMean adjusted Rand indices (Table 2):\n")
     to_latex(df_score, latex=latex, split=True)
 
@@ -50,23 +51,29 @@ def main(file, latex):
 
     # n_cpts
     df_n_cpts = df.groupby(["method", "dataset"])["n_cpts"].apply(
-        lambda x: f"{np.mean(x):.2f}"
+        lambda x: f"{np.mean(x):.2f} {np.std(x):.2f}"
     )
     df_n_cpts = df_n_cpts.reset_index().pivot(index=["method"], columns=["dataset"])
     print("\n\nMean number of changepoints estimated (Table 5):\n")
-    to_latex(df_n_cpts, latex=latex)
+    to_latex(df_n_cpts, latex=latex, split=True)
 
-    # mean hausdorff distances
+    # median hausdorff distances
+    df["symmetric_hausdorff"] *= 100
     df_score = (
         df.groupby(["method", "dataset"])["symmetric_hausdorff"]
-        .median()
+        .apply(lambda x: f"{np.median(x):.1f} ({x.mad():.1f})")
         .reset_index()
         .pivot(index=["method"], columns=["dataset"])
-    ) * 100
-    df_score[("symmetric_hausdorff", "average")] = df_score.mean(axis=1)
-    df_score = df_score.applymap("{:.1f}".format)
+    )
+    df_mean = (
+        df.groupby(["method", "dataset"])["symmetric_hausdorff"]
+        .median()
+        .groupby("method")
+        .mean()
+    )
+    df_score[("symmetric_hausdorff", "average")] = df_mean.apply(lambda x: f"{x:.1f}")
     print("\n\nMedian hausdorff distances (Table 6):\n")
-    to_latex(df_score, latex=latex)
+    to_latex(df_score, latex=latex, split=True)
 
 
 def fmt(x):
@@ -78,7 +85,7 @@ def fmt(x):
         return f"{x:.2f}"
 
 
-def to_latex(df, latex=True, split=False):
+def to_latex(df, latex=True, split=False, bold=False, n=None):
     df.columns = df.columns.get_level_values(level=1)
     df = df.rename(columns=DATASET_RENAMING, copy=False)
     df = df[[x for x in DATASET_ORDERING if x in df]]
