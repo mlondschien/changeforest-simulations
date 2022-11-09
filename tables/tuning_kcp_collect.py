@@ -43,7 +43,7 @@ def main(file, n_seeds, seed_start, append):
         for dataset in datasets:
             for method in [
                 f"kernseg_rbf__gamma={gamma}"
-                for gamma in [0.025, 0.05, 0.1, 0.2, 0.4, 0.8]
+                for gamma in [0.025, 0.05, 0.1, 0.2, 0.4, 0.8, "median"]
             ] + ["kernseg_linear", "kernseg_cosine"]:
                 benchmark(method, dataset, seed, file_path=file_path)
 

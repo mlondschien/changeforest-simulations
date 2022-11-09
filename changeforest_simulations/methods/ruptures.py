@@ -2,11 +2,15 @@ import numpy as np
 import ruptures as rpt
 from scipy.special import betaln
 from sklearn.linear_model import LinearRegression
+from sklearn.metrics import pairwise_distances
 
 
 def kernseg_rbf(X, minimal_relative_segment_length, **kwargs):
     """Wrapper around kernseg with a radial basis function kernel."""
     gamma = kwargs.get("gamma", 0.1)
+    if gamma == "median":
+        gamma = median_heuristic(X)
+
     return kernseg(X, "rbf", minimal_relative_segment_length, params={"gamma": gamma})
 
 
@@ -55,3 +59,17 @@ def kernseg(X, kernel, minimal_relative_segment_length, params=None, **kwargs):
     adjusted_costs = costs - 2 * X_lm.dot(lm.coef_)
 
     return [0] + segmentations_values[np.argmin(adjusted_costs)]
+
+
+def median_heuristic(X):
+    """See https://arxiv.org/pdf/1707.07269.pdf, Section 2.2."""
+    n, p = X.shape
+    if n > 500:
+        rng = np.random.default_rng(0)
+        idx = rng.choice(n, 500, replace=False)
+        X_ = X[idx, :]
+    else:
+        X_ = X
+
+    distances = pairwise_distances(X_, metric="euclidean")
+    return np.median(distances) / np.sqrt(2)
