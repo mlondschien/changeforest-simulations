@@ -27,11 +27,11 @@ METHOD_RENAMING = {
 }
 METHOD_ORDERING = [
     "change in mean",
-    "changeforest",
     "changekNN",
     "ECP",
     "KCP",
     "MultiRank",
+    "changeforest",
 ]
 
 # https://personal.sron.nl/~pault/#sec:qualitative
