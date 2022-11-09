@@ -60,7 +60,9 @@ for idx in range(4):
         linewidth=DOTTED_LINEWIDTH,
     )
     axes[idx, 0].scatter(alpha[1:-1], [ymin_gain] * (len(alpha) - 2), **X_MARKER_KWARGS)
-    axes[idx, 0].set_ylabel("approx. gain")
+    axes[idx, 0].set_ylabel(
+        f"approx. gain for\ninit. guess s={gain_results[idx].guess}"
+    )
 
     axes[idx, 1].set_ylim(*proba_range)
     axes[idx, 1].vlines(
