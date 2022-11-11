@@ -14,6 +14,7 @@ from .changeforest import (
 from .decon import decon
 from .ecp import ecp
 from .mnwbs._mnwbs import mnwbs
+from .mnwbs_changepoints import mnwbs_changepoints
 from .multirank.dynkw import autoDynKWRupt
 from .ruptures import kernseg_cosine, kernseg_linear, kernseg_rbf
 
@@ -85,6 +86,10 @@ def estimate_changepoints(X, method, minimal_relative_segment_length, **kwargs):
         )
     elif method == "mnwbs":
         return mnwbs(
+            X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
+        )
+    elif method == "mnwbs_changepoints":
+        return mnwbs_changepoints(
             X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
         )
     else:

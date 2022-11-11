@@ -10,6 +10,7 @@ dependencies:
   - r-rfast  # for Rfast::Lchoose only
   - ruptures
   - rpy2
+  - r-changepoints  # mnwbs
   - changeforest=0.6.0
   - scikit-learn  # For adj. rand
   - numpy

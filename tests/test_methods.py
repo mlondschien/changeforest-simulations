@@ -20,6 +20,7 @@ from changeforest_simulations import estimate_changepoints, simulate
         "kernseg_rbf",
         "kernseg_linear",
         "decon",
+        "mnwbs_changepoints"
         # "mnwbs"  # mnwbs takes 5-10s on iris.
     ],
 )
@@ -30,6 +31,7 @@ def test_method(method):
     )
     assert changepoints[0] == 0
     assert changepoints[-1] == 150
+    assert list(changepoints) == sorted(changepoints)
 
     assert len(changepoints) > 2
 
@@ -49,8 +51,9 @@ def test_method(method):
         # "kernseg",
         "kernseg_rbf",
         "kernseg_linear",
-        "kernseg_cosine"
+        "kernseg_cosine",
         #   "kcprs",
+        # "mnwbs_changepoints"
     ],
 )
 def test_minimal_relative_segment_length(method):
