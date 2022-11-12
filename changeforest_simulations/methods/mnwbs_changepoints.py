@@ -21,10 +21,4 @@ def mnwbs_changepoints(X, minimal_relative_segment_length):
         r(
             "bs <- changepoints::WBS.multi.nonpar(t(X), t(X), 1, n, intervals$Alpha, intervals$Beta, h, minimal_segment_length)"
         )
-        return (
-            [0]
-            + sorted(
-                r("changepoints::thresholdBS(bs, median(bs$Dval))$cpt_hat$location")
-            )
-            + [n]
-        )
+        return [0] + sorted(r("changepoints::tuneBSmultinonpar(bs, t(X))")) + [n]
