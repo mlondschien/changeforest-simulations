@@ -24,6 +24,7 @@ METHOD_RENAMING = {
     "ecp": "ECP",
     "multirank": "MultiRank",
     "kernseg_rbf": "KCP",
+    "mnwbs_changepoints": "MNWBS"
 }
 METHOD_ORDERING = [
     "change in mean",
@@ -31,6 +32,7 @@ METHOD_ORDERING = [
     "ECP",
     "KCP",
     "MultiRank",
+    "MNWBS",
     "changeforest",
 ]
 
