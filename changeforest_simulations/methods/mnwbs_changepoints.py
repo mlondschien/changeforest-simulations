@@ -17,6 +17,7 @@ def mnwbs_changepoints(X, minimal_relative_segment_length):
         r.assign("M", M)
         r.assign("n", n)
         r.assign("minimal_segment_length", int(minimal_relative_segment_length * n))
+        r("set.seed(0)")
         r("intervals <- changepoints::WBS.intervals(M, 1, n)")
         r(
             "bs <- changepoints::WBS.multi.nonpar(t(X), t(X), 1, n, intervals$Alpha, intervals$Beta, h, minimal_segment_length)"
