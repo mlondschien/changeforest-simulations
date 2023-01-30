@@ -19,3 +19,4 @@ dependencies:
   - pandas
   - click
   - matplotlib
+  - r-changepoints
