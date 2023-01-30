@@ -16,7 +16,7 @@ from changeforest_simulations import estimate_changepoints, simulate
         "changekNN_sbs",
         "change_in_mean_bs",
         "change_in_mean_sbs",
-        # "kernseg",
+        # "r_kernseg",
         "kernseg_rbf",
         "kernseg_linear",
         "decon",

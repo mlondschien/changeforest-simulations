@@ -2,7 +2,7 @@ import numpy as np
 
 from changeforest_simulations.utils import string_to_kwargs
 
-from ._kernseg import kernseg
+from ._kernseg import kernseg as r_kernseg
 from .changeforest import (
     change_in_mean_bs,
     change_in_mean_sbs,
@@ -64,8 +64,8 @@ def estimate_changepoints(X, method, minimal_relative_segment_length, **kwargs):
     elif method == "multirank":
         __, cpts = autoDynKWRupt(X.T, Kmax=int(1 / minimal_relative_segment_length))
         return np.append([0], cpts[cpts != 0] + 1)
-    elif method == "kernseg":
-        return kernseg(
+    elif method == "r_kernseg":
+        return r_kernseg(
             X, minimal_relative_segment_length=minimal_relative_segment_length, **kwargs
         )
     elif method == "kernseg_rbf":
