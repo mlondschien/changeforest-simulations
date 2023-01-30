@@ -77,3 +77,13 @@ def test_normalize():
     X_normalized = normalize(X)
 
     np.testing.assert_almost_equal(np.std(X_normalized, axis=0), [1, 1, 1], decimal=1)
+
+
+def test_simulate_change_in_covariance():
+    d, rho = 5, 0.7
+    Sigma = np.full((d, d), rho)
+    np.fill_diagonal(Sigma, 1)
+
+    X = simulate("change_in_covariance")[1]
+    cov = np.cov(X[200:400, :].T)
+    np.testing.assert_almost_equal(cov, Sigma, decimal=1)

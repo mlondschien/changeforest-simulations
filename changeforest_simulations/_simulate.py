@@ -337,11 +337,27 @@ def simulate_change_in_covariance(seed=0):
     Sigma = np.full((d, d), rho)
     np.fill_diagonal(Sigma, 1)
 
+    # One possible solution of sqrt_Sigma @ sqrt_Sigma.T = Sigma, given via
+    # Cholesky decomposition np.linalg.cholesky(Sigma).
+    # This is not unique, resulting in rng.multi_normal() returning different results
+    # for different architectures. ref: https://github.com/numpy/numpy/issues/22919
+    sqrt_Sigma = np.array(
+        [
+            [1.0, 0.0, 0.0, 0.0, 0.0],
+            [0.7, 0.71414284, 0.0, 0.0, 0.0],
+            [0.7, 0.29405882, 0.65079137, 0.0, 0.0],
+            [0.7, 0.29405882, 0.18981415, 0.62249498, 0.0],
+            [0.7, 0.29405882, 0.18981415, 0.14056338, 0.60641729],
+        ]
+    )
+
+    np.testing.assert_almost_equal(sqrt_Sigma @ sqrt_Sigma.T, Sigma)
+
     rng = np.random.default_rng(seed)
     X = np.concatenate(
         (
             rng.normal(0, 1, (int(T / 3), d)),
-            rng.multivariate_normal(np.zeros(d), Sigma, int(T / 3)),
+            rng.normal(0, 1, (int(T / 3), d)) @ sqrt_Sigma.T,
             rng.normal(0, 1, (int(T / 3), d)),
         ),
         axis=0,
