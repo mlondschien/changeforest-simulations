@@ -11,11 +11,12 @@ def decon(X, minimal_relative_segment_length):
         r.assign("X", r.matrix(X, nrow=n, ncol=p))
         r.assign("min_size", min_size)
         r.assign("Kmax", Kmax)
+        r("set.seed(0)")
         return (
             [0]
             + list(
                 r(
-                    "kcpRS::kcpRS(data=X, RS_fun=kcpRS::runMean, RS_name='mean', wsize=2 * min_size, nperm=1000, Kmax=Kmax, alpha=0.05)$changePoints"
+                    "kcpRS::kcpRS(data=X, RS_fun=kcpRS::runMean, RS_name='mean', wsize=2 * min_size, nperm=200, Kmax=Kmax, alpha=0.05)$changePoints"
                 )
                 - 1
             )
