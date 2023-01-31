@@ -31,7 +31,7 @@ def main(n_seeds, seed_start, methods, datasets, file, append, verify):
             "abalone",
             "dry-beans",
             "change_in_mean",
-            "change_in_covariance",
+            "change_in_covariance_new",
             "dirichlet",
         ]
     else:
@@ -46,6 +46,8 @@ def main(n_seeds, seed_start, methods, datasets, file, append, verify):
             "multirank",
             "kernseg_rbf",
             "kernseg_linear",
+            "mnwbs_changepoints",
+            "decon",
         ]
     else:
         methods = methods.split(" ")
@@ -65,6 +67,14 @@ def main(n_seeds, seed_start, methods, datasets, file, append, verify):
             for method in methods:
                 if method == "multirank" and dataset == "dry-beans":
                     continue  # Singular Matrix error
+
+                # slow
+                if method == "mnwbs_changepoints" and dataset in [
+                    "dry-beans",
+                    "wine",
+                    "abalone",
+                ]:
+                    continue
 
                 benchmark(method, dataset, seed, file_path=file_path, verify=verify)
 

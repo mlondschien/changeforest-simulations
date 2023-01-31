@@ -27,7 +27,7 @@ def main(file, n_seeds, seed_start, append):
         "abalone",
         "dry-beans",
         "change_in_mean",
-        "change_in_covariance",
+        "change_in_covariance_new",
         "dirichlet",
     ]
 

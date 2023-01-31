@@ -27,7 +27,7 @@ from changeforest_simulations._simulate import normalize, simulate_from_data
         ("dry-beans", [0, 2027, 3657, 5585, 6107, 7429, 10975, 13611], (13611, 16)),
         ("covertype", [0, 20510, 56264, 65757, 83124, 366425, 578265], (578265, 54)),
         ("change_in_mean", [0, 200, 400, 600], (600, 5)),
-        ("change_in_covariance", [0, 200, 400, 600], (600, 5)),
+        ("change_in_covariance_new", [0, 200, 400, 600], (600, 5)),
         ("repeated-covertype", None, (100000, 54)),
         ("repeated-dry-beans", None, (5000, 16)),
         ("repeated-wine", None, (5000, 12)),
@@ -84,6 +84,6 @@ def test_simulate_change_in_covariance():
     Sigma = np.full((d, d), rho)
     np.fill_diagonal(Sigma, 1)
 
-    X = simulate("change_in_covariance")[1]
+    X = simulate("change_in_covariance_new")[1]
     cov = np.cov(X[200:400, :].T)
     np.testing.assert_almost_equal(cov, Sigma, decimal=1)

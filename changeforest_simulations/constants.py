@@ -1,6 +1,6 @@
 DATASET_RENAMING = {
     "change_in_mean": "CIM",
-    "change_in_covariance": "CIC",
+    "change_in_covariance_new": "CIC",
     "dirichlet": "Dirichlet",
 }
 DATASET_ORDERING = [

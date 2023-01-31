@@ -1,3 +1,5 @@
+from warnings import warn
+
 import numpy as np
 import pandas as pd
 from scipy.stats import median_abs_deviation
@@ -58,7 +60,9 @@ def simulate(scenario, seed=0):
     elif scenario == "change_in_mean":
         return simulate_change_in_mean(seed=seed)
     elif scenario == "change_in_covariance":
-        return simulate_change_in_covariance(seed=seed)
+        return simulate_change_in_covariance(seed=seed, version="old")
+    elif scenario == "change_in_covariance_new":
+        return simulate_change_in_covariance(seed=seed, version="new")
     else:
         raise ValueError(f"Scenario {scenario} not supported.")
 
@@ -326,7 +330,7 @@ def simulate_change_in_mean(seed=0):
     return [0, T / 3, 2 * T / 3, T], X
 
 
-def simulate_change_in_covariance(seed=0):
+def simulate_change_in_covariance(seed=0, version="new"):
     """
     Simulate change in correlation dataset as described in [1], 4.3.
 
@@ -337,31 +341,47 @@ def simulate_change_in_covariance(seed=0):
     Sigma = np.full((d, d), rho)
     np.fill_diagonal(Sigma, 1)
 
-    # One possible solution of sqrt_Sigma @ sqrt_Sigma.T = Sigma, given via
-    # Cholesky decomposition np.linalg.cholesky(Sigma).
-    # This is not unique, resulting in rng.multi_normal() returning different results
-    # for different architectures. ref: https://github.com/numpy/numpy/issues/22919
-    sqrt_Sigma = np.array(
-        [
-            [1.0, 0.0, 0.0, 0.0, 0.0],
-            [0.7, 0.71414284, 0.0, 0.0, 0.0],
-            [0.7, 0.29405882, 0.65079137, 0.0, 0.0],
-            [0.7, 0.29405882, 0.18981415, 0.62249498, 0.0],
-            [0.7, 0.29405882, 0.18981415, 0.14056338, 0.60641729],
-        ]
-    )
+    if version == "new":
+        # One possible solution of sqrt_Sigma @ sqrt_Sigma.T = Sigma, given via
+        # Cholesky decomposition np.linalg.cholesky(Sigma).
+        # This is not unique, resulting in rng.multi_normal() returning different results
+        # for different architectures. ref: https://github.com/numpy/numpy/issues/22919
+        sqrt_Sigma = np.array(
+            [
+                [1.0, 0.0, 0.0, 0.0, 0.0],
+                [0.7, 0.71414284, 0.0, 0.0, 0.0],
+                [0.7, 0.29405882, 0.65079137, 0.0, 0.0],
+                [0.7, 0.29405882, 0.18981415, 0.62249498, 0.0],
+                [0.7, 0.29405882, 0.18981415, 0.14056338, 0.60641729],
+            ]
+        )
 
-    np.testing.assert_almost_equal(sqrt_Sigma @ sqrt_Sigma.T, Sigma)
+        np.testing.assert_almost_equal(sqrt_Sigma @ sqrt_Sigma.T, Sigma)
 
-    rng = np.random.default_rng(seed)
-    X = np.concatenate(
-        (
-            rng.normal(0, 1, (int(T / 3), d)),
-            rng.normal(0, 1, (int(T / 3), d)) @ sqrt_Sigma.T,
-            rng.normal(0, 1, (int(T / 3), d)),
-        ),
-        axis=0,
-    )
+        rng = np.random.default_rng(seed)
+        X = np.concatenate(
+            (
+                rng.normal(0, 1, (int(T / 3), d)),
+                rng.normal(0, 1, (int(T / 3), d)) @ sqrt_Sigma.T,
+                rng.normal(0, 1, (int(T / 3), d)),
+            ),
+            axis=0,
+        )
+
+    else:
+        warn(
+            "This version of 'simulate_change_in_covariance' is not reproducible across"
+            " different architectures. Please use the 'new' version instead."
+        )
+        rng = np.random.default_rng(seed)
+        X = np.concatenate(
+            (
+                rng.normal(0, 1, (int(T / 3), d)),
+                rng.multivariate_normal(np.zeros(d), Sigma, int(T / 3)),
+                rng.normal(0, 1, (int(T / 3), d)),
+            ),
+            axis=0,
+        )
 
     return [0, T / 3, 2 * T / 3, T], X
 
