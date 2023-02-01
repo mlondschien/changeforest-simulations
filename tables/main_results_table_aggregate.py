@@ -75,7 +75,12 @@ def main(file, latex):
     print("\n\nMedian hausdorff distances (Table 6):\n")
     to_latex(df_score, latex=latex, split=True)
 
-    df_n = df.groupby(["method", "dataset"]).size().reset_index().pivot(index=["method"], columns=["dataset"])
+    df_n = (
+        df.groupby(["method", "dataset"])
+        .size()
+        .reset_index()
+        .pivot(index=["method"], columns=["dataset"])
+    )
     print("\n\nN\n")
     to_latex(df_n, latex=latex)
 

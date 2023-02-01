@@ -24,16 +24,18 @@ from changeforest_simulations import estimate_changepoints, simulate
         # "mnwbs"  # mnwbs takes 5-10s on iris.
     ],
 )
-def test_method(method):
-    _, X = simulate("iris")
+@pytest.mark.parametrize("dataset", ["iris", "iris-no-change"])
+def test_method(method, dataset):
+    _, X = simulate(dataset)
     changepoints = estimate_changepoints(
-        X, method=method, minimal_relative_segment_length=0.02
+        X, method=method, minimal_relative_segment_length=0.01
     )
     assert changepoints[0] == 0
-    assert changepoints[-1] == 150
+    assert changepoints[-1] == X.shape[0]
     assert list(changepoints) == sorted(changepoints)
 
-    assert len(changepoints) > 2
+    if dataset == "iris":
+        assert len(changepoints) > 2
 
 
 @pytest.mark.parametrize(
