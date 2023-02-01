@@ -1,11 +1,11 @@
 from rpy2.robjects import default_converter, numpy2ri, r
 from rpy2.robjects.conversion import localconverter
-
+import numpy as np
 
 def decon(X, minimal_relative_segment_length):
     n, p = X.shape
 
-    wsize = max(25, int(minimal_relative_segment_length * n))
+    wsize = max(25, int(2 * np.ceil(minimal_relative_segment_length * n)))
     Kmax = min(int(1 / minimal_relative_segment_length), n - 1)
 
     with localconverter(default_converter + numpy2ri.converter):
