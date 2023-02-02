@@ -27,7 +27,6 @@ def main(n_seeds, seed_start, file, append):
         "ecp",
         "multirank",
         "kernseg_rbf",
-        "decon",
         "mnwbs_changepoints",
     ]
     n_segments_list = [20, 80]
@@ -81,8 +80,6 @@ def main(n_seeds, seed_start, file, append):
                         if method == "changekNN_bs" and n_observations > 32000:
                             continue
                         if method == "kernseg_rbf" and n_observations >= 64000:
-                            continue
-                        if method == "decon" and n_observations >= 10000:
                             continue
                         if method == "mnwbs_changepoints" and n_observations >= 1000:
                             continue

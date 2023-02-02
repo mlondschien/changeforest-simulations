@@ -24,4 +24,9 @@ def mnwbs_changepoints(X, minimal_relative_segment_length):
         r(
             "bs <- changepoints::WBS.multi.nonpar(t(X), t(X), 1, n, intervals$Alpha, intervals$Beta, h, minimal_segment_length)"
         )
-        return [0] + sorted(r("changepoints::tuneBSmultinonpar(bs, t(X))")) + [n]
+        result = r("changepoints::tuneBSmultinonpar(bs, t(X))")
+
+        if result is None or type(result) is rpy2.rinterface_lib.sexp.NULLType:
+            result = []
+
+        return [0] + sorted(result) + [n]

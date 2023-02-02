@@ -47,7 +47,6 @@ def main(n_seeds, seed_start, methods, datasets, file, append, verify):
             "kernseg_rbf",
             "kernseg_linear",
             "mnwbs_changepoints",
-            "decon",
         ]
     else:
         methods = methods.split(" ")
@@ -73,7 +72,6 @@ def main(n_seeds, seed_start, methods, datasets, file, append, verify):
                     "dry-beans",
                     "wine",
                     "abalone",
-                    "dirichlet",
                 ]:
                     continue
 

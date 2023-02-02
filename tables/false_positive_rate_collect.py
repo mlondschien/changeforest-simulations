@@ -46,7 +46,6 @@ def main(n_seeds, seed_start, methods, datasets, file, append):
             "ecp",
             "multirank",
             "kernseg_rbf",
-            "decon",
             "mnwbs_changepoints",
         ]
     else:
@@ -73,7 +72,6 @@ def main(n_seeds, seed_start, methods, datasets, file, append):
                     "dry-beans-no-change",
                     "wine-no-change",
                     "abalone-no-change",
-                    # "dirichlet-no-change",
                 ]:
                     continue
 
