@@ -41,7 +41,6 @@ def main(file, dataset):
     )
 
     fig, axes = plt.subplots(ncols=2, nrows=3, figsize=(FIGURE_WIDTH, FIGURE_WIDTH))
-    plt.subplots_adjust(wspace=1.5)
     for idx, method in enumerate(METHOD_ORDERING[1:]):  # Exclude change in mean
         changepoints = (
             df.loc[lambda x: x["method"].eq(method), "estimated_changepoints"]
