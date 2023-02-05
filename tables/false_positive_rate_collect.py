@@ -75,6 +75,11 @@ def main(n_seeds, seed_start, methods, datasets, file, append):
                 ]:
                     continue
 
+                if method == "mnwbs_changepoints" and dataset == "dirichlet-no-change" and seed in [233, 537]:
+                    # mnwbs_changepoints raises a division by zero error for these
+                    # settings. Insead of fixing their code we just use a different seed.
+                    seed = 2500 + seed
+                
                 benchmark(method, dataset, seed, file_path=file_path)
 
 

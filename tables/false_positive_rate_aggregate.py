@@ -30,9 +30,11 @@ def main(file, latex):
     )
     to_latex(df_display, latex=latex)
 
+    to_latex(df.groupby(["dataset", "method"]).size().reset_index().pivot(index="method", columns=["dataset"]), latex=latex)
 
 def to_latex(df, latex=True):
     df.columns = df.columns.get_level_values(level=1)
+    DATASET_RENAMING["change_in_covariance"] = "CIC"
     renaming = {f"{x}-no-change": f"{y}-no-change" for x, y in DATASET_RENAMING.items()}
     df = df.rename(columns=renaming, copy=False)
     df = df[[f"{x}-no-change" for x in DATASET_ORDERING if f"{x}-no-change" in df]]

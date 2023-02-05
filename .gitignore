@@ -5,3 +5,5 @@ __pycache__
 
 output/
 applications/
+
+lsf.o*
