@@ -16,22 +16,26 @@ from changeforest_simulations import estimate_changepoints, simulate
         "changekNN_sbs",
         "change_in_mean_bs",
         "change_in_mean_sbs",
-        # "kernseg",
+        # "r_kernseg",
         "kernseg_rbf",
         "kernseg_linear",
         "decon",
+        "mnwbs_changepoints"
         # "mnwbs"  # mnwbs takes 5-10s on iris.
     ],
 )
-def test_method(method):
-    _, X = simulate("iris")
+@pytest.mark.parametrize("dataset", ["iris", "iris-no-change"])
+def test_method(method, dataset):
+    _, X = simulate(dataset)
     changepoints = estimate_changepoints(
-        X, method=method, minimal_relative_segment_length=0.02
+        X, method=method, minimal_relative_segment_length=0.01
     )
     assert changepoints[0] == 0
-    assert changepoints[-1] == 150
+    assert changepoints[-1] == X.shape[0]
+    assert list(changepoints) == sorted(changepoints)
 
-    assert len(changepoints) > 2
+    if dataset == "iris":
+        assert len(changepoints) > 2
 
 
 @pytest.mark.parametrize(
@@ -49,8 +53,9 @@ def test_method(method):
         # "kernseg",
         "kernseg_rbf",
         "kernseg_linear",
-        "kernseg_cosine"
+        "kernseg_cosine",
         #   "kcprs",
+        # "mnwbs_changepoints"
     ],
 )
 def test_minimal_relative_segment_length(method):

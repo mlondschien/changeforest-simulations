@@ -46,6 +46,7 @@ def main(n_seeds, seed_start, methods, datasets, file, append):
             "ecp",
             "multirank",
             "kernseg_rbf",
+            "mnwbs_changepoints",
         ]
     else:
         methods = methods.split(" ")
@@ -65,6 +66,23 @@ def main(n_seeds, seed_start, methods, datasets, file, append):
             for method in methods:
                 if method == "multirank" and "dry-beans" in dataset:
                     continue  # Singular Matrix error
+
+                # slow
+                if method == "mnwbs_changepoints" and dataset in [
+                    "dry-beans-no-change",
+                    "wine-no-change",
+                    "abalone-no-change",
+                ]:
+                    continue
+
+                if (
+                    method == "mnwbs_changepoints"
+                    and dataset == "dirichlet-no-change"
+                    and seed in [233, 537]
+                ):
+                    # mnwbs_changepoints raises a division by zero error for these
+                    # settings. Insead of fixing their code we just use a different seed.
+                    seed = 2500 + seed
 
                 benchmark(method, dataset, seed, file_path=file_path)
 

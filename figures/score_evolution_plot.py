@@ -43,10 +43,16 @@ def main(file):
     )
 
     df = df[lambda x: x["n_observations"] <= 64000]
-
     df["dataset"] = df["dataset"].str.split("__").str[0]
     df["method"] = df["method"].replace(METHOD_RENAMING)
     df = df[lambda x: x["method"].isin(METHOD_ORDERING)]
+    df = df[
+        lambda x: ~(
+            x["method"].eq("MNWBS")
+            & x["dataset"].eq("dry-beans-noise")
+            & x["n_observations"].ge(500)
+        )
+    ]
 
     index_columns = ["dataset", "method", "n_segments", "n_observations"]
     if df[index_columns + ["seed"]].duplicated().any():
@@ -124,81 +130,63 @@ def main(file):
     plt.savefig(figures_path / "evolution_performance.eps", dpi=300)
     plt.savefig(figures_path / "evolution_performance.png", dpi=300)
 
-    figsize = (FIGURE_WIDTH, FIGURE_WIDTH * 0.3)
-    fig, axes = plt.subplots(ncols=len(segments), nrows=1, figsize=figsize)
+    for dataset in ["dirichlet", "dry-beans-noise"]:
+        figsize = (FIGURE_WIDTH, FIGURE_WIDTH * 0.3)
+        fig, axes = plt.subplots(ncols=len(segments), nrows=1, figsize=figsize)
 
-    min_time = df.loc[lambda x: x["dataset"].eq("dirichlet"), "mean_time"].min()
-    max_time = df.loc[lambda x: x["dataset"].eq("dirichlet"), "mean_time"].max()
-    ymin = np.exp(np.log(min_time) - 0.1 * np.log(max_time / min_time))
-    ymax = np.exp(np.log(max_time) + 0.1 * np.log(max_time / min_time))
+        min_time = df.loc[lambda x: x["dataset"].eq(dataset), "mean_time"].min()
+        max_time = df.loc[lambda x: x["dataset"].eq(dataset), "mean_time"].max()
+        ymin = np.exp(np.log(min_time) - 0.1 * np.log(max_time / min_time))
+        ymax = np.exp(np.log(max_time) + 0.1 * np.log(max_time / min_time))
 
-    labels = []
+        labels = []
 
-    for idx, n_segments in enumerate(segments):
-        df_plot = df[df["n_segments"].eq(n_segments) & df["dataset"].eq("dirichlet")]
+        for idx, n_segments in enumerate(segments):
+            df_plot = df[df["n_segments"].eq(n_segments) & df["dataset"].eq(dataset)]
 
-        for method in METHOD_ORDERING:
-            df_method = df_plot[lambda x: x["method"].eq(method)]
+            for method in METHOD_ORDERING:
+                df_method = df_plot[lambda x: x["method"].eq(method)]
 
-            label = axes[idx].plot(
-                df_method["n_observations"],
-                df_method["mean_time"],
-                label=method,
-                linewidth=LINEWIDTH,
+                label = axes[idx].plot(
+                    df_method["n_observations"],
+                    df_method["mean_time"],
+                    label=method,
+                    linewidth=LINEWIDTH,
+                )
+                if idx == 0:
+                    labels += label
+
+                df_lm = df_method[lambda x: x["n_observations"] >= 1000]
+                if df_lm.empty:
+                    df_lm = df_method
+                lm = LinearRegression().fit(
+                    X=np.log(df_lm[["n_observations"]]), y=np.log(df_lm["mean_time"])
+                )
+                print(f"{dataset} {method} - {n_segments} segments: {lm.coef_[0]}")
+
+            labels += axes[idx].plot(
+                [250, 64000], [250 / 2 / 1e5, 64000 / 2 / 1e5], "--", color="grey"
             )
-            if idx == 0:
-                labels += label
-
-            df_lm = df_method[lambda x: x["n_observations"] >= 1000]
-            lm = LinearRegression().fit(
-                X=np.log(df_lm[["n_observations"]]), y=np.log(df_lm["mean_time"])
+            axes[idx].plot(
+                [250, 64000],
+                [250 / 1e6 / 2, 64000 * 64000 / 250 / 1e6 / 2],
+                "--",
+                color="grey",
             )
-            print(f"{method} - {n_segments} segments: {lm.coef_[0]}")
+            axes[idx].set_title(f"{n_segments} segments", {"size": 16})
+            axes[idx].set_xscale("log")
+            axes[idx].set_yscale("log")
+            axes[idx].set_xlabel("sample size (n)")
+            axes[idx].set_ylim(ymin, ymax)
 
-        labels += axes[idx].plot(
-            [250, 64000], [250 / 2 / 1e5, 64000 / 2 / 1e5], "--", color="grey"
-        )
-        axes[idx].plot(
-            [250, 64000],
-            [250 / 1e6 / 2, 64000 * 64000 / 250 / 1e6 / 2],
-            "--",
-            color="grey",
-        )
-        axes[idx].set_title(f"{n_segments} segments", {"size": 16})
-        axes[idx].set_xscale("log")
-        axes[idx].set_yscale("log")
-        axes[idx].set_xlabel("sample size (n)")
-        axes[idx].set_ylim(ymin, ymax)
+        # https://stackoverflow.com/a/43439132
+        fig.legend(labels, METHOD_ORDERING + ["linear / quadratic"], loc=7)
+        axes[0].set_ylabel("time (s)")
+        plt.tight_layout()
+        plt.subplots_adjust(top=0.88, right=0.8)
 
-    # https://stackoverflow.com/a/43439132
-    fig.legend(labels, METHOD_ORDERING + ["linear / quadratic"], loc=7)
-    axes[0].set_ylabel("time (s)")
-    plt.tight_layout()
-    plt.subplots_adjust(top=0.88, right=0.8)
-    plt.savefig(figures_path / "evolution_time.eps", dpi=300)
-    plt.savefig(figures_path / "evolution_time.png", dpi=300)
-
-    df_display = (
-        df.groupby(["method", "dataset", "n_segments"])
-        .apply(
-            lambda x: pd.DataFrame(
-                {
-                    "threshold": [0.8, 0.95],
-                    "val": [
-                        x.loc[lambda x: x["mean_score"] > thr, "n_observations"].min()
-                        / x["n_segments"].min()
-                        for thr in [0.8, 0.95]
-                    ],
-                }
-            )
-        )
-        .reset_index()
-    ).drop(columns="level_3")
-    print(
-        df_display.pivot(
-            index=["method", "threshold"], columns=["dataset", "n_segments"]
-        )
-    )
+        plt.savefig(figures_path / f"evolution_time_{dataset}.eps", dpi=300)
+        plt.savefig(figures_path / f"evolution_time_{dataset}.png", dpi=300)
 
 
 if __name__ == "__main__":

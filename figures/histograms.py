@@ -41,7 +41,7 @@ def main(file, dataset):
     )
 
     fig, axes = plt.subplots(ncols=2, nrows=3, figsize=(FIGURE_WIDTH, FIGURE_WIDTH))
-    for idx, method in enumerate(METHOD_ORDERING):
+    for idx, method in enumerate(METHOD_ORDERING[1:]):  # Exclude change in mean
         changepoints = (
             df.loc[lambda x: x["method"].eq(method), "estimated_changepoints"]
             .apply(lambda x: json.loads(x)[1:-1])

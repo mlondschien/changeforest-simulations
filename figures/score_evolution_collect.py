@@ -27,6 +27,7 @@ def main(n_seeds, seed_start, file, append):
         "ecp",
         "multirank",
         "kernseg_rbf",
+        "mnwbs_changepoints",
     ]
     n_segments_list = [20, 80]
     n_observations_list = [
@@ -80,6 +81,11 @@ def main(n_seeds, seed_start, file, append):
                             continue
                         if method == "kernseg_rbf" and n_observations >= 64000:
                             continue
+                        if method == "mnwbs_changepoints":
+                            if dataset == "dry-beans-noise" and n_observations >= 500:
+                                continue
+                            if dataset == "dirichlet" and n_observations >= 1000:
+                                continue
 
                         benchmark(method, dataset_name, seed, file_path=file_path)
 

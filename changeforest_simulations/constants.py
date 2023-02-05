@@ -1,6 +1,6 @@
 DATASET_RENAMING = {
     "change_in_mean": "CIM",
-    "change_in_covariance": "CIC",
+    "change_in_covariance_new": "CIC",
     "dirichlet": "Dirichlet",
 }
 DATASET_ORDERING = [
@@ -24,14 +24,16 @@ METHOD_RENAMING = {
     "ecp": "ECP",
     "multirank": "MultiRank",
     "kernseg_rbf": "KCP",
+    "mnwbs_changepoints": "MNWBS",
 }
 METHOD_ORDERING = [
     "change in mean",
-    "changeforest",
     "changekNN",
     "ECP",
     "KCP",
     "MultiRank",
+    "MNWBS",
+    "changeforest",
 ]
 
 # https://personal.sron.nl/~pault/#sec:qualitative
@@ -44,15 +46,17 @@ COLORS = {
     "purple": "#AA3377",
     "grey": "#BBBBBB",
     "black": "#000000",
+    "indigo": "#332288",
 }
 
 COLOR_CYCLE = [
     COLORS["cyan"],  # change in mean
-    COLORS["black"],  # ours
     COLORS["purple"],  # changekNN
     COLORS["red"],  # ECP
     COLORS["yellow"],  # KCP (rbf)
     COLORS["green"],  # MultiRank
+    COLORS["blue"],  # MNWBS
+    COLORS["black"],  # ours
 ]
 
 FIGURE_FONT_SIZE = 14
