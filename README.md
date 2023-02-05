@@ -11,7 +11,7 @@ conda env create -f environment.yaml
 pip install -e .
 ```
 
-Importantly, results in [1] are based on `changeforest=0.6.0`.
+Results in [1] are based on `changeforest=0.6.0`.
 
 ## Figures
 
@@ -23,7 +23,7 @@ The `figures` folder contains Python scripts to reproduce figures in [1].
 | 2 | `two_step_search.py` | `two_step_search.eps` |
 | 3 | `two_step_search_biased.py` | `two_step_search_biased.eps` |
 | 4 | `binary_segmentation.py` | `binary_segmentation_abalone_0.eps` |
-| 5 | `score_evolution*` (see below) | `evolution_performance.eps` |
+| 5 | `score_evolution*` (see below) | `evolution_performance_dirichlet.eps` |
 | 6 | `score_evolution*` (see below) | `evolution_time.eps` |
 | 7 | `histograms.py` | `histograms_dirichlet.eps` |
 
@@ -32,12 +32,13 @@ All scripts produce both an `eps` and a `png` file.
 Figures 5, 6 display the result of an extensive simulation study.
 For this, the script `score_evolution_collect.py` collects simulation results in `csv` files.
 The script is written in such a fashion to be run in a distributed fashion.
-For example, to collect simulation results for 500 simulations, as in [1], distributed among 10 machines, run `python figures/score_evolution_collect.py --seed-start 0 --n-seeds 50 --file changeforest`, ..., `python figures/score_evolution_collect.py --seed-start 450 --n-seeds 50 --file changeforest`.
+For example, to collect simulation results for 500 simulations, as in [1], distributed among 10 machines, run `python figures/score_evolution_collect.py --seed-start 0 --n-seeds 50 --file 0.6.0`, ..., `python figures/score_evolution_collect.py --seed-start 450 --n-seeds 50 --file changeforest`.
 Here, `file` is a name for the `csv` files containing simulation results.
-While developing the `changeforest` algorithm, I would use for example `--file changeforest-0.6.0` to later be able to compare results from different versions.
+While developing the `changeforest` algorithm, I would use for example `--file 0.6.0` to later be able to compare results from different versions.
+The `csv` files generated for the tables and figures of [1] are included in this repository.
 
 After collecting simulation results in `csv` files, the `score_evolution_collect.py` script will gather these results and produce Figures 5, 6.
-For our setting, calling `python figures/score_evolution_collect.py --file changeforest` will produce the figures.
+For our setting, calling `python figures/score_evolution_collect.py --file 0.6.0` will produce the figures.
 
 ## Tables
 
