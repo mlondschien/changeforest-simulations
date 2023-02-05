@@ -46,14 +46,20 @@ def main(file):
     df["dataset"] = df["dataset"].str.split("__").str[0]
     df["method"] = df["method"].replace(METHOD_RENAMING)
     df = df[lambda x: x["method"].isin(METHOD_ORDERING)]
-    df = df[lambda x: ~(x["method"].eq("MNWBS") & x["dataset"].eq("dry-beans-noise") & x["n_observations"].ge(500))]
+    df = df[
+        lambda x: ~(
+            x["method"].eq("MNWBS")
+            & x["dataset"].eq("dry-beans-noise")
+            & x["n_observations"].ge(500)
+        )
+    ]
 
     index_columns = ["dataset", "method", "n_segments", "n_observations"]
     if df[index_columns + ["seed"]].duplicated().any():
         raise ValueError("There were duplicates.")
 
     if not df.groupby(index_columns).size().eq(500).all():
-       raise ValueError("Not 500 unique seeds per combination.")
+        raise ValueError("Not 500 unique seeds per combination.")
 
     df = (
         df.groupby(["dataset", "method", "n_observations", "n_segments"])
@@ -124,7 +130,7 @@ def main(file):
     plt.savefig(figures_path / "evolution_performance.eps", dpi=300)
     plt.savefig(figures_path / "evolution_performance.png", dpi=300)
 
-    for dataset in ['dirichlet', 'dry-beans-noise']:
+    for dataset in ["dirichlet", "dry-beans-noise"]:
         figsize = (FIGURE_WIDTH, FIGURE_WIDTH * 0.3)
         fig, axes = plt.subplots(ncols=len(segments), nrows=1, figsize=figsize)
 

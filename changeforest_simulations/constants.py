@@ -55,7 +55,7 @@ COLOR_CYCLE = [
     COLORS["red"],  # ECP
     COLORS["yellow"],  # KCP (rbf)
     COLORS["green"],  # MultiRank
-    COLORS["blue"], # MNWBS
+    COLORS["blue"],  # MNWBS
     COLORS["black"],  # ours
 ]
 

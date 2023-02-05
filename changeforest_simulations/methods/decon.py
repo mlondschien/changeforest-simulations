@@ -1,6 +1,7 @@
+import numpy as np
 from rpy2.robjects import default_converter, numpy2ri, r
 from rpy2.robjects.conversion import localconverter
-import numpy as np
+
 
 def decon(X, minimal_relative_segment_length):
     n, p = X.shape

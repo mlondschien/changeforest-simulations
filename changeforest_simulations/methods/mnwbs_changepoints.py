@@ -1,7 +1,8 @@
 import numpy as np
+from rpy2.rinterface_lib.sexp import NULLType
 from rpy2.robjects import default_converter, numpy2ri, r
 from rpy2.robjects.conversion import localconverter
-from rpy2.rinterface_lib.sexp import NULLType
+
 
 def mnwbs_changepoints(X, minimal_relative_segment_length):
     n, p = X.shape

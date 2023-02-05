@@ -30,7 +30,14 @@ def main(file, latex):
     )
     to_latex(df_display, latex=latex)
 
-    to_latex(df.groupby(["dataset", "method"]).size().reset_index().pivot(index="method", columns=["dataset"]), latex=latex)
+    to_latex(
+        df.groupby(["dataset", "method"])
+        .size()
+        .reset_index()
+        .pivot(index="method", columns=["dataset"]),
+        latex=latex,
+    )
+
 
 def to_latex(df, latex=True):
     df.columns = df.columns.get_level_values(level=1)
