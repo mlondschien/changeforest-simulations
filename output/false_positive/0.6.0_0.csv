@@ -1,0 +1,80 @@
+dataset,seed,method,score,left_hausdorff,right_hausdorff,symmetric_hausdorff,true_changepoints,estimated_changepoints,n_cpts,time
+iris-no-change,0,changeforest_bs,1.0,0.0,0.0,0.0,"[0, 50]","[0, 50]",0,0.0089639211073517
+iris-no-change,0,changeforest_bs__model_selection_alpha=0.05,1.0,0.0,0.0,0.0,"[0, 50]","[0, 50]",0,0.0048217130824923
+iris-no-change,0,changekNN_bs,1.0,0.0,0.0,0.0,"[0, 50]","[0, 50]",0,0.0006105750799179
+iris-no-change,0,changekNN_bs__model_selection_alpha=0.05,1.0,0.0,0.0,0.0,"[0, 50]","[0, 50]",0,0.0005881050601601
+iris-no-change,0,ecp,1.0,0.0,0.0,0.0,"[0, 50]","[0.0, 50.0]",0,0.155950317159295
+iris-no-change,0,multirank,0.0,0.0,0.46,0.46,"[0, 50]","[0, 23, 50]",1,0.0254115238785743
+iris-no-change,0,kernseg_rbf,1.0,0.0,0.0,0.0,"[0, 50]","[0, 50]",0,0.0061772968620061
+glass-no-change,0,changeforest_bs,1.0,0.0,0.0,0.0,"[0, 76]","[0, 76]",0,0.010700549930334
+glass-no-change,0,changeforest_bs__model_selection_alpha=0.05,1.0,0.0,0.0,0.0,"[0, 76]","[0, 76]",0,0.0096961837261915
+glass-no-change,0,changekNN_bs,1.0,0.0,0.0,0.0,"[0, 76]","[0, 76]",0,0.0011310651898384
+glass-no-change,0,changekNN_bs__model_selection_alpha=0.05,1.0,0.0,0.0,0.0,"[0, 76]","[0, 76]",0,0.0006692484021186
+glass-no-change,0,ecp,1.0,0.0,0.0,0.0,"[0, 76]","[0.0, 76.0]",0,0.0546385627239942
+glass-no-change,0,multirank,0.0,0.0,0.0657894736842105,0.0657894736842105,"[0, 76]","[0, 71, 76]",1,0.0338657926768064
+glass-no-change,0,kernseg_rbf,1.0,0.0,0.0,0.0,"[0, 76]","[0, 76]",0,0.005500579252839
+wine-no-change,0,changeforest_bs,1.0,0.0,0.0,0.0,"[0, 2836]","[0, 2836]",0,0.1179296001791954
+wine-no-change,0,changeforest_bs__model_selection_alpha=0.05,1.0,0.0,0.0,0.0,"[0, 2836]","[0, 2836]",0,0.1163585949689149
+wine-no-change,0,changekNN_bs,1.0,0.0,0.0,0.0,"[0, 2836]","[0, 2836]",0,1.0101844910532236
+wine-no-change,0,changekNN_bs__model_selection_alpha=0.05,1.0,0.0,0.0,0.0,"[0, 2836]","[0, 2836]",0,1.0794143173843622
+wine-no-change,0,ecp,1.0,0.0,0.0,0.0,"[0, 2836]","[0.0, 2836.0]",0,55.07897447049618
+wine-no-change,0,multirank,0.0,0.0,0.4248942172073343,0.4248942172073343,"[0, 2836]","[0, 267, 272, 496, 497, 944, 951, 952, 1084, 1112, 1113, 1631, 1632, 1748, 1749, 2253, 2297, 2310, 2311, 2345, 2346, 2367, 2836]",21,14.804302852600811
+wine-no-change,0,kernseg_rbf,1.0,0.0,0.0,0.0,"[0, 2836]","[0, 2836]",0,1.0147846769541502
+breast-cancer-no-change,0,changeforest_bs,1.0,0.0,0.0,0.0,"[0, 458]","[0, 458]",0,0.0219963956624269
+breast-cancer-no-change,0,changeforest_bs__model_selection_alpha=0.05,1.0,0.0,0.0,0.0,"[0, 458]","[0, 458]",0,0.029783796519041
+breast-cancer-no-change,0,changekNN_bs,1.0,0.0,0.0,0.0,"[0, 458]","[0, 458]",0,0.0160063989460468
+breast-cancer-no-change,0,changekNN_bs__model_selection_alpha=0.05,1.0,0.0,0.0,0.0,"[0, 458]","[0, 458]",0,0.0157277602702379
+breast-cancer-no-change,0,ecp,1.0,0.0,0.0,0.0,"[0, 458]","[0.0, 458.0]",0,0.9714584201574326
+breast-cancer-no-change,0,multirank,0.0,0.0,0.4323144104803493,0.4323144104803493,"[0, 458]","[0, 58, 59, 79, 80, 90, 91, 125, 126, 152, 153, 260, 266, 267, 324, 331, 338, 339, 344, 345, 418, 419, 443, 444, 458]",23,0.5300263613462448
+breast-cancer-no-change,0,kernseg_rbf,1.0,0.0,0.0,0.0,"[0, 458]","[0, 458]",0,0.0564620643854141
+abalone-no-change,0,changeforest_bs,1.0,0.0,0.0,0.0,"[0, 689]","[0, 689]",0,0.0352812055498361
+abalone-no-change,0,changeforest_bs__model_selection_alpha=0.05,1.0,0.0,0.0,0.0,"[0, 689]","[0, 689]",0,0.0438701622188091
+abalone-no-change,0,changekNN_bs,1.0,0.0,0.0,0.0,"[0, 689]","[0, 689]",0,0.0507903359830379
+abalone-no-change,0,changekNN_bs__model_selection_alpha=0.05,1.0,0.0,0.0,0.0,"[0, 689]","[0, 689]",0,0.0507608074694871
+abalone-no-change,0,ecp,0.0,0.0,0.2177068214804063,0.2177068214804063,"[0, 689]","[0.0, 539.0, 561.0, 689.0]",2,5.52024906501174
+abalone-no-change,0,multirank,0.0,0.0,0.3033381712626996,0.3033381712626996,"[0, 689]","[0, 54, 55, 65, 66, 71, 72, 185, 186, 480, 481, 482, 489, 490, 496, 497, 554, 555, 635, 636, 645, 646, 689]",21,1.0763617288321257
+abalone-no-change,0,kernseg_rbf,1.0,0.0,0.0,0.0,"[0, 689]","[0, 689]",0,0.0871637966483831
+dry-beans-no-change,0,changeforest_bs,1.0,0.0,0.0,0.0,"[0, 3546]","[0, 3546]",0,0.2120603397488594
+dry-beans-no-change,0,changeforest_bs__model_selection_alpha=0.05,1.0,0.0,0.0,0.0,"[0, 3546]","[0, 3546]",0,0.2147791218012571
+dry-beans-no-change,0,changekNN_bs,1.0,0.0,0.0,0.0,"[0, 3546]","[0, 3546]",0,1.7976072877645493
+dry-beans-no-change,0,changekNN_bs__model_selection_alpha=0.05,1.0,0.0,0.0,0.0,"[0, 3546]","[0, 3546]",0,1.7403349597007036
+dry-beans-no-change,0,ecp,1.0,0.0,0.0,0.0,"[0, 3546]","[0.0, 3546.0]",0,83.53643717430532
+dry-beans-no-change,0,kernseg_rbf,1.0,0.0,0.0,0.0,"[0, 3546]","[0, 3546]",0,1.661452716216445
+change_in_mean-no-change,0,changeforest_bs,1.0,0.0,0.0,0.0,"[0, 200]","[0, 200]",0,0.0128115098923444
+change_in_mean-no-change,0,changeforest_bs__model_selection_alpha=0.05,1.0,0.0,0.0,0.0,"[0, 200]","[0, 200]",0,0.0140822473913431
+change_in_mean-no-change,0,changekNN_bs,1.0,0.0,0.0,0.0,"[0, 200]","[0, 200]",0,0.00520302914083
+change_in_mean-no-change,0,changekNN_bs__model_selection_alpha=0.05,1.0,0.0,0.0,0.0,"[0, 200]","[0, 200]",0,0.0035329554229974
+change_in_mean-no-change,0,ecp,1.0,0.0,0.0,0.0,"[0, 200]","[0.0, 200.0]",0,0.2273057084530592
+change_in_mean-no-change,0,multirank,1.0,0.0,0.0,0.0,"[0, 200]","[0, 200]",0,0.1195788644254207
+change_in_mean-no-change,0,kernseg_rbf,1.0,0.0,0.0,0.0,"[0, 200]","[0, 200]",0,0.0337035600095987
+change_in_covariance-no-change,0,changeforest_bs,1.0,0.0,0.0,0.0,"[0, 200]","[0, 200]",0,0.014322455972433
+change_in_covariance-no-change,0,changeforest_bs__model_selection_alpha=0.05,1.0,0.0,0.0,0.0,"[0, 200]","[0, 200]",0,0.0170279648154974
+change_in_covariance-no-change,0,changekNN_bs,1.0,0.0,0.0,0.0,"[0, 200]","[0, 200]",0,0.0044250916689634
+change_in_covariance-no-change,0,changekNN_bs__model_selection_alpha=0.05,1.0,0.0,0.0,0.0,"[0, 200]","[0, 200]",0,0.003613356500864
+change_in_covariance-no-change,0,ecp,1.0,0.0,0.0,0.0,"[0, 200]","[0.0, 200.0]",0,0.2442982643842697
+change_in_covariance-no-change,0,multirank,1.0,0.0,0.0,0.0,"[0, 200]","[0, 200]",0,0.1192821022123098
+change_in_covariance-no-change,0,kernseg_rbf,1.0,0.0,0.0,0.0,"[0, 200]","[0, 200]",0,0.0335983652621507
+dirichlet-no-change,0,changeforest_bs,1.0,0.0,0.0,0.0,"[0, 150]","[0, 150]",0,0.0182538796216249
+dirichlet-no-change,0,changeforest_bs__model_selection_alpha=0.05,1.0,0.0,0.0,0.0,"[0, 150]","[0, 150]",0,0.0214639082551002
+dirichlet-no-change,0,changekNN_bs,1.0,0.0,0.0,0.0,"[0, 150]","[0, 150]",0,0.0023161694407463
+dirichlet-no-change,0,changekNN_bs__model_selection_alpha=0.05,1.0,0.0,0.0,0.0,"[0, 150]","[0, 150]",0,0.002237033098936
+dirichlet-no-change,0,ecp,1.0,0.0,0.0,0.0,"[0, 150]","[0.0, 150.0]",0,0.1188456565141677
+dirichlet-no-change,0,multirank,1.0,0.0,0.0,0.0,"[0, 150]","[0, 150]",0,0.0767677742987871
+dirichlet-no-change,0,kernseg_rbf,1.0,0.0,0.0,0.0,"[0, 150]","[0, 150]",0,0.0195728857070207
+iris-no-change,0,change_in_mean_bs,0.0,0.0,0.06,0.06,"[0, 50]","[0, 47, 50]",1,0.000107979401946
+glass-no-change,0,change_in_mean_bs,0.0,0.0,0.0921052631578947,0.0921052631578947,"[0, 76]","[0, 2, 7, 73, 74, 76]",4,3.990065306425095e-05
+wine-no-change,0,change_in_mean_bs,1.0,0.0,0.0,0.0,"[0, 2836]","[0, 2836]",0,0.0001347176730632
+breast-cancer-no-change,0,change_in_mean_bs,1.0,0.0,0.0,0.0,"[0, 458]","[0, 458]",0,4.241056740283966e-05
+abalone-no-change,0,change_in_mean_bs,1.0,0.0,0.0,0.0,"[0, 689]","[0, 689]",0,5.433894693851471e-05
+dry-beans-no-change,0,change_in_mean_bs,1.0,0.0,0.0,0.0,"[0, 3546]","[0, 3546]",0,0.0002038776874542
+change_in_mean-no-change,0,change_in_mean_bs,1.0,0.0,0.0,0.0,"[0, 200]","[0, 200]",0,3.452971577644348e-05
+change_in_covariance-no-change,0,change_in_mean_bs,1.0,0.0,0.0,0.0,"[0, 200]","[0, 200]",0,2.91094183921814e-05
+dirichlet-no-change,0,change_in_mean_bs,0.0,0.0,0.4933333333333333,0.4933333333333333,"[0, 150]","[0, 2, 5, 7, 11, 14, 16, 19, 22, 25, 29, 31, 33, 36, 39, 41, 44, 48, 50, 52, 55, 57, 60, 64, 67, 69, 71, 73, 76, 79, 82, 85, 87, 89, 91, 93, 97, 100, 103, 106, 109, 111, 113, 117, 120, 122, 125, 128, 130, 132, 135, 137, 139, 141, 143, 147, 150]",55,0.0001156385987997
+iris-no-change,0,decon,1.0,0.0,0.0,0.0,"[0, 50]","[0, 50]",0,1.0656178258359432
+iris-no-change,0,mnwbs_changepoints,0.0,0.0,0.14,0.14,"[0, 50]","[0, 43.0, 50]",1,14.108057660982013
+glass-no-change,0,decon,1.0,0.0,0.0,0.0,"[0, 76]","[0, 76]",0,1.0737258475273848
+glass-no-change,0,mnwbs_changepoints,1.0,0.0,0.0,0.0,"[0, 76]","[0, 76]",0,31.136431913357228
+breast-cancer-no-change,0,mnwbs_changepoints,0.0,0.0,0.2925764192139738,0.2925764192139738,"[0, 458]","[0, 324.0, 458]",1,1219.2117861821316
+change_in_mean-no-change,0,mnwbs_changepoints,0.0,0.0,0.455,0.455,"[0, 200]","[0, 86.0, 91.0, 200]",2,126.74105468392372
+change_in_covariance-no-change,0,mnwbs_changepoints,0.0,0.0,0.455,0.455,"[0, 200]","[0, 86.0, 91.0, 200]",2,126.54964769957587
+dirichlet-no-change,0,mnwbs_changepoints,0.0,0.0,0.24,0.24,"[0, 150]","[0, 114.0, 150]",1,649.4155241730623
