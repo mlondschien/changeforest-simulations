@@ -25,7 +25,6 @@ METHOD_RENAMING = {
     "multirank": "MultiRank",
     "kernseg_rbf": "KCP",
     "mnwbs_changepoints": "MNWBS",
-    "decon": "Decon",
 }
 METHOD_ORDERING = [
     "change in mean",
@@ -34,7 +33,6 @@ METHOD_ORDERING = [
     "KCP",
     "MultiRank",
     "MNWBS",
-    "Decon",
     "changeforest",
 ]
 
@@ -48,15 +46,17 @@ COLORS = {
     "purple": "#AA3377",
     "grey": "#BBBBBB",
     "black": "#000000",
+    "indigo": "#332288",
 }
 
 COLOR_CYCLE = [
     COLORS["cyan"],  # change in mean
-    COLORS["black"],  # ours
     COLORS["purple"],  # changekNN
     COLORS["red"],  # ECP
     COLORS["yellow"],  # KCP (rbf)
     COLORS["green"],  # MultiRank
+    COLORS["blue"], # MNWBS
+    COLORS["black"],  # ours
 ]
 
 FIGURE_FONT_SIZE = 14
